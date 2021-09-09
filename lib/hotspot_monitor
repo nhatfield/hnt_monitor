@@ -17,7 +17,7 @@ for c in ../conf/*.conf; do
   . "${c}"
 done
 
-if [ ${debug} == "true" ]; then
+if [ ${trace} == "true" ]; then
   set -x
 fi
 
@@ -200,5 +200,6 @@ if [ "${hotspot_monitor}" == "true" ]; then
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Hotspot monitor run complete" >> "${logpath}/${logfile}"
 else
-  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: Hotspot monitor collection is disabled. Skipping" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: Hotspot monitor collection is disabled. Hint: (hotspot_monitor=false)" >> "${logpath}/${logfile}"
+  true
 fi
