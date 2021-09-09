@@ -1,0 +1,55 @@
+version: "3"
+
+networks:
+  hnt_monitor:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.30.0.0/24
+
+services:
+  hnt_monitor:
+    container_name: hnt_monitor
+    image: hnt_monitor:1.6.0
+    build:
+      dockerfile: ./build/docker/Dockerfile
+      context: .
+    environment:
+      HOTSPOT_MONITOR: "true"
+      MINER_ADDRESSES: "12345.. "
+      PROMETHEUS_PG_HOST: "prometheus_pushgateway"
+      DEBUG: "true"
+    networks:
+      hnt_monitor:
+        ipv4_address: 10.30.0.05
+    depends_on:
+      - prometheus_pushgateway
+
+  prometheus_pushgateway:
+    container_name: prometheus_pushgateway
+    image: prom/pushgateway
+    ports:
+      - "9091:9091"
+    networks:
+      hnt_monitor:
+        ipv4_address: 10.30.0.04
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      hnt_monitor:
+        ipv4_address: 10.30.0.03
+    volumes:
+      - ./src/conf/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      hnt_monitor:
+        ipv4_address: 10.30.0.02

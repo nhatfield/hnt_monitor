@@ -1,5 +1,7 @@
 # vNext
 
+- **TechTask** - adding grafana, prometheus, prometheus pushgateway, and collector as a full docker stack
+
 # 1.5.1
 
 - **HotFix** - bobcat miner instance name was hardcoded
