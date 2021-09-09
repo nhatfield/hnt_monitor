@@ -21,22 +21,23 @@ if [ ${debug} == "true" ]; then
   set -x
 fi
 
-if [ ! "${bobcat_monitor}" == "true" ]; then
-  exit 0
-fi
+if [ "${bobcat_monitor}" == "true" ]; then
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Starting bobcat monitor run" >> "${logpath}/${logfile}"
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Starting bobcat monitor run" >> "${logpath}/${logfile}"
+  for M in ${bobcat_ips}; do
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: getting bobcat temperature for - ${M}" >> "${logpath}/${logfile}"
+    temp=$(curl -s http://${M}/temp.json) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: code $? - could not retrieve bobcat temperature" >> "${logpath}/${logfile}"
 
-for M in ${bobcat_ips}; do
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: getting bobcat temperature for - ${M}" >> "${logpath}/${logfile}"
-  temp=$(curl -s http://${M}/temp.json) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: code $? - could not retrieve bobcat temperature" >> "${logpath}/${logfile}"
-
-  cat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/bobcat_miner
+    cat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/bobcat_miner
 # HELP bobcat_miner_temperature of the bobcat miner cpu
 # TYPE bobcat_miner_temperature gauge
 bobcat_miner_temperature{instance="custom-rusty-porcupine",core="0"} $(jq '.temp0' <<< "${temp}")
 bobcat_miner_temperature{instance="custom-rusty-porcupine",core="1"} $(jq '.temp1' <<< "${temp}")
 EOF
-done
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: bobcat temperature core0: $(jq '.temp0' <<< "${temp}"); core1: $(jq '.temp1' <<< "${temp}")"
+  done
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Bobcat monitor run complete" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Bobcat monitor run complete" >> "${logpath}/${logfile}"
+else
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: Bobcat monitor collection is disabled. Skipping" >> "${logpath}/${logfile}"
+fi
