@@ -63,7 +63,7 @@ $> docker run -d --name hnt_monitor -e BOBCAT_MONITOR=true -e BOBCAT_IPS="192.16
 **Help Menu**
 
 ```bash
-$> docker -it --rm hnt_monitor help
+$> docker run -it --rm hnt_monitor help
 ```
 
 **Logs**
@@ -71,6 +71,24 @@ $> docker -it --rm hnt_monitor help
 ```bash
 $> docker logs -f hnt_monitor
 ```
+
+**Variables**
+
+| Name | Default | Description | Required |
+|:----:|---------|-------------|----------|
+| INTERVAL | `60` | Run the monitor collection once every 'n' seconds. | `no` |
+| MINER_ADDRESES | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `yes` |
+| PROJECT | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
+| HOTSPOT_URL | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
+| PROMETHEUS_PG_HOST | `localhost` | The prometheus push gateway hostname. | `yes` |
+| PROMETHEUS_PG_PORT | `9091` | The prometheus push gateway port. | `no` |
+| BOBCAT_MONITOR | `false` | Enable or disable bobcat monitoring. Boolean: [ true | false ] | `no` |
+| HOTSPOT_MONITOR | `false` | Enable hotspot monitoring from helium api. Boolean: [ true | false ] | `yes` |
+| BOBCAT_IPS | | If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
+| DEBUG | `false` | Turn on debug logging. Boolean: [ true | false ] | `no` |
+| TRACE | `false` | Turn on trace logging. Produces more logs than debug. Boolean: [ true | false ] | `no` |
+| LOGPATH | `/dev/` | Send logs to this path | `no` |
+| LOGFILE | `stdout` | Send logs to this file | `no` |
 
 ## Scheduling 
 
