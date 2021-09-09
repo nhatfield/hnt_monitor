@@ -1,10 +1,12 @@
 # vNext
 
 - **TechTask** - adding codeowners file to .github
+- **TechTask** - adding support for docker
+- **TechTask** - update readme with docker instructions
 
 # 1.4.0
 
-- **TechTask** - update readme and grafan png
+- **TechTask** - update readme and grafana png
 
 # 1.3.0
 

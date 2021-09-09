@@ -21,16 +21,11 @@ if [ ${debug} == "true" ]; then
   set -x
 fi
 
-if [ ! "${hotspot_monitor}" == "true" ]; then
-  exit 0
-fi
 
 addresses=$(< ../conf/address.list)
 current_day=$(date +%Y-%m-%d -u)
 current_time=$(date +%H:%M -u)
 timestamp_30d=$(date +%Y-%m-%d -u --date="30 days ago")
-
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Starting hotspot monitor run" >> "${logpath}/${logfile}"
 
 get_miner() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: getting hotspot data" >> "${logpath}/${logfile}"
@@ -191,13 +186,19 @@ EOF
 }
 
 
-for a in ${addresses}; do
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Gathering data for hotspot address - ${a}" >> "${logpath}/${logfile}"
-  get_miner
-  reward_scale &
-  reward_total &
-  witness &
-  sleep 1
-done
+if [ "${hotspot_monitor}" == "true" ]; then
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Starting hotspot monitor run" >> "${logpath}/${logfile}"
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Hotspot monitor run complete" >> "${logpath}/${logfile}"
+  for a in ${addresses}; do
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Gathering data for hotspot address - ${a}" >> "${logpath}/${logfile}"
+    get_miner
+    reward_scale &
+    reward_total &
+    witness &
+    sleep 1
+  done
+
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Hotspot monitor run complete" >> "${logpath}/${logfile}"
+else
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: Hotspot monitor collection is disabled. Skipping" >> "${logpath}/${logfile}"
+fi

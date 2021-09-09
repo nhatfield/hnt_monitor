@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+
+conf_dir="/opt/hnt_monitor/conf"
+conf_file="${conf_dir}/hnt_monitor.conf"          
+address_file="${conf_dir}/address.list"           # Used to query the helium api for metrics
+
+OPTION=${1:-"run"}
+INTERVAL=${INTERVAL:-"60"}
+MINER_ADDRESES=${MINER_ADDRESES:-""}
+PROJECT=${PROJECT:-"hnt_miner"}
+HOTSPOT_URL=${HOTSPOT_URL:-"api.helium.io/v1/hotspots"}
+PROMETHEUS_PG_HOST=${PROMETHEUS_PG_HOST:-"localhost"}
+PROMETHEUS_PG_PORT=${PROMETHEUS_PG_PORT:-"9091"}
+BOBCAT_MONITOR=${BOBCAT_MONITOR:-"false"}
+HOTSPOT_MONITOR=${HOTSPOT_MONITOR:-"false"}
+BOBCAT_IPS=${BOBCAT_IPS:-""}
+DEBUG=${DEBUG:-"false"}
+LOGPATH=${LOGPATH:-"/dev/"}
+LOGFILE=${LOGFILE:-"stdout"}
+
+setup() {
+  > "${address_file}"
+
+  for a in ${MINER_ADDRESES}; do
+    echo "${a}" >> "${address_file}"
+  done
+
+  sed -i "s%project=.*%project=${PROJECT}%" "${conf_file}"
+  sed -i "s%hotspot_url=.*%hotspot_url=${HOTSPOT_URL}%" "${conf_file}"
+  sed -i "s%prometheus_pg_host=.*%prometheus_pg_host=${PROMETHEUS_PG_HOST}%" "${conf_file}"
+  sed -i "s%prometheus_pg_port=.*%prometheus_pg_port=${PROMETHEUS_PG_PORT}%" "${conf_file}"
+  sed -i "s%bobcat_monitor=.*%bobcat_monitor=${BOBCAT_MONITOR}%" "${conf_file}"
+  sed -i "s%hotspot_monitor=.*%hotspot_monitor=${HOTSPOT_MONITOR}%" "${conf_file}"
+  sed -i "s%bobcat_ips=.*%bobcat_ips=${BOBCAT_IPS}%" "${conf_file}"
+  sed -i "s%debug=.*%debug=${DEBUG}%" "${conf_file}"
+  sed -i "s%logpath=.*%logpath=${LOGPATH}%" "${conf_file}"
+  sed -i "s%logfile=.*%logfile=${LOGFILE}%" "${conf_file}"
+}
+
+help() {
+  echo "HNT Monitor $(grep '^#' /opt/hnt_monitor/HISTORY.md | grep -v 'Next' | head -1 | sed 's%# %%')
+
+Update the configs by passing in the environment variables.
+
+Description:
+  VARIABLE		DESCRIPTION
+
+  INTERVAL		# Run the monitor collection once every 'n' seconds.
+  MINER_ADDRESES	# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
+  PROJECT		# The name of the metric prefix when sending to prometheus.
+  HOTSPOT_URL		# The helium hotspot api url.
+  PROMETHEUS_PG_HOST	# The prometheus push gateway hostname.
+  PROMETHEUS_PG_PORT	# The prometheus push gateway port.
+  BOBCAT_MONITOR	# Enable or disable bobcat monitoring. Boolean: [ true | false ]
+  HOTSPOT_MONITOR	# Enable hotspot monitoring from helium api. Boolean: [ true | false ]
+  BOBCAT_IPS		# If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc'
+  DEBUG			# Turn on debug logging. Boolean: [ true | false ]
+  LOGPATH		# Send logs to this path
+  LOGFILE		# Send logs to this file
+
+Defaults:
+  VARIABLE		DEFAULT
+
+  INTERVAL		'${INTERVAL}'
+  MINER_ADDRESES	'${MINER_ADDRESES}'
+  PROJECT		'${PROJECT}'
+  HOTSPOT_URL		'${HOTSPOT_URL}'
+  PROMETHEUS_PG_HOST	'${PROMETHEUS_PG_HOST}'
+  PROMETHEUS_PG_PORT	'${PROMETHEUS_PG_PORT}'
+  BOBCAT_MONITOR	'${BOBCAT_MONITOR}'
+  HOTSPOT_MONITOR	'${HOTSPOT_MONITOR}'
+  BOBCAT_IPS		'${BOBCAT_IPS}' 
+  DEBUG			'${DEBUG}'
+  LOGPATH		'${LOGPATH}'
+  LOGFILE		'${LOGFILE}'
+
+Examples:
+
+  docker run -e PROJECT=test_monitoring -e BOBCAT_MONITOR=true -e BOBCAT_IPS="192.168.1.1" hnt_monitor
+
+"
+}
+
+run() {
+  while true; do
+    /opt/hnt_monitor/bin/hnt_monitor
+    sleep "${INTERVAL}"
+  done
+}
+
+case $OPTION in
+           help)
+             help
+             ;;
+           run)
+             setup
+             run
+             ;;
+           *)
+             echo "Try [help] command: docker run -i hnt_monitor help"
+             ;;
+esac
