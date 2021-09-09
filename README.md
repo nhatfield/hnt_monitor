@@ -82,11 +82,11 @@ $> docker logs -f hnt_monitor
 | HOTSPOT_URL | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
 | PROMETHEUS_PG_HOST | `localhost` | The prometheus push gateway hostname. | `yes` |
 | PROMETHEUS_PG_PORT | `9091` | The prometheus push gateway port. | `no` |
-| BOBCAT_MONITOR | `false` | Enable or disable bobcat monitoring. Boolean: `[ true, false ]` | `no` |
-| HOTSPOT_MONITOR | `false` | Enable hotspot monitoring from helium api. Boolean: `[ true, false ]` | `yes` |
+| BOBCAT_MONITOR | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
+| HOTSPOT_MONITOR | `false` | Enable hotspot monitoring from helium api. Boolean: `(true or false)` | `yes` |
 | BOBCAT_IPS | | If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
-| DEBUG | `false` | Turn on debug logging. Boolean: [ true | false ] | `no` |
-| TRACE | `false` | Turn on trace logging. Produces more logs than debug. Boolean: `[ true, false ]` | `no` |
+| DEBUG | `false` | Turn on debug logging. Boolean: `(true or false)` | `no` |
+| TRACE | `false` | Turn on trace logging. Produces more logs than debug. Boolean: `(true or false)` | `no` |
 | LOGPATH | `/dev/` | Send logs to this path | `no` |
 | LOGFILE | `stdout` | Send logs to this file | `no` |
 
