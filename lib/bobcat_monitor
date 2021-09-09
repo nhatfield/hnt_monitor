@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+cd ${DIR}
+
+for c in ../conf/*.conf; do
+  . "${c}"
+done
+
+if [ ${debug} == "true" ]; then
+  set -x
+fi
+
+if [ ! "${bobcat_monitor}" == "true" ]; then
+  exit 0
+fi
+
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Starting bobcat monitor run" >> "${logpath}/${logfile}"
+
+for M in ${bobcat_ips}; do
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: getting bobcat temperature for - ${M}" >> "${logpath}/${logfile}"
+  temp=$(curl -s http://${M}/temp.json) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: code $? - could not retrieve bobcat temperature" >> "${logpath}/${logfile}"
+
+  cat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/bobcat_miner
+# HELP bobcat_miner_temperature of the bobcat miner cpu
+# TYPE bobcat_miner_temperature gauge
+bobcat_miner_temperature{instance="custom-rusty-porcupine",core="0"} $(jq '.temp0' <<< "${temp}")
+bobcat_miner_temperature{instance="custom-rusty-porcupine",core="1"} $(jq '.temp1' <<< "${temp}")
+EOF
+done
+
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Bobcat monitor run complete" >> "${logpath}/${logfile}"
