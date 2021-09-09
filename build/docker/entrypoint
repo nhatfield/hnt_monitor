@@ -15,6 +15,7 @@ BOBCAT_MONITOR=${BOBCAT_MONITOR:-"false"}
 HOTSPOT_MONITOR=${HOTSPOT_MONITOR:-"false"}
 BOBCAT_IPS=${BOBCAT_IPS:-""}
 DEBUG=${DEBUG:-"false"}
+TRACE=${TRACE:-"false"}
 LOGPATH=${LOGPATH:-"/dev/"}
 LOGFILE=${LOGFILE:-"stdout"}
 
@@ -55,6 +56,7 @@ Description:
   HOTSPOT_MONITOR	# Enable hotspot monitoring from helium api. Boolean: [ true | false ]
   BOBCAT_IPS		# If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc'
   DEBUG			# Turn on debug logging. Boolean: [ true | false ]
+  TRACE			# Turn on trace logging. Boolean: [ true | false ]
   LOGPATH		# Send logs to this path
   LOGFILE		# Send logs to this file
 
@@ -71,6 +73,7 @@ Defaults:
   HOTSPOT_MONITOR	'${HOTSPOT_MONITOR}'
   BOBCAT_IPS		'${BOBCAT_IPS}' 
   DEBUG			'${DEBUG}'
+  TACE			'${TRACE}'
   LOGPATH		'${LOGPATH}'
   LOGFILE		'${LOGFILE}'
 
