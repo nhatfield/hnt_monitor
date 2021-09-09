@@ -29,7 +29,7 @@ You should have your monitoring platform setup by using prometheus and grafana. 
 
 ## Quick Start
 
-**Local *nix**
+**Local \*nix**
 
 Navitage to the `conf/` directory and add your miner address to the `address.list` file. Then update the `hnt_monitor.conf` file with your prometheus push gateway host and port. Then run the hnt monitor script manually. You can visit the `host:port` of the machine running prometheus pushgaeway and see the new metrics
 
@@ -46,9 +46,9 @@ $> docker run -d -e HOTSPOT_MONITOR=true -e MINER_ADDRESSES="12345..." -e PROMET
 
 ## Docker
 
-**Build**
-
 The HNT Monitor is supported on docker. Pull down the repo, and run the following command:
+
+**Build**
 
 ```bash
 $> docker build -t hnt_monitor -f build/docker/Dockerfile .
@@ -56,10 +56,8 @@ $> docker build -t hnt_monitor -f build/docker/Dockerfile .
 
 **Run**
 
-Run it
-
 ```
-$> docker run -d -e BOBCAT_MONITOR=true -e BOBCAT_IPS="192.168.1.2 54.35.54.35" -e PROMETHEUS_PG_HOST="my.prometheus-pushgateway.host -e PROMETHUS_PG_PORT=9091 hnt_monitor
+$> docker run -d --name hnt_monitor -e BOBCAT_MONITOR=true -e BOBCAT_IPS="192.168.1.2 54.35.54.35" -e PROMETHEUS_PG_HOST="my.prometheus-pushgateway.host -e PROMETHUS_PG_PORT=9091 hnt_monitor
 ```
 
 **Help Menu**
@@ -68,7 +66,15 @@ $> docker run -d -e BOBCAT_MONITOR=true -e BOBCAT_IPS="192.168.1.2 54.35.54.35" 
 $> docker -it --rm hnt_monitor help
 ```
 
+**Logs**
+
+```bash
+$> docker logs -f hnt_monitor
+```
+
 ## Scheduling 
+
+**Local \*nix**
 
 Since this is a bash script you can schedule the scripts to run at any preferred interval. Generally no more than once a minute so you are not hitting the HNT API too often with queries. I recommend running on a 5 minute interval.
 
@@ -77,6 +83,10 @@ $> crontab -e
 
 */5**** /opt/hnt_monitor/bin/hnt_monitor
 ```
+
+**Docker**
+
+If you're using docker to manage the collections, you can change the collection interval by supplying the `INTERVAL` variable during startup. By default this is set to 60 seconds (1 minute)
 
 ## Monitoring
 
