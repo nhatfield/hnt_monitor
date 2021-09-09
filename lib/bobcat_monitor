@@ -17,7 +17,7 @@ for c in ../conf/*.conf; do
   . "${c}"
 done
 
-if [ ${debug} == "true" ]; then
+if [ ${trace} == "true" ]; then
   set -x
 fi
 
@@ -39,5 +39,5 @@ EOF
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Bobcat monitor run complete" >> "${logpath}/${logfile}"
 else
-  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: Bobcat monitor collection is disabled. Skipping" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: Bobcat monitor collection is disabled. Hint: (bobcat_monitor=false)" >> "${logpath}/${logfile}"
 fi
