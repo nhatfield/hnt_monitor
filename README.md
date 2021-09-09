@@ -37,10 +37,10 @@ With docker we can create the entire monitoring stack
 
 **Without Docker**
 
-Navitage to the `conf/` directory and add your miner address to the `address.list` file. Then update the `hnt_monitor.conf` file with your prometheus push gateway host and port. Then run the hnt monitor script manually. You can visit the `host:port` of the machine running prometheus pushgaeway and see the new metrics
+Navitage to the `src/conf/` directory and add your miner address to the `address.list` file. Then update the `hnt_monitor.conf` file with your prometheus push gateway host and port. Then run the hnt monitor script manually. You can visit the `host:port` of the machine running prometheus pushgaeway and see the new metrics
 
 ```bash
-$> ./bin/hnt_monitor
+$> ./src/bin/hnt_monitor
 ```
 
 **Docker**
@@ -48,6 +48,7 @@ $> ./bin/hnt_monitor
 Run the hnt monitor script standalone
 
 ```bash
+$> docker build -t hnt_monitor -f build/docker/Dockerfile .
 $> docker run --rm -it hnt_monitor help     # help menu
 $> docker run -d -e HOTSPOT_MONITOR=true -e MINER_ADDRESSES="12345..." -e PROMETHEUS_PG_HOST=my.prometheus-pushgateway.host hnt_monitor  # Enable hotspot monitoring from helium api
 ```
