@@ -3,6 +3,7 @@
 # 1.5.1
 
 - **HotFix** - bobcat miner instance name was hardcoded
+- **HotFix** - bobcat miner project name was hardcoded
 
 # 1.5.0
 

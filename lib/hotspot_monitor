@@ -47,7 +47,7 @@ reward_scale() {
 
   scale=$(jq -r '.data.reward_scale' <<< "${miner}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: could not retrieve reward scale" >> "${logpath}/${logfile}"
 
-  cat <<EOF | curl --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
 # HELP ${project}_reward_scale based on hex and nearby miners
 # TYPE ${project}_reward_scale gauge
 ${project}_reward_scale{instance="${name}",address="${a}"} ${scale}
@@ -148,7 +148,7 @@ ${new_data}"
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: rewards in 7 days ${rewards_7d}" >> "${logpath}/${logfile}"
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: rewards in 30 days ${rewards_30d}" >> "${logpath}/${logfile}"
 
-  cat <<EOF | curl --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
 # HELP ${project}_reward_15m total rewards by hour
 # TYPE ${project}_reward_15m gauge
 ${project}_reward_15m{instance="${name}",address="${a}"} ${rewards_15m}
@@ -174,7 +174,7 @@ witness() {
   witnessed_count=$(jq '.data[].name' <<< "${witnessed}" | wc -l)
   witnesses_count=$(jq '.data[].name' <<< "${witnesses}" | wc -l)
 
-  cat <<EOF | curl --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
 # HELP ${project}_witnessed miners
 # TYPE ${project}_witnessed gauge
 ${project}_witnessed{instance="${name}",address="${a}"} ${witnessed_count}

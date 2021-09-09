@@ -26,28 +26,28 @@ if [ "${bobcat_monitor}" == "true" ]; then
 
   for M in ${bobcat_ips}; do
     echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: getting bobcat temperature for - ${M}" >> "${logpath}/${logfile}"
-    name=$(cat .bobcat.cache | grep "${M}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: No name cached for ${M}" >> "${logpath}/${logfile}"
+    name=$(cat .bobcat.cache 2>/dev/null | grep "${M}" | awk '{print $2}') || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: No name cached for ${M}" >> "${logpath}/${logfile}"
     
     if [ ! "${name}" ]; then
       name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: Could not get bobcat miner name" >> "${logpath}/${logfile}"
-      echo "${M}:${name}" >> .bobcat.cache
+      echo "${M}: ${name}" >> .bobcat.cache
       echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Storing bobcat miner ${M} - ${name}" >> "${logpath}/${logfile}"
 
     elif [ "$(echo "${name}" | wc -l | tr -dc .[:print:].)" -gt 1 ]; then
       echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: Found duplicate entries for ${M}" >> "${logpath}/${logfile}"
       name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: Could not get bobcat miner name" >> "${logpath}/${logfile}"
       sed -i "s%${M}:.*%%g" .bobcat.cache
-      echo "${M}:${name}" >> .bobcat.cache
+      echo "${M}: ${name}" >> .bobcat.cache
       echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Storing bobcat miner ${M} - ${name}" >> "${logpath}/${logfile}"
     fi
 
     temp=$(curl -s http://${M}/temp.json) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: code $? - could not retrieve bobcat temperature" >> "${logpath}/${logfile}"
 
-    cat <<EOF | curl --data-binary @- http://localhost:9091/metrics/job/bobcat_miner
+    cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
 # HELP bobcat_miner_temperature of the bobcat miner cpu
 # TYPE bobcat_miner_temperature gauge
-bobcat_miner_temperature{instance="${name}",core="0"} $(jq '.temp0' <<< "${temp}")
-bobcat_miner_temperature{instance="${name}",core="1"} $(jq '.temp1' <<< "${temp}")
+${project}_temperature{instance="${name}",core="0"} $(jq '.temp0' <<< "${temp}")
+${project}_temperature{instance="${name}",core="1"} $(jq '.temp1' <<< "${temp}")
 EOF
     [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: bobcat temperature core0: $(jq '.temp0' <<< "${temp}"); core1: $(jq '.temp1' <<< "${temp}")"
   done
