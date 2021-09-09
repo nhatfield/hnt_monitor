@@ -40,4 +40,5 @@ EOF
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: Bobcat monitor run complete" >> "${logpath}/${logfile}"
 else
   [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: Bobcat monitor collection is disabled. Hint: (bobcat_monitor=false)" >> "${logpath}/${logfile}"
+  true
 fi
