@@ -108,6 +108,14 @@ If you're using docker to manage the collections, you can change the collection 
 
 ## Monitoring
 
+**Prometheus Push Gateway**
+
+You can verify your metrics have been pushed by viewing them in the prometheus push gateway UI
+
+![prometheuspg](docs/prometheus-pg.PNG)
+
+**Grafana**
+
 Use grafana to monitor prometheus metrics and start adding your own widgets to view the data as you like
 
 ![grafana](docs/grafana.PNG)
