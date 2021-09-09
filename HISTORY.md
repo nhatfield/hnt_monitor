@@ -1,5 +1,7 @@
 # vNext
 
+- **TechTask** - adding codeowners file to .github
+
 # 1.4.0
 
 - **TechTask** - update readme and grafan png
