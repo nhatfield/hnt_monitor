@@ -10,7 +10,7 @@ networks:
 services:
   hnt_monitor:
     container_name: hnt_monitor
-    image: hnt_monitor:1.6.0
+    image: hnt_monitor:latest
     build:
       dockerfile: ./build/docker/Dockerfile
       context: .

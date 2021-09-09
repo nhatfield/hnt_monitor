@@ -55,7 +55,33 @@ $> docker run -d -e HOTSPOT_MONITOR=true -e MINER_ADDRESSES="12345..." -e PROMET
 
 ## Docker
 
-The entire monitoring stack is available in docker containers. Pull down the repo, and run the following command:
+The entire monitoring stack is available in docker containers. Update the configs and deploy the services.
+
+**Configs**
+
+Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monitor` service environment variables.
+
+```bash
+  hnt_monitor:
+    container_name: hnt_monitor
+    image: hnt_monitor:latest
+    build:
+      dockerfile: ./build/docker/Dockerfile
+      context: .
+    environment:
+      HOTSPOT_MONITOR: "true"
+      MINER_ADDRESSES: "<myminersaddress> "
+      PROMETHEUS_PG_HOST: "prometheus_pushgateway"
+      DEBUG: "true"
+    networks:
+      hnt_monitor:
+        ipv4_address: 10.30.0.05
+    depends_on:
+      - prometheus_pushgateway
+```
+
+Check the variables table below for more options that the hnt_monitor supports
+
 
 **Run**
 
