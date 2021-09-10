@@ -6,7 +6,7 @@ address_file="${conf_dir}/address.list"           # Used to query the helium api
 
 OPTION=${1:-"run"}
 INTERVAL=${INTERVAL:-"60"}
-MINER_ADDRESES=${MINER_ADDRESES:-""}
+MINER_ADDRESSES=${MINER_ADDRESSES:-""}
 PROJECT=${PROJECT:-"hnt_miner"}
 HOTSPOT_URL=${HOTSPOT_URL:-"api.helium.io/v1/hotspots"}
 PROMETHEUS_PG_HOST=${PROMETHEUS_PG_HOST:-"localhost"}
@@ -22,7 +22,7 @@ LOGFILE=${LOGFILE:-"stdout"}
 setup() {
   > "${address_file}"
 
-  for a in ${MINER_ADDRESES}; do
+  for a in ${MINER_ADDRESSES}; do
     echo "${a}" >> "${address_file}"
   done
 
@@ -47,7 +47,7 @@ Description:
   VARIABLE		DESCRIPTION
 
   INTERVAL		# Run the monitor collection once every 'n' seconds.
-  MINER_ADDRESES	# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
+  MINER_ADDRESSES	# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
   PROJECT		# The name of the metric prefix when sending to prometheus.
   HOTSPOT_URL		# The helium hotspot api url.
   PROMETHEUS_PG_HOST	# The prometheus push gateway hostname.
@@ -64,7 +64,7 @@ Defaults:
   VARIABLE		DEFAULT
 
   INTERVAL		'${INTERVAL}'
-  MINER_ADDRESES	'${MINER_ADDRESES}'
+  MINER_ADDRESSES	'${MINER_ADDRESSES}'
   PROJECT		'${PROJECT}'
   HOTSPOT_URL		'${HOTSPOT_URL}'
   PROMETHEUS_PG_HOST	'${PROMETHEUS_PG_HOST}'
