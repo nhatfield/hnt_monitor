@@ -122,7 +122,7 @@ $> docker logs -f hnt_monitor
 | Name | Default | Description | Required |
 |:----:|---------|-------------|----------|
 | INTERVAL | `60` | Run the monitor collection once every 'n' seconds. | `no` |
-| MINER_ADDRESES | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `yes` |
+| MINER_ADDRESSES | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `yes` |
 | PROJECT | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
 | HOTSPOT_URL | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
 | PROMETHEUS_PG_HOST | `localhost` | The prometheus push gateway hostname. | `yes` |
