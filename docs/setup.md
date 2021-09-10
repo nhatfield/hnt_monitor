@@ -16,7 +16,7 @@ Then select `data sources` and `add data source`.
 
 Select the `Prometheus` data source on the next page and add the URL to point to your prometheus host. 
 
-![prometheus](images/datasource-prometheus.png
+![prometheus](images/datasource-prometheus.png)
 
 ![url](images/datasource-url.png)
 
