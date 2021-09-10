@@ -8,7 +8,7 @@ Now that you have the full stack running, it's time to setup grafana. The first 
 ## Data Source
 Next, lets add the prometheus data source to grafana for metric query. Click the configuration cog wheel in the left nav window. 
 
-![config](images/grafan-config.png)
+![config](images/grafana-config.png)
 
 Then select `data sources` and `add data source`.
 
@@ -22,8 +22,8 @@ Select the `Prometheus` data source on the next page and add the URL to point to
 
 Test and save the data source configuration and click the `back` button
 
-![save](images/datasource-save.ping)
+![save](images/datasource-save.png)
 
-![verify](images/datasource-verify.ping)
+![verify](images/datasource-verify.png)
 
 Thats it, you're ready to query metrics in grafana from prometheus!
