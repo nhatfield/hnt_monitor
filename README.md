@@ -101,7 +101,7 @@ Once the docker-compose completes, you can verify the endpoints in your browser.
 
 Check the prometheus push gateway to see metrics have been pushed from the hnt_monitor.
 
-![prometheuspg](images/prometheus-pg.png)
+![prometheuspg](docs/images/prometheus-pg.png)
 
 
 
