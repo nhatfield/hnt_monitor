@@ -36,5 +36,7 @@ Once you have your dashboard complete or you're just ready to save your progress
 
 ![dashsave](images/grafana-dashboardsave.png)
 
+Be sure to remove `Copy` from the name!
+
 That's it! Enjoy your new dashboard. Feel free to add and customize widgets as you see fit.
 
