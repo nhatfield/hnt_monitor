@@ -26,7 +26,7 @@ You can change the type of widget that is displayed by changing the default `Tim
 
 ![types](images/grafana-widgettypes.png)
 
-![list](images/grafana-widgetlist.png
+![list](images/grafana-widgetlist.png)
 
 Once you have your dashboard complete or you're just ready to save your progress, we can give the dashboard a name and save it for later viewing. Click the `dashboard settings` cog wheel in the top right and update the dashboard name.
 
