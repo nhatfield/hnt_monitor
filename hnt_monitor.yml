@@ -16,7 +16,7 @@ services:
       context: .
     environment:
       HOTSPOT_MONITOR: "true"
-      MINER_ADDRESSES: "12345.. "
+      MINER_ADDRESES: "112VEhPPMYF95neEEwwgnckHej4bgZ1roo13SMx18RSJxLq6JuiK"
       PROMETHEUS_PG_HOST: "prometheus_pushgateway"
       DEBUG: "true"
     networks:

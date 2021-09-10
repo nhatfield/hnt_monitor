@@ -97,6 +97,14 @@ Once the docker-compose completes, you can verify the endpoints in your browser.
 | prometheus | my.host.com:9090 |
 | prometheus pushgateway | my.host.com:9091 |
 
+**Prometheus Push Gateway**
+
+Check the prometheus push gateway to see metrics have been pushed from the hnt_monitor.
+
+![prometheuspg](images/prometheus-pg.png)
+
+
+
 **Help Menu**
 
 ```bash
@@ -127,35 +135,13 @@ $> docker logs -f hnt_monitor
 | LOGPATH | `/dev/` | Send logs to this path | `no` |
 | LOGFILE | `stdout` | Send logs to this file | `no` |
 
-## Scheduling 
 
-**Without docker**
+## What's next
 
-Since this is a bash script you can schedule the scripts to run at any preferred interval. Generally no more than once a minute so you are not hitting the HNT API too often with queries. I recommend running on a 5 minute interval.
-
-```bash
-$> crontab -e
-
-*/5**** /opt/hnt_monitor/bin/hnt_monitor
-```
-
-**Docker**
-
-If you're using docker to manage the collections, you can change the collection interval by supplying the `INTERVAL` variable during startup. By default this is set to 60 seconds (1 minute)
-
-## Monitoring
-
-**Prometheus Push Gateway**
-
-You can verify your metrics have been pushed by viewing them in the prometheus push gateway UI
-
-![prometheuspg](docs/images/prometheus-pg.PNG)
-
-**Grafana**
-
-Use grafana to monitor prometheus metrics and start adding your own widgets to view the data as you like
-
-![grafana](docs/images/grafana.PNG)
+- [Scheduling](docs/scheduling.md)
+- [Setup Grafana](docs/setup.md)
+- [Create Dashboards](docs/dashboards.md)
+- [Create Alerts](docs/alerts.md)
 
 ## Tips & Donations
 

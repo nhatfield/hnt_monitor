@@ -1,6 +1,7 @@
 # vNext
 
 - **TechTask** - adding grafana, prometheus, prometheus pushgateway, and collector as a full docker stack
+- **TechTask** - updates to README
 
 # 1.5.1
 
