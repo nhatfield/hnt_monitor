@@ -1,5 +1,11 @@
 # vNext
 
+- **TechTask** - move all ETL to their own microscript
+- **TechTask** - separate collectors from the ETL scripts
+- **TechTask** - move all collectors to their own microscript
+- **TechTask** - only query the api for reward data 15 minutes ago
+- **TechTask** - store data locally for ETL
+
 # 1.6.0
 
 - **TechTask** - adding grafana, prometheus, prometheus pushgateway, and collector as a full docker stack

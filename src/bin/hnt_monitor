@@ -22,9 +22,18 @@ if [ ! -d "${logpath}" ]; then
   mkdir "${logpath}"
 fi
 
+if [ ! -d "../data" ]; then
+  mkdir ../data
+fi
+
 echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: hnt monitor initialized" >> "${logpath}/${logfile}"
 
-# Run scripts
+# Run collectors
+for c in ../collectors/*; do
+  echo "${c}"
+done
+
+# Run ETL
 for l in ../lib/*; do
   . "${l}" || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: failed to run ${l}" >> "${logpath}/${logfile}"
 done

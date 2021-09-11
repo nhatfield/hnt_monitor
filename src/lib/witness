@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+cd ${DIR}
+
+for c in ../conf/*.conf; do
+  . "${c}"
+done
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+
+addresses=$(< ../conf/address.list)
+id=witness
+
+run() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data" >> "${logpath}/${logfile}"
+  witnessed_count=$(jq '.data[].name' "${data_dir}/${a}/${data_format}.witnessed"  | wc -l)
+  witnesses_count=$(jq '.data[].name' "${data_dir}/${a}/${data_format}.witnesses" | wc -l)
+
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
+# HELP ${project}_witnessed miners
+# TYPE ${project}_witnessed gauge
+${project}_witnessed{instance="${name}",address="${a}"} ${witnessed_count}
+# HELP ${project}_witnesses miners
+# TYPE ${project}_witnesses gauge
+${project}_witnesses{instance="${name}",address="${a}"} ${witnesses_count}
+EOF
+
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnesses count ${witnesses_count}" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnessed count ${witnessed_count}" >> "${logpath}/${logfile}"
+}
+
+
+if [ "${hotspot_monitor}" == "true" ]; then
+  for a in ${addresses}; do
+    name=$(jq -r '.data.name' "${data_dir}/${a}/info") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: could not get the miner name" >> "${logpath}/${logfile}"
+
+    run
+  done
+else
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: Hotspot monitor collection is disabled. Hint: (hotspot_monitor=false)" >> "${logpath}/${logfile}"
+  true
+fi
