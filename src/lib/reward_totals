@@ -74,7 +74,7 @@ reward_total() {
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 30 days ${rewards_30d}" >> "${logpath}/${logfile}" || true
 
   cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}
-# HELP ${project}_${a}_reward_15m total rewards by hour
+# HELP ${project}_${a}_reward_15m total rewards 15 minutes
 # TYPE ${project}_${a}_reward_15m gauge
 ${project}_${a}_reward_15m{instance="${name}",address="${a}"} ${rewards_15m}
 # HELP ${project}_${a}_reward_1h total rewards by hour
