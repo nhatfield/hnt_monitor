@@ -57,6 +57,7 @@ pipeline {
                 script {
                     env.STAGE = "${STAGE_NAME}"
                     sh """
+                      BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
                       if [ ${env.GIT_BRANCH} = "master" ]; then
                         docker tag ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} ${REPOSITORY}/${PROJECT}:${VERSION}
                         docker push ${REPOSITORY}/${PROJECT}
