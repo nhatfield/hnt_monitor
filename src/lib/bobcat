@@ -28,28 +28,28 @@ if [ "${bobcat_monitor}" == "true" ]; then
 
   for M in ${bobcat_ips}; do
     echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting bobcat temperature for - ${M}" >> "${logpath}/${logfile}"
-    name=$(cat .bobcat.cache 2>/dev/null | grep "${M}" | awk '{print $2}') || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: No name cached for ${M}" >> "${logpath}/${logfile}"
+    name=$(cat ${data_dir}/${a}/.bobcat.cache 2>/dev/null | grep "${M}" | awk '{print $2}') || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: No name cached for ${M}" >> "${logpath}/${logfile}"
     
     if [ ! "${name}" ]; then
       name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN] [$id]: Could not get bobcat miner name" >> "${logpath}/${logfile}"
-      echo "${M}: ${name}" >> .bobcat.cache
+      echo "${M}: ${name}" >> "${data_dir}/${a}/.bobcat.cache"
       echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: Storing bobcat miner ${M} - ${name}" >> "${logpath}/${logfile}"
 
     elif [ "$(echo "${name}" | wc -l | tr -dc .[:print:].)" -gt 1 ]; then
       echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN] [$id]: Found duplicate entries for ${M}" >> "${logpath}/${logfile}"
       name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN] [$id]: Could not get bobcat miner name" >> "${logpath}/${logfile}"
-      sed -i "s%${M}:.*%%g" .bobcat.cache
-      echo "${M}: ${name}" >> .bobcat.cache
+      sed -i "s%${M}:.*%%g" "${data_dir}/${a}/.bobcat.cache"
+      echo "${M}: ${name}" >> "${data_dir}/${a}/.bobcat.cache"
       echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: Storing bobcat miner ${M} - ${name}" >> "${logpath}/${logfile}"
     fi
 
     temp=$(curl -s http://${M}/temp.json) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: code $? - could not retrieve bobcat temperature" >> "${logpath}/${logfile}"
 
-    cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
-# HELP bobcat_miner_temperature of the bobcat miner cpu
-# TYPE bobcat_miner_temperature gauge
-${project}_temperature{instance="${name}",core="0"} $(jq '.temp0' <<< "${temp}")
-${project}_temperature{instance="${name}",core="1"} $(jq '.temp1' <<< "${temp}")
+    cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}
+# HELP ${project}_${a}_temperature of the bobcat miner cpu
+# TYPE ${project}_${a}_temperature gauge
+${project}_${a}_temperature{instance="${name}",core="0"} $(jq '.temp0' <<< "${temp}")
+${project}_${a}_temperature{instance="${name}",core="1"} $(jq '.temp1' <<< "${temp}")
 EOF
     [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: bobcat temperature core0: $(jq '.temp0' <<< "${temp}"); core1: $(jq '.temp1' <<< "${temp}")" || true
   done

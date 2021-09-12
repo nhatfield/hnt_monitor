@@ -73,25 +73,25 @@ reward_total() {
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 7 days ${rewards_7d}" >> "${logpath}/${logfile}" || true
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 30 days ${rewards_30d}" >> "${logpath}/${logfile}" || true
 
-  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
-# HELP ${project}_reward_15m total rewards by hour
-# TYPE ${project}_reward_15m gauge
-${project}_reward_15m{instance="${name}",address="${a}"} ${rewards_15m}
-# HELP ${project}_reward_1h total rewards by hour
-# TYPE ${project}_reward_1h gauge
-${project}_reward_1h{instance="${name}",address="${a}"} ${rewards_1h}
-# HELP ${project}_reward_1d total rewards in a day
-# TYPE ${project}_reward_1d gauge
-${project}_reward_1d{instance="${name}",address="${a}"} ${rewards_1d}
-# HELP ${project}_reward_7d total rewards in 7 days
-# TYPE ${project}_reward_7d gauge
-${project}_reward_7d{instance="${name}",address="${a}"} ${rewards_7d}
-# HELP ${project}_reward_30d total rewards in 30 days
-# TYPE ${project}_reward_30d gauge
-${project}_reward_30d{instance="${name}",address="${a}"} ${rewards_30d}
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}
+# HELP ${project}_${a}_reward_15m total rewards by hour
+# TYPE ${project}_${a}_reward_15m gauge
+${project}_${a}_reward_15m{instance="${name}",address="${a}"} ${rewards_15m}
+# HELP ${project}_${a}_reward_1h total rewards by hour
+# TYPE ${project}_${a}_reward_1h gauge
+${project}_${a}_reward_1h{instance="${name}",address="${a}"} ${rewards_1h}
+# HELP ${project}_${a}_reward_1d total rewards in a day
+# TYPE ${project}_${a}_reward_1d gauge
+${project}_${a}_reward_1d{instance="${name}",address="${a}"} ${rewards_1d}
+# HELP ${project}_${a}_reward_7d total rewards in 7 days
+# TYPE ${project}_${a}_reward_7d gauge
+${project}_${a}_reward_7d{instance="${name}",address="${a}"} ${rewards_7d}
+# HELP ${project}_${a}_reward_30d total rewards in 30 days
+# TYPE ${project}_${a}_reward_30d gauge
+${project}_${a}_reward_30d{instance="${name}",address="${a}"} ${rewards_30d}
 EOF
 
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}" >> "${logpath}/${logfile}"
 }
 
 if [ "${hotspot_monitor}" == "true" ]; then

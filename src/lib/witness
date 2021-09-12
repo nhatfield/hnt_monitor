@@ -30,16 +30,16 @@ witness() {
   witnessed_count=$(jq '.data[].name' "${data_dir}/${a}/witnessed" 2>/dev/null | wc -l)
   witnesses_count=$(jq '.data[].name' "${data_dir}/${a}/witnesses" 2>/dev/null | wc -l)
 
-  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
-# HELP ${project}_witnessed miners
-# TYPE ${project}_witnessed gauge
-${project}_witnessed{instance="${name}",address="${a}"} ${witnessed_count}
-# HELP ${project}_witnesses miners
-# TYPE ${project}_witnesses gauge
-${project}_witnesses{instance="${name}",address="${a}"} ${witnesses_count}
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}
+# HELP ${project}_${a}_witnessed miners
+# TYPE ${project}_${a}_witnessed gauge
+${project}_${a}_witnessed{instance="${name}",address="${a}"} ${witnessed_count}
+# HELP ${project}_${a}_witnesses miners
+# TYPE ${project}_${a}_witnesses gauge
+${project}_${a}_witnesses{instance="${name}",address="${a}"} ${witnesses_count}
 EOF
 
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}" >> "${logpath}/${logfile}"
   [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnesses count ${witnesses_count}" >> "${logpath}/${logfile}" || true
   [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnessed count ${witnessed_count}" >> "${logpath}/${logfile}" || true
 }
