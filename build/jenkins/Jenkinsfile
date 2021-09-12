@@ -11,8 +11,8 @@ pipeline {
         ).trim()
 
         PROJECT = 'hnt_monitor'
-        REPOSITORY = 'registry.blackem.net/hnt/hnt_monitor'
-        DEV_REPOSITORY = 'registry.blackem.net/hnt/hnt_monitor'
+        REPOSITORY = 'registry.blackem.net/hnt/hnt'
+        DEV_REPOSITORY = 'registry.blackem.net/hnt'
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
     }

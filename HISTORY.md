@@ -1,4 +1,4 @@
-# vNext
+vNext
 
 - **TechTask** - fixed reward collection
 - **TechTask** - fixed multi address collections
