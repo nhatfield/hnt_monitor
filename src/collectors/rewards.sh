@@ -25,30 +25,40 @@ addresses=$(< ../conf/address.list)
 current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="15 minutes ago")
 endpoint=rewards
 lock_file=".${endpoint}.lock"
+id=${endpoint}.collector
 
 get() {
   url="https://${hotspot_url}/${a}/${endpoint}?min_time=${current_date}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: getting hotspot ${endpoint} data" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting hotspot ${endpoint} data" >> "${logpath}/${logfile}"
 
   n=0
-  payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: api timeout" >> "${logpath}/${logfile}"
+  payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
   
   while ! jq '.data[]' <<< "${payload}"; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
-      echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: maximum retries have been reached - ${api_retry_threshold}" >> "${logpath}/${logfile}"
+      echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: maximum retries have been reached - ${api_retry_threshold}" >> "${logpath}/${logfile}"
       rm -f "${lock_file}"
       exit
     fi
 
-    echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: bad response from the api gateway while retrieving ${endpoint} data. Retrying in 5 seconds..." >> "${logpath}/${logfile}"
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN] [$id]: bad response from the api gateway while retrieving ${endpoint} data. Retrying in 5 seconds..." >> "${logpath}/${logfile}"
     ((n++)) || true
     sleep "${api_retry_wait}"
-    payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: api timeout" >> "${logpath}/${logfile}"
+    payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
+  done
+
+  cursor=$(jq '.data[].cursor' <<< "${payload}")
+  
+  while [ "${cursor}" ]; do
+    new_payload=$(curl -s "${url}&cursor=${cursor}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
+    cursor=$(jq '.data[].cursor' <<< "${new_payload}")
+    payload="${payload}
+${new_payload}"
   done
 
   echo "${payload}" >> "${data_dir}/${a}/${data_format}.${endpoint}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}"
 }
 
 

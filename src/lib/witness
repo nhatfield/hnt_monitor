@@ -23,12 +23,12 @@ fi
 
 
 addresses=$(< ../conf/address.list)
-id=witness
+id=witness.etl
 
 run() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data" >> "${logpath}/${logfile}"
-  witnessed_count=$(jq '.data[].name' "${data_dir}/${a}/${data_format}.witnessed"  | wc -l)
-  witnesses_count=$(jq '.data[].name' "${data_dir}/${a}/${data_format}.witnesses" | wc -l)
+  witnessed_count=$(jq '.data[].name' "${data_dir}/${a}/witnessed"  | wc -l)
+  witnesses_count=$(jq '.data[].name' "${data_dir}/${a}/witnesses" | wc -l)
 
   cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
 # HELP ${project}_witnessed miners

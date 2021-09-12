@@ -85,6 +85,8 @@ Examples:
 }
 
 run() {
+  rm -f /opt/hnt_monitor/collectors/.*.lock
+
   while true; do
     /opt/hnt_monitor/bin/hnt_monitor
     sleep "${INTERVAL}"

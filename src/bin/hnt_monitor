@@ -13,6 +13,8 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 cd ${DIR}
 
+id=main
+
 # Set configs
 for c in ../conf/*.conf; do
   . "${c}"
@@ -26,16 +28,16 @@ if [ ! -d "../data" ]; then
   mkdir ../data
 fi
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: hnt monitor initialized" >> "${logpath}/${logfile}"
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hnt monitor initialized" >> "${logpath}/${logfile}"
 
 # Run collectors
 for c in ../collectors/*; do
-  echo "${c}"
+  . "${c}" &
 done
 
 # Run ETL
 for l in ../lib/*; do
-  . "${l}" || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: failed to run ${l}" >> "${logpath}/${logfile}"
+  . "${l}" & 
 done
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: hnt monitor collection complete" >> "${logpath}/${logfile}"
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hnt monitor collection complete" >> "${logpath}/${logfile}"

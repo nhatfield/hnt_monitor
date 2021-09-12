@@ -23,7 +23,7 @@ fi
 
 
 addresses=$(< ../conf/address.list)
-id=reward_scale
+id=reward_scale.etl
 
 reward_scale() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data" >> "${logpath}/${logfile}"
