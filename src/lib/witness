@@ -27,8 +27,8 @@ id=witness.etl
 
 witness() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data" >> "${logpath}/${logfile}"
-  witnessed_count=$(jq '.data[].name' "${data_dir}/${a}/witnessed"  | wc -l)
-  witnesses_count=$(jq '.data[].name' "${data_dir}/${a}/witnesses" | wc -l)
+  witnessed_count=$(jq '.data[].name' "${data_dir}/${a}/witnessed" 2>/dev/null | wc -l)
+  witnesses_count=$(jq '.data[].name' "${data_dir}/${a}/witnesses" 2>/dev/null | wc -l)
 
   cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
 # HELP ${project}_witnessed miners
