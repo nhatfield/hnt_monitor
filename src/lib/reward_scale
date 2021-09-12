@@ -42,7 +42,7 @@ EOF
 
 if [ "${hotspot_monitor}" == "true" ]; then
   for a in ${addresses}; do
-    name=$(jq -r '.data.name' "${data_dir}/${a}/info") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: could not get the miner name" >> "${logpath}/${logfile}"
+    name=$(jq -r '.data.name' "${data_dir}/${a}/info" 2>/dev/null) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: could not get the miner name" >> "${logpath}/${logfile}"
 
     reward_scale 
   done
