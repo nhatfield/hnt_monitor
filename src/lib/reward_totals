@@ -41,12 +41,12 @@ reward_total() {
 
   rewards=$(jq -r '.data[].timestamp' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u)
 
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards timestamps\n${rewards}\n\n" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards timestamps\n${rewards}\n\n" >> "${logpath}/${logfile}" || true
 
   for r in ${rewards}; do
     time=$(date -d ${r} +%s)    
 
-    if [ "${seven_days_ago}" -le "${time}" ]; then
+    if [ "${minutes_ago}" -le "${time}" ]; then
       ((rewards_15m++)) || true
     fi
 
@@ -67,11 +67,11 @@ reward_total() {
     fi
   done
 
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 15 minute ${rewards_15m}" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 1 hour ${rewards_1h}" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 1 day ${rewards_1d}" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 7 days ${rewards_7d}" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 30 days ${rewards_30d}" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 15 minute ${rewards_15m}" >> "${logpath}/${logfile}" || true
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 1 hour ${rewards_1h}" >> "${logpath}/${logfile}" || true
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 1 day ${rewards_1d}" >> "${logpath}/${logfile}" || true 
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 7 days ${rewards_7d}" >> "${logpath}/${logfile}" || true
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: rewards in 30 days ${rewards_30d}" >> "${logpath}/${logfile}" || true
 
   cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}
 # HELP ${project}_reward_15m total rewards by hour

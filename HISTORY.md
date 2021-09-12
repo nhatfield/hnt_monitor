@@ -1,5 +1,10 @@
 # vNext
 
+- **TechTask** - fixed reward collection
+- **TechTask** - fixed multi address collections
+- **TechTask** - fixed 15 minute reward data etl
+
+
 # 2.0.0
 
 - **TechTask** - move all ETL to their own microscript

@@ -48,22 +48,23 @@ get() {
 
   echo "${payload}" > "${data_dir}/${a}/${endpoint}"
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}" || true
+
+  sleep ${info_interval}
+  rm -f "${data_dir}/${a}/${lock_file}"
 }
 
 
-if [ ! -f "${lock_file}" ]; then
-  touch "${lock_file}"
+for a in ${addresses}; do
+  if [ ! -d "${data_dir}/${a}" ]; then
+    mkdir -p "${data_dir}/${a}"
+  fi
 
-  for a in ${addresses}; do
-    if [ ! -d "${data_dir}/${a}" ]; then
-      mkdir -p "${data_dir}/${a}"
-    fi
+  if [ ! -f "${data_dir}/${a}/${lock_file}" ]; then
+    touch "${data_dir}/${a}/${lock_file}"
   
     get
-    sleep 1
-  done
-  sleep ${info_interval}
-  
-  rm -f "${lock_file}"
-fi
+  fi
+
+  sleep 1
+done

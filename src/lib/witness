@@ -40,8 +40,8 @@ ${project}_witnesses{instance="${name}",address="${a}"} ${witnesses_count}
 EOF
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnesses count ${witnesses_count}" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnessed count ${witnessed_count}" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnesses count ${witnesses_count}" >> "${logpath}/${logfile}" || true
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: witnessed count ${witnessed_count}" >> "${logpath}/${logfile}" || true
 }
 
 

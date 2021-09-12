@@ -1,0 +1,124 @@
+pipeline {
+    environment {
+        BUILDID = sh(
+                script: "seq -f \"%05g\" ${env.BUILD_ID} ${env.BUILD_ID}",
+                returnStdout: true
+        ).trim()
+
+        VERSION = sh(
+                script: "grep '#' HISTORY.md | sed 's%#%%' | sort -V | tail -1",
+                returnStdout: true
+        ).trim()
+
+        PROJECT = 'hnt_monitor'
+        REPOSITORY = 'registry.blackem.net/hnt/hnt_monitor'
+        DEV_REPOSITORY = 'registry.blackem.net/hnt/hnt_monitor'
+        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+    }
+
+    agent any
+
+    stages {
+
+        stage('Build') {
+            steps {
+                script {
+                    env.STAGE = "${STAGE_NAME}"
+                    slackSend (color: "warning", message: "*${PROJECT}:* <${env.BUILD_URL}|Build Started>\n> *Job:* ${env.JOB_NAME}\n> *Branch:* ${env.GIT_BRANCH}\n> *Version:* ${VERSION}.${BUILDID}")
+                    sh """
+                      set +x
+                      BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
+                      docker build -t ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} -f build/docker/Dockerfile . 
+                    """
+                }
+            }
+        }
+
+        stage('Git tag') {
+            steps {
+                script {
+                    env.STAGE = "${STAGE_NAME}"
+                }
+                sshagent(["Jenkins_Bitbucket"]) {
+                    sh """
+                    if [ ${env.GIT_BRANCH} = "master" ]; then
+                        tag="\$(echo $VERSION)"
+                        git tag -f \$tag
+                        git push -f git@bitbucket.org:ctgcorp/${PROJECT}.git \$tag
+                    fi
+                    """
+                }
+            }
+        }
+
+        stage('Docker Tag and Push') {
+            steps {
+                script {
+                    env.STAGE = "${STAGE_NAME}"
+                    sh """
+                      if [ ${env.GIT_BRANCH} = "master" ]; then
+                        docker tag ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} ${REPOSITORY}/${PROJECT}:${VERSION}
+                        docker push ${REPOSITORY}/${PROJECT}
+                      else
+                        docker push ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
+                      fi
+                    """
+                }
+            }
+        }
+
+        stage('Cleanup Workspace') {
+            steps {
+                script {
+                    env.STAGE = "${STAGE_NAME}"
+                    sh """
+                    BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
+                    if [ ${env.GIT_BRANCH} = "origin/master" ]; then
+                        docker rmi -f ${REPOSITORY}/${PROJECT}:${VERSION}
+                        docker rmi -f ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
+                    else
+                        docker rmi -f ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
+                    fi
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend (color: "good", message: "*${PROJECT}:* <${env.BUILD_URL}|Build Successful>\n> *Job:* ${env.JOB_NAME}\n> *Branch:* ${env.GIT_BRANCH}\n> *Version:* ${VERSION}.${BUILDID}")
+        }
+
+        failure {
+            slackSend (color: "danger", message: "*${PROJECT}:* <${env.BUILD_URL}|Build Failed>\n> *Job:* ${env.JOB_NAME}\n> *Branch:* ${env.GIT_BRANCH}\n> *Version:* ${VERSION}.${BUILDID}")
+            script {
+                    sh """
+                    BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
+                    if [ ${env.GIT_BRANCH} = "master" ]; then
+                        docker rmi -f ${REPOSITORY}/${PROJECT}:${VERSION} || true
+                        docker rmi -f ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || true
+                    else
+                        docker rmi -f ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || true
+                    fi
+                    """
+            }
+        }
+                
+        unstable {
+            slackSend (color: "danger", message: "*${PROJECT}:* <${env.BUILD_URL}|Build Unstable>\n> *Job: ${env.JOB_NAME}\n> *Branch:* ${env.GIT_BRANCH}\n> *Version:* ${VERSION}.${BUILDID}")
+            script {
+                    sh """
+                    BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
+                    if [ ${env.GIT_BRANCH} = "master" ]; then
+                        docker rmi -f ${REPOSITORY}/${PROJECT}:${VERSION} || true
+                        docker rmi -f ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || true
+                    else
+                        docker rmi -f ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || true
+                    fi
+                    """
+            }
+        }
+    }
+}
