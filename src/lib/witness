@@ -25,7 +25,7 @@ fi
 addresses=$(< ../conf/address.list)
 id=witness.etl
 
-run() {
+witness() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data" >> "${logpath}/${logfile}"
   witnessed_count=$(jq '.data[].name' "${data_dir}/${a}/witnessed"  | wc -l)
   witnesses_count=$(jq '.data[].name' "${data_dir}/${a}/witnesses" | wc -l)
@@ -49,7 +49,7 @@ if [ "${hotspot_monitor}" == "true" ]; then
   for a in ${addresses}; do
     name=$(jq -r '.data.name' "${data_dir}/${a}/info") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: could not get the miner name" >> "${logpath}/${logfile}"
 
-    run
+    witness
   done
 else
   [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: Hotspot monitor collection is disabled. Hint: (hotspot_monitor=false)" >> "${logpath}/${logfile}"
