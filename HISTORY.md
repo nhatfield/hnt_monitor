@@ -1,5 +1,7 @@
 # vNext
 
+# 2.0.0
+
 - **TechTask** - move all ETL to their own microscript
 - **TechTask** - separate collectors from the ETL scripts
 - **TechTask** - move all collectors to their own microscript
