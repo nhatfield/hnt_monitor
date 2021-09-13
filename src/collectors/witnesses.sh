@@ -28,7 +28,7 @@ id=collector.${endpoint}
 
 get() {
   url="https://${hotspot_url}/${a}/${endpoint}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting hotspot ${endpoint} data" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting hotspot ${endpoint} data for ${a}" >> "${logpath}/${logfile}"
 
   n=0
   payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
@@ -47,7 +47,7 @@ get() {
   done
 
   echo "${payload}" > "${data_dir}/${a}/${endpoint}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: ${a} hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}" || true
 
   sleep ${witness_interval}

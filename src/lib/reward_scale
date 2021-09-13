@@ -26,7 +26,7 @@ addresses=$(< ../conf/address.list)
 id=etl.reward.scale
 
 reward_scale() {
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data for ${a}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: processing data for ${a}" >> "${logpath}/${logfile}"
 
   scale=$(jq -r '.data.reward_scale' "${data_dir}/${a}/info" 2>/dev/null) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: could not retrieve reward scale" >> "${logpath}/${logfile}"
 

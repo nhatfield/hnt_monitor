@@ -23,7 +23,7 @@ fi
 
 
 addresses=$(< ../conf/address.list)
-minutes_ago=$(date -u --date="15 minutes ago" +%s)
+minutes_ago=$(date -u --date="20 minutes ago" +%s)
 hour_ago=$(date -u --date="1 hour ago" +%s)
 one_day_ago=$(date -u --date="1 days ago" +%s)
 seven_days_ago=$(date -u --date="7 days ago" +%s)
@@ -31,7 +31,7 @@ thirty_days_ago=$(date -u --date="30 days ago" +%s)
 id=etl.reward.count
 
 reward_total() {
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data for ${a}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: processing data for ${a}" >> "${logpath}/${logfile}"
 
   rewards_15m=0
   rewards_1h=0

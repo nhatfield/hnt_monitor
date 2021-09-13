@@ -26,7 +26,7 @@ addresses=$(< ../conf/address.list)
 id=etl.witness
 
 witness() {
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data for ${a}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: processing data for ${a}" >> "${logpath}/${logfile}"
   witnessed_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/witnessed" 2>/dev/null | sort -u | wc -l)
   witnesses_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/witnesses" 2>/dev/null | sort -u | wc -l)
 

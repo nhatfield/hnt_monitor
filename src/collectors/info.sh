@@ -47,7 +47,7 @@ get() {
   done
 
   echo "${payload}" > "${data_dir}/${a}/${endpoint}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hotspot ${endpoint} data ready to process for ${a}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: ${a} hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}" || true
 
   sleep ${info_interval}
