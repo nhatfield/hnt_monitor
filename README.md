@@ -43,6 +43,12 @@ Navitage to the `src/conf/` directory and add your miner address to the `address
 $> ./src/bin/hnt_monitor
 ```
 
+Run in the background if you want to make it a service
+
+```bash
+$> ./src/bin/hnt_monitor &
+```
+
 **Docker**
 
 Run the hnt monitor script standalone
@@ -121,7 +127,6 @@ $> docker logs -f hnt_monitor
 
 | Name | Default | Description | Required |
 |:----:|---------|-------------|----------|
-| INTERVAL | `60` | Run the monitor collection once every 'n' seconds. | `no` |
 | MINER_ADDRESSES | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `yes` |
 | PROJECT | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
 | HOTSPOT_URL | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |

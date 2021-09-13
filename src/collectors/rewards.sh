@@ -21,15 +21,16 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+when=${when:-"15 minutes ago"}
 addresses=$(< ../conf/address.list)
-current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="15 minutes ago")
+current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
 endpoint=rewards
 lock_file=".${endpoint}.lock"
-id=${endpoint}.collector
+id=collector.${endpoint}
 
 get() {
   url="https://${hotspot_url}/${a}/${endpoint}?min_time=${current_date}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting hotspot ${endpoint} data" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting hotspot ${endpoint} data for ${a}" >> "${logpath}/${logfile}"
 
   n=0
   payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
@@ -47,33 +48,33 @@ get() {
     payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
   done
 
-  cursor=$(jq '.data[].cursor' <<< "${payload}")
+  cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${payload}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: cursor data empty" >> "${logpath}/${logfile}"
   
   while [ "${cursor}" ]; do
     new_payload=$(curl -s "${url}&cursor=${cursor}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
-    cursor=$(jq '.data[].cursor' <<< "${new_payload}")
+    cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${new_payload}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: cursor data empty" >> "${logpath}/${logfile}"
     payload="${payload}
 ${new_payload}"
   done
 
   echo "${payload}" >> "${data_dir}/${a}/${data_format}.${endpoint}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
-  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: ${a} hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}" || true
+
+  sleep ${rewards_interval}
+  rm -f "${data_dir}/${a}/${lock_file}"
 }
 
+for a in ${addresses}; do
+  if [ ! -d "${data_dir}/${a}" ]; then
+    mkdir -p "${data_dir}/${a}"
+  fi
 
-if [ ! -f "${lock_file}" ]; then
-  touch "${lock_file}"
-
-  for a in ${addresses}; do
-    if [ ! -d "${data_dir}/${a}" ]; then
-      mkdir -p "${data_dir}/${a}"
-    fi
+  if [ ! -f "${data_dir}/${a}/${lock_file}" ]; then
+    touch "${data_dir}/${a}/${lock_file}"
 
     get
-    sleep 1
-  done
-  sleep "${rewards_interval}"
+  fi
 
-  rm -f "${lock_file}"
-fi
+  sleep 1
+done

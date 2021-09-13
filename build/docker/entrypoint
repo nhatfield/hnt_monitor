@@ -5,7 +5,6 @@ conf_file="${conf_dir}/hnt_monitor.conf"
 address_file="${conf_dir}/address.list"           # Used to query the helium api for metrics
 
 OPTION=${1:-"run"}
-INTERVAL=${INTERVAL:-"60"}
 MINER_ADDRESSES=${MINER_ADDRESSES:-""}
 PROJECT=${PROJECT:-"hnt_miner"}
 HOTSPOT_URL=${HOTSPOT_URL:-"api.helium.io/v1/hotspots"}
@@ -46,7 +45,6 @@ Update the configs by passing in the environment variables.
 Description:
   VARIABLE		DESCRIPTION
 
-  INTERVAL		# Run the monitor collection once every 'n' seconds.
   MINER_ADDRESSES	# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
   PROJECT		# The name of the metric prefix when sending to prometheus.
   HOTSPOT_URL		# The helium hotspot api url.
@@ -63,7 +61,6 @@ Description:
 Defaults:
   VARIABLE		DEFAULT
 
-  INTERVAL		'${INTERVAL}'
   MINER_ADDRESSES	'${MINER_ADDRESSES}'
   PROJECT		'${PROJECT}'
   HOTSPOT_URL		'${HOTSPOT_URL}'
@@ -84,14 +81,6 @@ Examples:
 "
 }
 
-run() {
-  rm -f /opt/hnt_monitor/collectors/.*.lock
-
-  while true; do
-    /opt/hnt_monitor/bin/hnt_monitor
-    sleep "${INTERVAL}"
-  done
-}
 
 case $OPTION in
            help)
@@ -99,7 +88,7 @@ case $OPTION in
              ;;
            run)
              setup
-             run
+             /opt/hnt_monitor/bin/hnt_monitor
              ;;
            *)
              echo "Try [help] command: docker run -i hnt_monitor help"
