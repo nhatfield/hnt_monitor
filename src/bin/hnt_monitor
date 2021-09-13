@@ -14,6 +14,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 cd ${DIR}
 
 id=main
+init=true
 
 # Set configs
 for c in ../conf/*.conf; do
@@ -31,20 +32,26 @@ fi
 echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: initializing hnt monitor" >> "${logpath}/${logfile}"
 
 rm -f ../data/*/.*lock
-when="30 days ago"
 
 while true; do
 
-# Run collectors
-for c in ../collectors/*; do
-  . "${c}" &
-done
+  if [ "${init}" == "true" ]; then
+    when="30 days ago"
+    init=false
+  else
+    when=
+  fi
 
-# Run ETL
-for l in ../lib/*; do
-  . "${l}" & 
-done
+  # Run collectors
+  for c in ../collectors/*; do
+    . "${c}" &
+  done
 
-sleep 60
+  # Run ETL
+  for l in ../lib/*; do
+    . "${l}" & 
+  done
+
+  sleep 60
 
 done
