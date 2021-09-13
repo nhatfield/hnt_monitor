@@ -76,7 +76,7 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
       context: .
     environment:
       HOTSPOT_MONITOR: "true"
-      MINER_ADDRESSES: "<myminersaddress> "   << Update your miner address on this line before launching the stack
+      MINER_ADDRESSES: "<myminersaddress> "   # Update your miner address on this line before launching the stack
       PROMETHEUS_PG_HOST: "prometheus_pushgateway"
       DEBUG: "true"
     networks:

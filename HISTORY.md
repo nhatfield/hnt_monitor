@@ -1,5 +1,7 @@
 vNext
 
+# 3.0.0
+
 - **TechTask** - fixed reward collection
 - **TechTask** - fixed multi address collections
 - **TechTask** - fixed 15 minute reward data etl
