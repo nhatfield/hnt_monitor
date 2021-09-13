@@ -28,10 +28,10 @@ hour_ago=$(date -u --date="1 hour ago" +%s)
 one_day_ago=$(date -u --date="1 days ago" +%s)
 seven_days_ago=$(date -u --date="7 days ago" +%s)
 thirty_days_ago=$(date -u --date="30 days ago" +%s)
-id=reward_total.etl
+id=etl.reward.count
 
 reward_total() {
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data for ${a}" >> "${logpath}/${logfile}"
 
   rewards_15m=0
   rewards_1h=0
@@ -91,7 +91,7 @@ ${project}_${name//-/_}_reward_7d{instance="${name}",address="${a}"} ${rewards_7
 ${project}_${name//-/_}_reward_30d{instance="${name}",address="${a}"} ${rewards_30d}
 EOF
 
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: ${a} data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}" >> "${logpath}/${logfile}"
 }
 
 if [ "${hotspot_monitor}" == "true" ]; then

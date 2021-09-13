@@ -24,7 +24,7 @@ fi
 addresses=$(< ../conf/address.list)
 endpoint=witnessed
 lock_file=.${endpoint}.lock
-id=${endpoint}.collector
+id=collector.${endpoint}
 
 get() {
   url="https://${hotspot_url}/${a}/${endpoint}"

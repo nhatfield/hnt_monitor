@@ -28,7 +28,12 @@ if [ ! -d "../data" ]; then
   mkdir ../data
 fi
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hnt monitor initialized" >> "${logpath}/${logfile}"
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: initializing hnt monitor" >> "${logpath}/${logfile}"
+
+rm -f ../data/*/.*lock
+when="30 days ago"
+
+while true; do
 
 # Run collectors
 for c in ../collectors/*; do
@@ -40,4 +45,6 @@ for l in ../lib/*; do
   . "${l}" & 
 done
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: hnt monitor collection complete" >> "${logpath}/${logfile}"
+sleep 60
+
+done

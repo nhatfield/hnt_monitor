@@ -23,20 +23,20 @@ fi
 
 
 addresses=$(< ../conf/address.list)
-id=reward_scale.etl
+id=etl.reward.scale
 
 reward_scale() {
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting data for ${a}" >> "${logpath}/${logfile}"
 
   scale=$(jq -r '.data.reward_scale' "${data_dir}/${a}/info" 2>/dev/null) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: could not retrieve reward scale" >> "${logpath}/${logfile}"
 
-  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}
-# HELP ${project}_${a}_reward_scale based on hex and nearby miners
-# TYPE ${project}_${a}_reward_scale gauge
-${project}_${a}_reward_scale{instance="${name}",address="${a}"} ${scale}
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
+# HELP ${project}_${name//-/_}_reward_scale based on hex and nearby miners
+# TYPE ${project}_${name//-/_}_reward_scale gauge
+${project}_${name//-/_}_reward_scale{instance="${name}",address="${a}"} ${scale}
 EOF
   
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${a}" >> "${logpath}/${logfile}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: ${a} data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}" >> "${logpath}/${logfile}"
   [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: reward scale ${scale}" >> "${logpath}/${logfile}" || true
 }
 

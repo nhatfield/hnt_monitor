@@ -3,7 +3,9 @@ vNext
 - **TechTask** - fixed reward collection
 - **TechTask** - fixed multi address collections
 - **TechTask** - fixed 15 minute reward data etl
-
+- **TechTask** - fixed kulti address etl
+- **TechTask** - add jenkins build 
+- **TechTask** - backfill 30 days data on initial boot
 
 # 2.0.0
 
