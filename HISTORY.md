@@ -1,5 +1,7 @@
 vNext
 
+# 3.1.0
+
 - **TechTask** - witness collection default moved to 1 hour
 - **TechTask** - fixed addition message output in logs
 - **TechTask** - add support for sensecap miner
