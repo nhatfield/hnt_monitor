@@ -149,7 +149,7 @@ $> docker logs -f hnt_monitor
 | `BOBCAT_IPS` | | If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
 | `BOBCAT_MONITOR` | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
 | `DEBUG` | `false` | Turn on debug logging. Boolean: `(true or false)` | `no` |
-| `HELIUM_MONITOR | `true` | Enable or disable helium monitoring. Boolean: `(true or false)` | `no` |
+| `HELIUM_MONITOR` | `true` | Enable or disable helium monitoring. Boolean: `(true or false)` | `no` |
 | `HOTSPOT_ADDRESSES` | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `no` |
 | `HOTSPOT_MONITOR` | `false` | Enable hotspot monitoring from helium api. Boolean: `(true or false)` | `no` |
 | `HOTSPOT_URL` | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
@@ -159,7 +159,7 @@ $> docker logs -f hnt_monitor
 | `PROMETHEUS_PG_HOST` | `localhost` | The prometheus push gateway hostname. | `yes` |
 | `PROMETHEUS_PG_PORT` | `9091` | The prometheus push gateway port. | `no` |
 | `SENSECAP_API_KEY` | | Api key for sensecap | `no` |
-| `SENSECAP_MONITOR` | false | Enable or disable sensecap monitoring. Boolean: `(true or false)` | `no` |
+| `SENSECAP_MONITOR` | `false` | Enable or disable sensecap monitoring. Boolean: `(true or false)` | `no` |
 | `SENSECAP_SERIAL_NUMBERS` | | If sensecap monitoring enabled, list of Serial numbers of the sensecap miners | `no` |
 | `TRACE` | `false` | Turn on trace logging. Produces more logs than debug. Boolean: `(true or false)` | `no` |
 

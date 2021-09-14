@@ -63,7 +63,7 @@ for a in ${addresses}; do
   if [ ! -f "${data_dir}/${a}/${lock_file}" ]; then
     touch "${data_dir}/${a}/${lock_file}"
 
-    get
+    get &
   fi
 
   sleep 1
