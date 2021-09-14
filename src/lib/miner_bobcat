@@ -21,7 +21,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-id=bobcat
+id=miner.bobcat
 data_dir="${data_dir}/${id}"
 if [ ! -d "${data_dir}" ]; then
   mkdir -p "${data_dir}"

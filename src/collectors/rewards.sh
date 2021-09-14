@@ -38,7 +38,7 @@ get() {
   while ! jq '.data[]' <<< "${payload}"; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: maximum retries have been reached - ${api_retry_threshold}" >> "${logpath}/${logfile}"
-      rm -f "${lock_file}"
+      rm -f "${data_dir}/${a}/${lock_file}"
       exit
     fi
 

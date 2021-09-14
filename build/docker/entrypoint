@@ -5,28 +5,35 @@ conf_file="${conf_dir}/hnt_monitor.conf"
 address_file="${conf_dir}/address.list"           # Used to query the helium api for metrics
 
 OPTION=${1:-"run"}
-MINER_ADDRESSES=${MINER_ADDRESSES:-""}
-PROJECT=${PROJECT:-"hnt_miner"}
-HOTSPOT_URL=${HOTSPOT_URL:-"api.helium.io/v1/hotspots"}
-PROMETHEUS_PG_HOST=${PROMETHEUS_PG_HOST:-"localhost"}
-PROMETHEUS_PG_PORT=${PROMETHEUS_PG_PORT:-"9091"}
+BLOCKS_URL=${BLOCKS_URL:-"api.helium.io/v1/blocks"}
 BOBCAT_MONITOR=${BOBCAT_MONITOR:-"false"}
-HOTSPOT_MONITOR=${HOTSPOT_MONITOR:-"false"}
 BOBCAT_IPS=${BOBCAT_IPS:-""}
 DEBUG=${DEBUG:-"false"}
-TRACE=${TRACE:-"false"}
-LOGPATH=${LOGPATH:-"/dev/"}
+HELIUM_MONITOR=${HELIUM_MONITOR:-"true"}
+HOTSPOT_ADDRESSES=${HOTSPOT_ADDRESSES:-""}
+HOTSPOT_MONITOR=${HOTSPOT_MONITOR:-"false"}
+HOTSPOT_URL=${HOTSPOT_URL:-"api.helium.io/v1/hotspots"}
 LOGFILE=${LOGFILE:-"stdout"}
+LOGPATH=${LOGPATH:-"/dev/"}
+PROJECT=${PROJECT:-"hnt_miner"}
+PROMETHEUS_PG_HOST=${PROMETHEUS_PG_HOST:-"localhost"}
+PROMETHEUS_PG_PORT=${PROMETHEUS_PG_PORT:-"9091"}
+SENSECAP_API_KEY=${SENSECAP_API_KEY:-""}
+SENSECAP_MONITOR=${SENSECAP_MONITOR:-"false"}
+SENSECAP_SERIAL_NUMBERS=${SENSECAP_SERIAL_NUMBERS:-""}
+TRACE=${TRACE:-"false"}
 
 setup() {
   > "${address_file}"
 
-  for a in ${MINER_ADDRESSES}; do
+  for a in ${HOTSPOT_ADDRESSES}; do
     echo "${a}" >> "${address_file}"
   done
 
+  sed -i "s%blocks_url=.*%blocks_url=${BLOCKS_URL}%" "${conf_file}"
   sed -i "s%project=.*%project=${PROJECT}%" "${conf_file}"
   sed -i "s%hotspot_url=.*%hotspot_url=${HOTSPOT_URL}%" "${conf_file}"
+  sed -i "s%helium_monitor=.*%helium_monitor=${HELIUM_MONITOR}%" "${conf_file}"
   sed -i "s%prometheus_pg_host=.*%prometheus_pg_host=${PROMETHEUS_PG_HOST}%" "${conf_file}"
   sed -i "s%prometheus_pg_port=.*%prometheus_pg_port=${PROMETHEUS_PG_PORT}%" "${conf_file}"
   sed -i "s%bobcat_monitor=.*%bobcat_monitor=${BOBCAT_MONITOR}%" "${conf_file}"
@@ -35,6 +42,9 @@ setup() {
   sed -i "s%debug=.*%debug=${DEBUG}%" "${conf_file}"
   sed -i "s%logpath=.*%logpath=${LOGPATH}%" "${conf_file}"
   sed -i "s%logfile=.*%logfile=${LOGFILE}%" "${conf_file}"
+  sed -i "s%sensecap_api_key=.*%sensecap_api_key=${SENSECAP_API_KEY}%" "${conf_file}"
+  sed -i "s%sensecap_monitor=.*%sensecap_monitor=${SENSECAP_MONITOR}%" "${conf_file}"
+  sed -i "s%senscap_serial_numbers=.*%senscap_serial_numbers=${SENSECAP_SERIAL_NUMBERS%}" "${conf_file}"
 }
 
 help() {
@@ -45,34 +55,44 @@ Update the configs by passing in the environment variables.
 Description:
   VARIABLE		DESCRIPTION
 
-  MINER_ADDRESSES	# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
-  PROJECT		# The name of the metric prefix when sending to prometheus.
-  HOTSPOT_URL		# The helium hotspot api url.
-  PROMETHEUS_PG_HOST	# The prometheus push gateway hostname.
-  PROMETHEUS_PG_PORT	# The prometheus push gateway port.
-  BOBCAT_MONITOR	# Enable or disable bobcat monitoring. Boolean: [ true | false ]
-  HOTSPOT_MONITOR	# Enable hotspot monitoring from helium api. Boolean: [ true | false ]
-  BOBCAT_IPS		# If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc'
-  DEBUG			# Turn on debug logging. Boolean: [ true | false ]
-  TRACE			# Turn on trace logging. Boolean: [ true | false ]
-  LOGPATH		# Send logs to this path
-  LOGFILE		# Send logs to this file
+  BLOCKS_URL			# The helium blocks api url.
+  BOBCAT_IPS			# If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc'
+  BOBCAT_MONITOR		# Enable or disable bobcat monitoring. Boolean: [ true | false ]
+  DEBUG				# Turn on debug logging. Boolean: [ true | false ]
+  HELIUM_MONITOR		# Enable non hotspot specific helium monitoring. Boolean: [ true | false ]
+  HOTSPOT_ADDRESSES		# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
+  HOTSPOT_MONITOR		# Enable hotspot monitoring from helium api. Boolean: [ true | false ]
+  HOTSPOT_URL			# The helium hotspot api url.
+  LOGFILE			# Send logs to this file
+  LOGPATH			# Send logs to this path
+  PROJECT			# The name of the metric prefix when sending to prometheus.
+  PROMETHEUS_PG_HOST		# The prometheus push gateway hostname.
+  PROMETHEUS_PG_PORT		# The prometheus push gateway port.
+  SENSECAP_API_KEY		# The sensecap api key for your account
+  SENSECAP_MONITOR		# Enable or disable sensecap monitoring. Boolean: [ true | false ]
+  SENSECAP_SERIAL_NUMBERS	# The sensecap serial numbers of the devices to monitor. Ex: 'serial1 serial2 serial3 etc'
+  TRACE				# Turn on trace logging. Boolean: [ true | false ]
 
 Defaults:
   VARIABLE		DEFAULT
 
-  MINER_ADDRESSES	'${MINER_ADDRESSES}'
-  PROJECT		'${PROJECT}'
-  HOTSPOT_URL		'${HOTSPOT_URL}'
-  PROMETHEUS_PG_HOST	'${PROMETHEUS_PG_HOST}'
-  PROMETHEUS_PG_PORT	'${PROMETHEUS_PG_PORT}'
-  BOBCAT_MONITOR	'${BOBCAT_MONITOR}'
-  HOTSPOT_MONITOR	'${HOTSPOT_MONITOR}'
-  BOBCAT_IPS		'${BOBCAT_IPS}' 
-  DEBUG			'${DEBUG}'
-  TACE			'${TRACE}'
-  LOGPATH		'${LOGPATH}'
-  LOGFILE		'${LOGFILE}'
+  BLOCKS_URL			'${BLOCKS_URL}'
+  BOBCAT_IPS			'${BOBCAT_IPS}' 
+  BOBCAT_MONITOR		'${BOBCAT_MONITOR}'
+  DEBUG				'${DEBUG}'
+  HELIUM_MONITOR		'${HELIUM_MONITOR}'
+  HOTSPOT_ADDRESSES		'${HOTSPOT_ADDRESSES}'
+  HOTSPOT_MONITOR		'${HOTSPOT_MONITOR}'
+  HOTSPOT_URL			'${HOTSPOT_URL}'
+  LOGFILE			'${LOGFILE}'
+  LOGPATH			'${LOGPATH}'
+  PROJECT			'${PROJECT}'
+  PROMETHEUS_PG_HOST		'${PROMETHEUS_PG_HOST}'
+  PROMETHEUS_PG_PORT		'${PROMETHEUS_PG_PORT}'
+  SENSECAP_API_KEY		'${SENSECAP_API_KEY}'
+  SENSECAP_MONITOR		'${SENSECAP_MONITOR}'
+  SENSECAP_SERIAL_NUMBERS	'${SENSECAP_SERIAL_NUMBERS}'
+  TRACE				'${TRACE}'
 
 Examples:
 

@@ -21,22 +21,21 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-addresses=$(< ../conf/address.list)
-endpoint=info
+endpoint=height
 lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
 
 get() {
-  url="https://${hotspot_url}/${a}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting hotspot ${endpoint} data for ${a}" >> "${logpath}/${logfile}"
+  url="https://${blocks_url}/${endpoint}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: getting block ${endpoint} data" >> "${logpath}/${logfile}"
 
   n=0
   payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
   
-  while ! jq '.data[]' <<< "${payload}" 1>/dev/null; do
+  while ! jq '.data' <<< "${payload}" 1>/dev/null; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: maximum retries have been reached - ${api_retry_threshold}" >> "${logpath}/${logfile}"
-      rm -f "${data_dir}/${a}/${lock_file}"
+      rm -f "${data_dir}/${lock_file}"
       exit
     fi
 
@@ -46,25 +45,21 @@ get() {
     payload=$(curl -s "${url}") || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: api timeout" >> "${logpath}/${logfile}"
   done
 
-  echo "${payload}" > "${data_dir}/${a}/${endpoint}"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: ${a} hotspot ${endpoint} data ready to process" >> "${logpath}/${logfile}"
+  echo "${payload}" > "${data_dir}/${endpoint}"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: Block ${endpoint} data ready to process" >> "${logpath}/${logfile}"
   [ "${debug}" == "true" ] && echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: ${endpoint} data \n${payload}\n\n" >> "${logpath}/${logfile}" || true
 
-  sleep ${info_interval}
-  rm -f "${data_dir}/${a}/${lock_file}"
+  sleep ${blocks_interval}
+  rm -f "${data_dir}/${lock_file}"
 }
 
 
-for a in ${addresses}; do
-  if [ ! -d "${data_dir}/${a}" ]; then
-    mkdir -p "${data_dir}/${a}"
-  fi
+if [ ! -d "${data_dir}" ]; then
+  mkdir -p "${data_dir}"
+fi
 
-  if [ ! -f "${data_dir}/${a}/${lock_file}" ]; then
-    touch "${data_dir}/${a}/${lock_file}"
-  
-    get
-  fi
-
-  sleep 1
-done
+if [ ! -f "${data_dir}/${lock_file}" ]; then
+  touch "${data_dir}/${lock_file}"
+ 
+  get
+fi
