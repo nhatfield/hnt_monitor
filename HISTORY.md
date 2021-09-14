@@ -3,6 +3,7 @@ vNext
 - **TechTask** - witness collection default moved to 1 hour
 - **TechTask** - fixed addition message output in logs
 - **TechTask** - add support for sensecap miner
+- **TechTask** - add block height collections
 
 # 3.0.0
 
