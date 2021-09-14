@@ -10,6 +10,7 @@ This repo is used to produce metrics from the various api endpoints on the hnt b
 - witnessed
 - witnesses
 - reward scale
+- block height
 
 **Bobcat API**
 
