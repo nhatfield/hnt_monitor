@@ -40,12 +40,12 @@ pipeline {
                 script {
                     env.STAGE = "${STAGE_NAME}"
                 }
-                sshagent(["SSH_JENKINS"]) {
+                sshagent(["Jenkins_Github"]) {
                     sh """
                     if [ ${env.GIT_BRANCH} = "master" ]; then
                         tag="\$(echo $VERSION)"
                         git tag -f \$tag
-                        git push -f git@bitbucket.org:ctgcorp/${PROJECT}.git \$tag
+                        git push -f git@github.com:nhatfield/${PROJECT}.git \$tag
                     fi
                     """
                 }
