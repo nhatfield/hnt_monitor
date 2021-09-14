@@ -15,6 +15,23 @@ This repo is used to produce metrics from the various api endpoints on the hnt b
 
 - temperature
 
+**Sensecap API**
+
+- cpu temperature
+- cpu used
+- memory total
+- memory used
+- sd total
+- sd used
+- antenna gain
+- relayed
+- is healthy
+- helium block_height
+- block height
+- connected
+- dialable
+- nat type
+
 ## Prerequisite
 
 **Without Docker**
