@@ -11,7 +11,7 @@ pipeline {
         ).trim()
 
         PROJECT = 'hnt_monitor'
-        REPOSITORY = 'registry.blackem.net/hnt/hnt'
+        REPOSITORY = 'registry.blackem.net/hnt'
         DEV_REPOSITORY = 'registry.blackem.net/hnt'
         AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
         AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
@@ -40,7 +40,7 @@ pipeline {
                 script {
                     env.STAGE = "${STAGE_NAME}"
                 }
-                sshagent(["Jenkins_Bitbucket"]) {
+                sshagent(["SSH_JENKINS"]) {
                     sh """
                     if [ ${env.GIT_BRANCH} = "master" ]; then
                         tag="\$(echo $VERSION)"
