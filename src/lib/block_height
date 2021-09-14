@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+cd ${DIR}
+
+for c in ../conf/*.conf; do
+  . "${c}"
+done
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+
+id=etl.block.height
+
+block_height() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: processing data" >> "${logpath}/${logfile}"
+
+  height=$(jq -r '.data.height' "${data_dir}/height" 2>/dev/null) || echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id]: could not retrieve block height" >> "${logpath}/${logfile}"
+
+  cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}
+# HELP ${project}_${name}_block_height helium block height
+# TYPE ${project}_${name}_block_height gauge
+${project}_${name}_block_height{instance="${name}"} ${height}
+EOF
+  
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: Data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}" >> "${logpath}/${logfile}"
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: block height ${height}" >> "${logpath}/${logfile}" || true
+}
+
+if [ "${helium_monitor}" == "true" ]; then
+  name=helium
+  block_height
+else
+  [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: Blocks monitor collection is disabled. Hint: (helium_monitor=false)" >> "${logpath}/${logfile}"
+  true
+fi

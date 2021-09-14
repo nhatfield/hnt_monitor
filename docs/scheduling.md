@@ -36,7 +36,7 @@ Full stack run every 5 minutes. Update the `hnt_monitor.yml` at the `hnt_monitor
     environment:
       REWARDS_INTERVAL: "300"
       HOTSPOT_MONITOR: "true"
-      MINER_ADDRESSES: "<myminersaddress> "
+      HOTSPOT_ADDRESSES: "<myminersaddress> "
       PROMETHEUS_PG_HOST: "prometheus_pushgateway"
       DEBUG: "true"
     networks:

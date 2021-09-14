@@ -21,7 +21,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-id=sensecap
+id=miner.sensecap
 data_dir="${data_dir}/${id}"
 if [ ! -d "${data_dir}" ]; then
   mkdir -p "${data_dir}"
@@ -82,20 +82,20 @@ ${project}_${name//-/_}_dialable{instance="${name}"} $(jq '.data.dialable' <<< "
 ${project}_${name//-/_}_nat_type{instance="${name}"} $(jq '.data.natType' <<< "${data}")
 EOF
 
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap cpu temperature $(jq '.data.cpuTemperature' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap cpu used $(jq '.data.cpuUsed' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap memory total $(jq '.data.memoryTotal' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap memory used $(jq '.data.memoryUsed' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap sd total $(jq '.data.sdTotal' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap sd used $(jq '.data.sdUsed' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap antenna gain $(jq '.data.gain' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap relayed $(jq '.data.relayed' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap is healthy $(jq '.data.isHealth' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap helium block_height $(jq '.data.totalHeight' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap block height $(jq '.data.height' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap connected $(jq '.data.connected' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap dialable $(jq '.data.dialable' <<< "${data}")
-    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap nat type $(jq '.data.natType' <<< "${data}")
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap cpu temperature $(jq '.data.cpuTemperature' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap cpu used $(jq '.data.cpuUsed' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap memory total $(jq '.data.memoryTotal' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap memory used $(jq '.data.memoryUsed' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap sd total $(jq '.data.sdTotal' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap sd used $(jq '.data.sdUsed' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap antenna gain $(jq '.data.gain' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap relayed $(jq '.data.relayed' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap is healthy $(jq '.data.isHealth' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap helium block_height $(jq '.data.totalHeight' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap block height $(jq '.data.height' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap connected $(jq '.data.connected' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap dialable $(jq '.data.dialable' <<< "${data}")"
+    [ "${debug}" == "true" ] && echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id]: sensecap nat type $(jq '.data.natType' <<< "${data}")"
   done
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: Sensecap monitor run complete" >> "${logpath}/${logfile}"
