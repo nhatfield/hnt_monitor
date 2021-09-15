@@ -1,0 +1,3 @@
+get_hotspot_name() {
+  name=$(jq -r '.data.name' "${data_dir}/${a}/info" 2>/dev/null) || log_err "could not get the miner name"
+}

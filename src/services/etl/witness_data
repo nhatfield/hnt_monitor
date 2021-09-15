@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+get_addresses
+id=etl.witness
+
+witness() {
+  log_info "processing data for ${a}"
+
+  get_witness_count
+  send_witness_count
+
+  log_debug "witnesses count ${witnesses_count}"
+  log_debug "witnessed count ${witnessed_count}" 
+}
+
+
+if [ "${hotspot_monitor}" == "true" ]; then
+  for a in ${addresses}; do
+    get_hotspot_name
+    witness
+  done
+else
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})" 
+  true
+fi

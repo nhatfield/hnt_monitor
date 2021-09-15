@@ -1,0 +1,6 @@
+make_dir() {
+  dir=${1:-""}
+  if [ ! -d "${dir}" ]; then
+    mkdir -p "${dir}"
+  fi
+}

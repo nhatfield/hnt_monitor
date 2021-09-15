@@ -1,0 +1,11 @@
+run_collector() {
+  for c in ${HNT_HOME}/services/collectors/*; do
+    . "${c}" &
+  done
+}
+
+run_etl() {
+  for l in ${HNT_HOME}/services/etl/*; do
+    . "${l}" &
+  done
+}

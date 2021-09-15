@@ -4,6 +4,8 @@ vNext
 - **TechTask** - fix readme variable syntax
 - **TechTask** - fix initial collection for multiple miners on a single collector
 - **TechTask** - fix race condition on initial boot to allow collections to complete before the data is processed
+- **TechTask** - improved modular scripting
+- **TechTask** - improved logger
 
 # 3.1.0
 

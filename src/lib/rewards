@@ -1,0 +1,7 @@
+get_reward_timestamps() {
+  rewards=$(jq -r '.data[].timestamp' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u)
+}
+
+get_reward_scale() {
+  scale=$(jq -r '.data.reward_scale' "${data_dir}/${a}/info" 2>/dev/null) || log_err "could not retrieve reward scale"
+}

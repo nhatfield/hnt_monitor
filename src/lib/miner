@@ -1,0 +1,22 @@
+get_miner_bobcat_name() {
+  name=$(cat ${data_dir}/.${M} 2>/dev/null | grep "${M}" | awk '{print $2}') || log_warn "No name cached for ${M}"
+  
+  if [ ! "${name}" ]; then
+    name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_warn "Could not get bobcat miner name"
+    echo "${M}: ${name}" >> "${data_dir}/.${M}"
+    log_info "Storing bobcat miner ${M} - ${name}"
+
+  elif [ "$(echo "${name}" | wc -l | tr -dc .[:print:].)" -gt 1 ]; then
+    log_warn "Found duplicate entries for ${M}"
+    name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_warn "Could not get bobcat miner name"
+
+    sed -i "s%${M}:.*%%g" "${data_dir}/.${M}"
+    echo "${M}: ${name}" >> "${data_dir}/.${M}"
+
+    log_info "Storing bobcat miner ${M} - ${name}"
+  fi
+}
+
+get_miner_sensecap_name() {
+  name=$(jq -r '.data.name' <<< "${payload}" | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "No name collected for ${M}"
+}

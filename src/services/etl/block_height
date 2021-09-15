@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+id=etl.block.height
+
+block_height() {
+  log_info "processing data"
+
+  get_height
+  send_block_height
+
+  log_debug "block height ${height}"
+}
+
+if [ "${helium_monitor}" == "true" ]; then
+  name=helium
+  block_height
+else
+  log_debug "Blocks monitor collection is disabled. Hint: (helium_monitor=${helium_monitor})"
+  true
+fi

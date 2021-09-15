@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+get_addresses
+id=etl.reward.scale
+
+reward_scale() {
+  log_info "processing data for ${a}"
+
+  get_reward_scale
+  send_reward_scale
+
+  log_debug "reward scale ${scale}"
+}
+
+if [ "${hotspot_monitor}" == "true" ]; then
+  for a in ${addresses}; do
+    get_hotspot_name
+    reward_scale
+  done
+else
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})"
+  true
+fi

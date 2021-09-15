@@ -1,0 +1,21 @@
+lock() {
+  lockfile=${1:-""}
+  if [ ! -f "${lockfile}" ]; then
+    touch "${lockfile}"
+  else
+    log_err "Cannot create lock. No lock file provided - ${lockfile}"
+  fi
+}
+
+rm_locks() {
+  rm -f "${data_dir}"/*/.*lock
+}
+
+rm_lock() {
+  lockfile=${1:-""}
+  if [ "${lockfile}" ]; then
+    rm -f "${lockfile}"
+  else
+    log_err "Cannot remove lock. No lock file provided - ${lockfile}"
+  fi
+}
