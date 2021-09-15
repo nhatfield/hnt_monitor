@@ -44,7 +44,7 @@ setup() {
   sed -i "s%logfile=.*%logfile=${LOGFILE}%" "${conf_file}"
   sed -i "s%sensecap_api_key=.*%sensecap_api_key=${SENSECAP_API_KEY}%" "${conf_file}"
   sed -i "s%sensecap_monitor=.*%sensecap_monitor=${SENSECAP_MONITOR}%" "${conf_file}"
-  sed -i "s%senscap_serial_numbers=.*%senscap_serial_numbers=${SENSECAP_SERIAL_NUMBERS%}" "${conf_file}"
+  sed -i "s%senscap_serial_numbers=.*%senscap_serial_numbers=${SENSECAP_SERIAL_NUMBERS}%" "${conf_file}"
 }
 
 help() {

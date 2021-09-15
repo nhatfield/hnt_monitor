@@ -1,0 +1,9 @@
+get_configs() {
+  for c in ${HNT_HOME}/conf/*.conf; do
+    . "${c}"
+  done
+}
+
+get_addresses() {
+  addresses=$(< ${HNT_HOME}/conf/address.list)
+}

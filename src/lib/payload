@@ -1,0 +1,33 @@
+get_payload() {
+  payload=$(curl -s "${url}") || log_err "api timeout"
+}
+
+next_payload() {
+  new_payload=$(curl -s "${url}&cursor=${cursor}") || log_err "api timeout"
+}
+
+send_payload() {
+  option=${1:-""}
+  directory=${2:-""}
+
+  if [ "${directory}" ]; then
+    if [ "${option}" == "write" ]; then
+      echo "${payload}" > "${directory}"
+    elif [ "${option}" == "append" ]; then
+      echo "${payload}" >> "${directory}"
+    else
+      log_err "invalid option - ${option}"
+    fi
+  else
+    log_err "no directory to send payload was specified"
+  fi
+}
+
+success_payload() {
+  jq '.data' <<< "${payload}" 1>/dev/null
+}
+
+get_cursor() {
+  p=${1:-"${payload}"}
+  cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${p}") || log_info "cursor data empty"
+}

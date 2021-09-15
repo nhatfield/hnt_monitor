@@ -4,6 +4,7 @@ set -euo pipefail
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin
 
+OPT=${1:-"run"}
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -13,45 +14,56 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 cd ${DIR}
 
+# Set libs
+for l in ../lib/*; do
+  . "${l}"
+done
+
 id=main
 init=true
 
-# Set configs
-for c in ../conf/*.conf; do
-  . "${c}"
-done
+set_home
+get_configs
 
-if [ ! -d "${logpath}" ]; then
-  mkdir "${logpath}"
-fi
 
-if [ ! -d "../data" ]; then
-  mkdir ../data
-fi
+make_dir ${logpath}
+make_dir ${data_dir}
 
-echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id]: initializing hnt monitor" >> "${logpath}/${logfile}"
 
-rm -f ../data/*/.*lock
+log_info "initializing hnt monitor"
 
-while true; do
+rm_locks
 
-  if [ "${init}" == "true" ]; then
-    when="30 days ago"
-    init=false
-  else
-    when=
-  fi
+run() {
+  while true; do
+  
+    if [ "${init}" == "true" ]; then
+      when="30 days ago"
+    else
+      when=
+    fi
 
-  # Run collectors
-  for c in ../collectors/*; do
-    . "${c}" &
+    run_collector
+
+    if [ "${init}" == "false" ]; then
+      run_etl
+    else
+      log_info "allowing collections to finish before processesing data"
+      sleep 10
+      init=false
+      log_info "setting initialize to false"
+    fi
+
+    sleep 60
+
   done
+}
 
-  # Run ETL
-  for l in ../lib/*; do
-    . "${l}" & 
-  done
-
-  sleep 60
-
-done
+case ${OPT} in
+           start|run)
+             run
+             ;;
+           *)
+             echo "invalid argument"
+             ;;
+esac

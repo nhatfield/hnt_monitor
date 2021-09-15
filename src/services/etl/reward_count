@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+get_addresses
+minutes_ago=$(date -u --date="20 minutes ago" +%s)
+hour_ago=$(date -u --date="1 hour ago" +%s)
+one_day_ago=$(date -u --date="1 days ago" +%s)
+seven_days_ago=$(date -u --date="7 days ago" +%s)
+thirty_days_ago=$(date -u --date="30 days ago" +%s)
+id=etl.reward.count
+
+reward_count() {
+  log_info "processing data for ${a}"
+
+  rewards_15m=0
+  rewards_1h=0
+  rewards_1d=0
+  rewards_7d=0
+  rewards_30d=0
+
+  get_reward_timestamps
+
+  log_debug "rewards timestamps\n${rewards}\n\n"
+
+  for r in ${rewards}; do
+    time=$(date -d ${r} +%s)    
+
+    if [ "${minutes_ago}" -le "${time}" ]; then
+      ((rewards_15m++)) || true
+    fi
+
+    if [ "${hour_ago}" -le "${time}" ]; then
+      ((rewards_1h++)) || true
+    fi
+
+    if [ "${one_day_ago}" -le "${time}" ]; then
+      ((rewards_1d++)) || true
+    fi
+
+    if [ "${seven_days_ago}" -le "${time}" ]; then
+      ((rewards_7d++)) || true
+    fi
+
+    if [ "${thirty_days_ago}" -le "${time}" ]; then
+      ((rewards_30d++)) || true
+    fi
+  done
+
+  send_reward_counts
+
+  log_debug "rewards in 15 minute ${rewards_15m}"
+  log_debug "rewards in 1 hour ${rewards_1h}"
+  log_debug "rewards in 1 day ${rewards_1d}" 
+  log_debug "rewards in 7 days ${rewards_7d}"
+  log_debug "rewards in 30 days ${rewards_30d}"
+}
+
+if [ "${hotspot_monitor}" == "true" ]; then
+  for a in ${addresses}; do
+    get_hotspot_name
+    reward_count
+  done
+else
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})"
+  true
+fi

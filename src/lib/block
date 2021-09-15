@@ -1,0 +1,3 @@
+get_height() {
+  height=$(jq -r '.data.height' "${data_dir}/height" 2>/dev/null) || log_err "could not retrieve block height"
+}

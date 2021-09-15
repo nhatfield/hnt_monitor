@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+id=miner.bobcat
+data_dir="${data_dir}/${id}"
+make_dir "${data_dir}"
+
+
+if [ "${bobcat_monitor}" == "true" ]; then
+  log_info "Starting bobcat monitor run"
+
+  for M in ${bobcat_ips}; do
+    log_info "getting bobcat temperature for - ${M}"
+    url="http://${M}/temp.json"
+
+    get_miner_bobcat_name
+    get_payload
+
+    send_miner_bobcat
+    log_debug "bobcat temperature core0: $(jq '.temp0' <<< "${payload}"); core1: $(jq '.temp1' <<< "${payload}")"
+  done
+
+  log_info "Bobcat monitor run complete"
+else
+  log_debug "Bobcat monitor collection is disabled. Hint: (bobcat_monitor=${bobcat_monitor})"
+  true
+fi
