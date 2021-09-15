@@ -1,5 +1,7 @@
 vNext
 
+# 3.2.0
+
 - **TechTask** - fix entrypoint variable replacement
 - **TechTask** - fix readme variable syntax
 - **TechTask** - fix initial collection for multiple miners on a single collector
