@@ -16,6 +16,6 @@ log_err() {
 log_debug() {
   msg=${1:-""}
   if [ "${debug}" == "true" ]; then
-    echo "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+    echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: [$id] - ${msg}" >> "${logpath}/${logfile}"
   fi
 }
