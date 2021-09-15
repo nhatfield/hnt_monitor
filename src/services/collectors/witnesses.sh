@@ -31,19 +31,19 @@ get() {
     get_payload
   done
 
-  send_payload append "${data_dir}/${a}/${endpoint}"
+  send_payload append "${data_dir}/${a}/${data_format}.${endpoint}"
   log_info "${a} hotspot ${endpoint} data ready to process"
   log_debug "${endpoint} data \n${payload}\n\n"
 
-  sleep ${witness_interval}
-  rm_lock ${data_dir}/${a}/${lock_file}
+  sleep "${witness_interval}"
+  rm_lock "${data_dir}/${a}/${lock_file}"
 }
 
 
 for a in ${addresses}; do
   make_dir "${data_dir}/${a}"
 
-  lock ${data_dir}/${a}/${lock_file}
+  lock "${data_dir}/${a}/${lock_file}"
   get &
 
   sleep 1

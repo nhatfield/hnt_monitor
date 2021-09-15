@@ -9,3 +9,9 @@ run_etl() {
     . "${l}" &
   done
 }
+
+run_system() {
+  for s in ${HNT_HOME}/services/system/*; do
+    . "${s}" &
+  done
+}

@@ -47,6 +47,7 @@ run() {
 
     if [ "${init}" == "false" ]; then
       run_etl
+      run_system
     else
       log_info "allowing collections to finish before processesing data"
       sleep 10

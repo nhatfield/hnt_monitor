@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+cleanup_search=$(date +%Y-%m-%d --date="${data_cleanup_window} ${data_cleanup_unit} ago")
+lock_file=".cleanup.lock"
+id=system.cleanup
+
+cleanup() {
+  log_info "starting data cleanup service"
+
+  for d in ${data_dir}/*; do
+    if [ -d "${d}" ]; then
+      files=$(ls ${d}/ | grep "${cleanup_search}") || true
+
+      for f in ${files}; do
+        log_info "Removing file: ${d}/${f}"
+        rm -f "${d}/${f}"
+      done
+    fi
+  done
+
+  sleep ${data_cleanup_interval}
+  rm_lock "${data_dir}/${lock_file}"
+}
+
+lock "${data_dir}/${lock_file}"
+cleanup

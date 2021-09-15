@@ -6,6 +6,8 @@ vNext
 - **TechTask** - fix race condition on initial boot to allow collections to complete before the data is processed
 - **TechTask** - improved modular scripting
 - **TechTask** - improved logger
+- **TechTask** - updates to README
+- **TechTask** - add cleanup job data
 
 # 3.1.0
 
