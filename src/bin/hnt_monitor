@@ -51,6 +51,7 @@ run() {
       log_info "allowing collections to finish before processesing data"
       sleep 10
       init=false
+      log_info "setting initialize to false"
     fi
 
     sleep 60

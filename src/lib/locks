@@ -1,7 +1,11 @@
 lock() {
   lockfile=${1:-""}
-  if [ ! -f "${lockfile}" ]; then
-    touch "${lockfile}"
+  if [ "${lockfile}" ]; then
+    if [ ! -f "${lockfile}" ]; then
+      touch "${lockfile}"
+    else
+      exit 1
+    fi
   else
     log_err "Cannot create lock. No lock file provided - ${lockfile}"
   fi

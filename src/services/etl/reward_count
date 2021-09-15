@@ -14,7 +14,7 @@ seven_days_ago=$(date -u --date="7 days ago" +%s)
 thirty_days_ago=$(date -u --date="30 days ago" +%s)
 id=etl.reward.count
 
-reward_total() {
+reward_count() {
   log_info "processing data for ${a}"
 
   rewards_15m=0
@@ -63,7 +63,7 @@ reward_total() {
 if [ "${hotspot_monitor}" == "true" ]; then
   for a in ${addresses}; do
     get_hotspot_name
-    reward_total
+    reward_count
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})"
