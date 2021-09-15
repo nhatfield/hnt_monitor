@@ -4,10 +4,11 @@ lock() {
     if [ ! -f "${lockfile}" ]; then
       touch "${lockfile}"
     else
+      log_debug "service is locked."
       exit 1
     fi
   else
-    log_err "Cannot create lock. No lock file provided - ${lockfile}"
+    log_err "cannot create lock. no lock file provided - ${lockfile}"
   fi
 }
 
@@ -19,7 +20,8 @@ rm_lock() {
   lockfile=${1:-""}
   if [ "${lockfile}" ]; then
     rm -f "${lockfile}"
+    log_debug "removed service lock"
   else
-    log_err "Cannot remove lock. No lock file provided - ${lockfile}"
+    log_err "cannot remove lock. no lock file provided - ${lockfile}"
   fi
 }

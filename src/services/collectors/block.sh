@@ -20,7 +20,7 @@ get() {
   while ! success_payload; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
-      rm_lock ${data_dir}/${lock_file}
+      rm_lock "${data_dir}/${lock_file}"
       exit
     fi
 
@@ -34,10 +34,10 @@ get() {
   log_info "Block ${endpoint} data ready to process"
   log_debug "${endpoint} data \n${payload}\n\n"
 
-  sleep ${blocks_interval}
-  rm_lock ${data_dir}/${lock_file}
+  sleep "${blocks_interval}"
+  rm_lock "${data_dir}/${lock_file}"
 }
 
 
-lock ${data_dir}/${lock_file} 
+lock "${data_dir}/${lock_file}"
 get
