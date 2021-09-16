@@ -1,5 +1,7 @@
 vNext
 
+# 3.3.0
+
 - **TechTask** - expand bobcat collection
 
 # 3.2.0
