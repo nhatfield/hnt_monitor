@@ -1,5 +1,7 @@
 vNext
 
+- **BugFix** - sensecap serial numbers were not updated from entrypoint
+
 # 3.3.0
 
 - **TechTask** - expand bobcat collection
