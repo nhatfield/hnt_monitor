@@ -6,26 +6,36 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-id=miner.bobcat
-data_dir="${data_dir}/${id}"
-make_dir "${data_dir}"
+id=etl.bobcat
+
+bobcat_temp() {
+  id="${id}.temps"
+  log_info "processing data"
+  
+  get_miner_bobcat_temp
+  send_miner_bobcat_temp
+
+  log_debug "Temperature data cpu0: ${temp0}; cpu1: ${temp1}"
+}
+
+bobcat_status() {
+  id="${id}.status"
+  log_info "processing data"
+
+  get_miner_bobcat_status
+  send_miner_bobcat_status
+
+  log_debug "Status data \n  status: ${status}\n  gap: ${gap}\n  miner_height: ${miner_height}\n  block_height: ${blockchain_height}\n  epoch: ${epoch}\n"
+}
 
 
 if [ "${bobcat_monitor}" == "true" ]; then
-  log_info "Starting bobcat monitor run"
 
-  for M in ${bobcat_ips}; do
-    log_info "getting bobcat temperature for - ${M}"
-    url="http://${M}/temp.json"
-
+  for a in ${bobcat_ips}; do
     get_miner_bobcat_name
-    get_payload
-
-    send_miner_bobcat
-    log_debug "bobcat temperature core0: $(jq '.temp0' <<< "${payload}"); core1: $(jq '.temp1' <<< "${payload}")"
+    bobcat_temp &
+    bobcat_status &
   done
-
-  log_info "Bobcat monitor run complete"
 else
   log_debug "Bobcat monitor collection is disabled. Hint: (bobcat_monitor=${bobcat_monitor})"
   true

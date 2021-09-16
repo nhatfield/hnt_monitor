@@ -14,7 +14,11 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 
 **Bobcat API**
 
-- temperature
+- cpu temperatures
+- block height
+- miner height
+- height gap
+- sync status
 
 **Sensecap API**
 

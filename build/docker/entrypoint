@@ -40,6 +40,7 @@ setup() {
   sed -i "s%hotspot_monitor=.*%hotspot_monitor=${HOTSPOT_MONITOR}%" "${conf_file}"
   sed -i "s%bobcat_ips=.*%bobcat_ips=${BOBCAT_IPS}%" "${conf_file}"
   sed -i "s%debug=.*%debug=${DEBUG}%" "${conf_file}"
+  sed -i "s%trace=.*%trace=${TRACE}%" "${conf_file}"
   sed -i "s%logpath=.*%logpath=${LOGPATH}%" "${conf_file}"
   sed -i "s%logfile=.*%logfile=${LOGFILE}%" "${conf_file}"
   sed -i "s%sensecap_api_key=.*%sensecap_api_key=${SENSECAP_API_KEY}%" "${conf_file}"

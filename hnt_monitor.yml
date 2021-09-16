@@ -15,6 +15,11 @@ services:
       dockerfile: ./build/docker/Dockerfile
       context: .
     environment:
+      PROJECT: "bobcat_miner"
+      HOTSPOT_MONITOR: "true"
+      HOTSPOT_ADDRESSES: "112VEhPPMYF95neEEwwgnckHej4bgZ1roo13SMx18RSJxLq6JuiK 114TSkgPjZmKnF9eJzUsVbozGqi98jriPvnR7qbBQkN9kVXURWX"
+      BOBCAT_MONITOR: "true"
+      BOBCAT_IPS: "192.168.1.173"
       PROMETHEUS_PG_HOST: "prometheus_pushgateway"
     networks:
       hnt_monitor:
