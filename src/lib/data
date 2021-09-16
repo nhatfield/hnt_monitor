@@ -16,6 +16,9 @@ send_miner_bobcat_status() {
 # HELP ${project}_${name//-/_}_status of the bobcat synced to blockchain 0: no, 1: yes
 # TYPE ${project}_${name//-/_}_status gauge
 ${project}_${name//-/_}_status{instance="${name}"} ${status}
+# HELP ${project}_${name//-/_}_height_gap of the bobcat height to blockchain
+# TYPE ${project}_${name//-/_}_height_gap gauge
+${project}_${name//-/_}_height_gap{instance="${name}"} ${gap}
 # HELP ${project}_${name//-/_}_miner_height of the bobcat miner
 # TYPE ${project}_${name//-/_}_miner_height gauge
 ${project}_${name//-/_}_miner_height{instance="${name}"} ${miner_height}
