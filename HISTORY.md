@@ -1,5 +1,7 @@
 vNext
 
+# 3.3.1
+
 - **BugFix** - sensecap serial numbers were not updated from entrypoint
 
 # 3.3.0
