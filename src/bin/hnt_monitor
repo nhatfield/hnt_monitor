@@ -31,7 +31,7 @@ make_dir ${data_dir}
 
 
 log_info "initializing hnt monitor"
-
+log_info "removing stale locks"
 rm_locks
 
 run() {

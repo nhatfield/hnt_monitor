@@ -1,5 +1,7 @@
 vNext
 
+- **TechTask** - expand bobcat collection
+
 # 3.2.0
 
 - **TechTask** - fix entrypoint variable replacement

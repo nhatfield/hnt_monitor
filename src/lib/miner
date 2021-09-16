@@ -1,20 +1,28 @@
 get_miner_bobcat_name() {
-  name=$(cat ${data_dir}/.${M} 2>/dev/null | grep "${M}" | awk '{print $2}') || log_warn "No name cached for ${M}"
+  name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner)  || log_warn "No name found for ${a}"
   
   if [ ! "${name}" ]; then
-    name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_warn "Could not get bobcat miner name"
-    echo "${M}: ${name}" >> "${data_dir}/.${M}"
-    log_info "Storing bobcat miner ${M} - ${name}"
-
-  elif [ "$(echo "${name}" | wc -l | tr -dc .[:print:].)" -gt 1 ]; then
-    log_warn "Found duplicate entries for ${M}"
-    name=$(curl -s http://${M}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_warn "Could not get bobcat miner name"
-
-    sed -i "s%${M}:.*%%g" "${data_dir}/.${M}"
-    echo "${M}: ${name}" >> "${data_dir}/.${M}"
-
-    log_info "Storing bobcat miner ${M} - ${name}"
+    name=$(curl -s http://${a}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_warn "Could not get bobcat miner name"
   fi
+}
+
+get_miner_bobcat_temp() {
+  temp0=$(jq -r '.temp0' "${data_dir}"/miner.bobcat/${a}.temp)
+  temp1=$(jq -r '.temp1' "${data_dir}"/miner.bobcat/${a}.temp)
+}
+
+get_miner_bobcat_status() {
+  stat=$(jq -r '.status' "${data_dir}"/miner.bobcat/${a}.status)
+  if [ "${stat}" == "synced" ]; then
+    status=1
+  else
+    status=0
+  fi
+
+  gap=$(jq -r '.gap' "${data_dir}"/miner.bobcat/${a}.status)
+  miner_height=$(jq -r '.miner_height' "${data_dir}"/miner.bobcat/${a}.status)
+  blockchain_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status)
+  epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status)
 }
 
 get_miner_sensecap_name() {

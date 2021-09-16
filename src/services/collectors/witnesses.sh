@@ -18,7 +18,7 @@ get() {
   n=0
   get_payload
   
-  while ! success_payload; do
+  while [ ! "$(success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
       rm_lock "${data_dir}/${a}/${lock_file}"
@@ -26,6 +26,7 @@ get() {
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data. Retrying in 5 seconds..."
+    log_debug "bad payload\n\n${payload}\n"
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload

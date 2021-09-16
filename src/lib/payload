@@ -24,7 +24,19 @@ send_payload() {
 }
 
 success_payload() {
-  jq '.data' <<< "${payload}" 1>/dev/null
+  jq 'select(.data != null)' <<< "${payload}"
+}
+
+bobcat_miner_success_payload() {
+  jq 'select(.miner != null)' <<< "${payload}"
+}
+
+bobcat_temp_success_payload() {
+  jq 'select(.unit != null)' <<< "${payload}"
+}
+
+bobcat_status_success_payload() {
+  jq 'select(.status != null)' <<< "${payload}"
 }
 
 get_cursor() {
