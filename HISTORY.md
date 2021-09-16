@@ -1,6 +1,11 @@
 vNext
 
 - **TechTask** - add support for nebra miner
+- **TechTask** - add [docker hub](https://hub.docker.com/repository/docker/nhatfield/hnt_monitor) image
+
+# 3.3.1
+
+- **BugFix** - sensecap serial numbers were not updated from entrypoint
 
 # 3.3.0
 
