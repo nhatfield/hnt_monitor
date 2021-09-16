@@ -25,6 +25,51 @@ get_miner_bobcat_status() {
   epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status)
 }
 
+get_miner_nebra_name() {
+  name=$(jq -r '.AN' "${data_dir}"/miner.nebra/${a}.data) || log_warn "No name collected for ${a}"
+}
+
+get_miner_nebra_data() {
+  block_height=$(jq -r '.BCH' "${data_dir}"/miner.nebra/${a}.data)
+  frequency=$(jq -r '.FR' "${data_dir}"/miner.nebra/${a}.data) 
+  miner_height=$(jq -r '.MH' "${data_dir}"/miner.nebra/${a}.data)
+
+  status=$(jq -r '.BSP' "${data_dir}"/miner.nebra/${a}.data)
+  if [[ "${status}" == *"load"* ]]; then
+    sync_status=0
+  else
+    sync_status=${status}
+  fi
+
+  bt_conn=$(jq -r '.BT' "${data_dir}"/miner.nebra/${a}.data)
+  if [ "${bt_conn}" == "true" ]; then
+    bluetooth_connected=1
+  else
+    bluetooth_connected=0 
+  fi
+
+  lo_stat=$(jq -r '.LOR' "${data_dir}"/miner.nebra/${a}.data)
+  if [ "${lo_stat}" == "true" ]; then
+    lora_status=1
+  else
+    lora_status=0
+  fi
+
+  mn_conn=$(jq -r '.MC' "${data_dir}"/miner.nebra/${a}.data)
+  if [ "${mn_conn}" == "true" ]; then
+    miner_connected=1
+  else
+    miner_connected=0
+  fi
+
+  re=$(jq -r '.MR' "${data_dir}"/miner.nebra/${a}.data)
+  if [ "${re}" == "true" ]; then
+    relayed=1
+  else
+    relayed=0
+  fi
+}
+
 get_miner_sensecap_name() {
   name=$(jq -r '.data.name' <<< "${payload}" | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "No name collected for ${M}"
 }

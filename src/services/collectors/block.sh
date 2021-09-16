@@ -17,7 +17,7 @@ get() {
   n=0
   get_payload
   
-  while [ ! "$(success_payload)" ]; do
+  while [ ! "$(blockchain_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
       rm_lock "${data_dir}/${lock_file}"

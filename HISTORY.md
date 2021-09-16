@@ -1,5 +1,7 @@
 vNext
 
+- **TechTask** - add support for nebra miner
+
 # 3.3.0
 
 - **TechTask** - expand bobcat collection

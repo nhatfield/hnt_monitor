@@ -23,7 +23,7 @@ send_payload() {
   fi
 }
 
-success_payload() {
+blockchain_success_payload() {
   jq 'select(.data != null)' <<< "${payload}"
 }
 
@@ -37,6 +37,10 @@ bobcat_temp_success_payload() {
 
 bobcat_status_success_payload() {
   jq 'select(.status != null)' <<< "${payload}"
+}
+
+nebra_success_payload() {
+  jq 'select(.AN != null)' <<< "${payload}"
 }
 
 get_cursor() {
