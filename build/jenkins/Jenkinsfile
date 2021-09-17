@@ -34,6 +34,23 @@ pipeline {
             }
         }
 
+        stage('Test') {
+            steps {
+                script {
+                    env.STAGE = "${STAGE_NAME}"
+                    sh """
+                      set +x
+                      BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
+                      CONTAINER="\${BRANCH}.${BUILDID}"
+
+                      for t in build/tests/*.test; do 
+                        . \${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
+                      done
+                    """
+                }
+            }
+        }
+
         stage('Git tag') {
             steps {
                 script {
