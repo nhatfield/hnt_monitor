@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+OPT=${1:-"run"}
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+cd ${DIR}
+
+
+container=${1:-""}
+image=${2:-""}
+
+if [ ! "${container}" ]; then
+  echo "Missing container name"
+  exit 1
+fi
+
+if [ ! "${image}" ]; then
+  echo "Missing container image"
+  exit 1
+fi
+
+
+id=confg.test
+configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%')
+vars=$(echo "${configs}" | sed 's%^%HNT_%' | tr 'a-z' 'A-Z')
+run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=test_run%' | tr '\n' ' ')
+
+test() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
+    
+  cleanup || true
+  docker run -d ${run_vars} --name ${container} ${image} 1>/dev/null
+  sleep 10
+  docker cp ${container}:/opt/hnt_monitor/conf .
+
+  for c in ${configs}; do
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - verifying [${c}]"
+    grep -q "${c}=test_run" conf/hnt_monitor.conf || cleanup_err
+  done
+  
+}
+
+cleanup_err() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - validation failed"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - docker logs:"
+  echo
+  docker logs ${container} || true
+  echo
+  cleanup
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - FAILED!"
+  echo "  - step: ${c}=test_run"
+  exit 1
+}
+
+cleanup() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - cleaning up"
+  rm -rf conf/ || true
+  docker rm -f ${container} 2>&1 >/dev/null || true
+}
+
+test
+cleanup
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - PASSED!"
