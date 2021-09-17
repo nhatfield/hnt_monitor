@@ -27,10 +27,10 @@ if [ ! "${image}" ]; then
 fi
 
 
-id=confg.test
-configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%')
+id=etl.test
+configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%' | grep "_monitor")
 vars=$(echo "${configs}" | sed 's%^%HNT_%' | tr 'a-z' 'A-Z')
-run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=test_run%' | tr '\n' ' ')
+run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=true%' | tr '\n' ' ')
 
 test() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
@@ -38,7 +38,11 @@ test() {
   cleanup 2>/dev/null || true
   docker run -d ${run_vars} --name ${container} ${image} 1>/dev/null
   sleep 10
-  docker cp ${container}:/opt/hnt_monitor/conf .
+
+  for j in json/*; do
+    docker cp json/${j} ${container}:/opt/hnt_monitor/data/miner.${j}/
+  done
+  sleep 10
 
   for c in ${configs}; do
     echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - verifying [${c}]"

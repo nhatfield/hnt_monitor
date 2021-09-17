@@ -44,6 +44,7 @@ pipeline {
                       CONTAINER="\${BRANCH}.${BUILDID}"
 
                       for t in build/tests/*.test; do 
+                        echo "Running Test: \${t//.test/}"
                         . \${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
                       done
                     """
