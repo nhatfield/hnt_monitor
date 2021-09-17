@@ -1,68 +1,69 @@
 get_miner_bobcat_name() {
-  name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner)  || log_warn "No name found for ${a}"
+  name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "No name found for ${a}"
   
   if [ ! "${name}" ]; then
-    name=$(curl -s http://${a}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_warn "Could not get bobcat miner name"
+    name=$(curl -s http://${a}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_err "Could not collect [name] on ${a}"
   fi
 }
 
 get_miner_bobcat_temp() {
-  temp0=$(jq -r '.temp0' "${data_dir}"/miner.bobcat/${a}.temp)
-  temp1=$(jq -r '.temp1' "${data_dir}"/miner.bobcat/${a}.temp)
+  temp0=$(jq -r '.temp0' "${data_dir}"/miner.bobcat/${a}.temp 2> /dev/null) || log_err "Could not collect [temp0] on ${a}"
+  temp1=$(jq -r '.temp1' "${data_dir}"/miner.bobcat/${a}.temp 2> /dev/null) || log_err "Could not collect [temp1] on ${a}"
 }
 
 get_miner_bobcat_status() {
-  stat=$(jq -r '.status' "${data_dir}"/miner.bobcat/${a}.status)
+  stat=$(jq -r '.status' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [status] on ${a}"
   if [ "${stat}" == "synced" ]; then
     status=1
   else
     status=0
   fi
 
-  gap=$(jq -r '.gap' "${data_dir}"/miner.bobcat/${a}.status)
-  miner_height=$(jq -r '.miner_height' "${data_dir}"/miner.bobcat/${a}.status)
-  blockchain_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status)
-  epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status)
+  gap=$(jq -r '.gap' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [height gap] on ${a}"
+  miner_height=$(jq -r '.miner_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  blockchain_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
+  epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [epoch timestamp] on ${a}"
 }
 
 get_miner_nebra_name() {
-  name=$(jq -r '.AN' "${data_dir}"/miner.nebra/${a}.data) || log_warn "No name collected for ${a}"
+  name=$(jq -r '.AN' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_warn "Could not collect [name] on ${a}"
 }
 
 get_miner_nebra_data() {
-  block_height=$(jq -r '.BCH' "${data_dir}"/miner.nebra/${a}.data)
-  frequency=$(jq -r '.FR' "${data_dir}"/miner.nebra/${a}.data) 
-  miner_height=$(jq -r '.MH' "${data_dir}"/miner.nebra/${a}.data)
+  block_height=$(jq -r '.BCH' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
+  frequency=$(jq -r '.FR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null)  || log_err "Could not collect [frequency] on ${a}"
+  miner_height=$(jq -r '.MH' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  gap=$((miner_height - block_height))
 
-  status=$(jq -r '.BSP' "${data_dir}"/miner.nebra/${a}.data)
+  status=$(jq -r '.BSP' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [status] on ${a}"
   if [[ "${status}" == *"load"* ]]; then
     sync_status=0
   else
     sync_status=${status}
   fi
 
-  bt_conn=$(jq -r '.BT' "${data_dir}"/miner.nebra/${a}.data)
+  bt_conn=$(jq -r '.BT' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [bluetooth status] on ${a}"
   if [ "${bt_conn}" == "true" ]; then
     bluetooth_connected=1
   else
     bluetooth_connected=0 
   fi
 
-  lo_stat=$(jq -r '.LOR' "${data_dir}"/miner.nebra/${a}.data)
+  lo_stat=$(jq -r '.LOR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [lora status] on ${a}"
   if [ "${lo_stat}" == "true" ]; then
     lora_status=1
   else
     lora_status=0
   fi
 
-  mn_conn=$(jq -r '.MC' "${data_dir}"/miner.nebra/${a}.data)
+  mn_conn=$(jq -r '.MC' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [miner connection status] on ${a}"
   if [ "${mn_conn}" == "true" ]; then
     miner_connected=1
   else
     miner_connected=0
   fi
 
-  re=$(jq -r '.MR' "${data_dir}"/miner.nebra/${a}.data)
+  re=$(jq -r '.MR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [relayed status] on ${a}"
   if [ "${re}" == "true" ]; then
     relayed=1
   else
@@ -71,5 +72,23 @@ get_miner_nebra_data() {
 }
 
 get_miner_sensecap_name() {
-  name=$(jq -r '.data.name' <<< "${payload}" | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "No name collected for ${M}"
+  name=$(jq -r '.data.name' "${data_dir}"/miner.sensecap/${a}.data 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_err "Could not collect [name] on ${a}"
+}
+
+get_miner_sensecap_data() {
+  cputemp=$(jq '.data.cpuTemperature' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [cpu temp] on ${a}"
+  cpuused=$(jq '.data.cpuUsed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [cpu used] on ${a}"
+  memtotal=$(jq '.data.memoryTotal' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [memory total] on ${a}"
+  memused=$(jq '.data.memoryUsed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [memory used] on ${a}"
+  sdtotal=$(jq '.data.sdTotal' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [sd total] on ${a}"
+  sdused=$(jq '.data.sdUsed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [sd used] on ${a}"
+  gain=$(jq '.data.gain' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [atenna gain] on ${a}"
+  relayed=$(jq '.data.relayed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [relayed status] on ${a}"
+  healthy=$(jq '.data.isHealth' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [health status] on ${a}"
+  totalheight=$(jq '.data.totalHeight' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [total height] on ${a}"
+  height=$(jq '.data.height' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  connected=$(jq '.data.connected' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [connected status] on ${a}"
+  dialable=$(jq '.data.dialable' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [dialable status] on ${a}"
+  nattype=$(jq '.data.natType' <<< "${payload}" 2> /dev/null)   || log_err "Could not collect [nat type] on ${a}"
+  gap=$((height - totalheight))
 }

@@ -1,4 +1,4 @@
 get_witness_count() {
-  witnessed_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/witnessed" 2>/dev/null | sort -u | wc -l)
-  witnesses_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/witnesses" 2>/dev/null | sort -u | wc -l)
+  witnessed_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/${data_format}.witnessed" 2>/dev/null | sort -u | wc -l)
+  witnesses_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/${data_format}.witnesses" 2>/dev/null | sort -u | wc -l)
 }

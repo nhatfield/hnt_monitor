@@ -3,49 +3,59 @@
 conf_dir="/opt/hnt_monitor/conf"
 conf_file="${conf_dir}/hnt_monitor.conf"          
 address_file="${conf_dir}/address.list"           # Used to query the helium api for metrics
+id=startup
 
 OPTION=${1:-"run"}
-BLOCKS_URL=${BLOCKS_URL:-"api.helium.io/v1/blocks"}
-BOBCAT_MONITOR=${BOBCAT_MONITOR:-"false"}
-BOBCAT_IPS=${BOBCAT_IPS:-""}
-DEBUG=${DEBUG:-"false"}
-HELIUM_MONITOR=${HELIUM_MONITOR:-"true"}
-HOTSPOT_ADDRESSES=${HOTSPOT_ADDRESSES:-""}
-HOTSPOT_MONITOR=${HOTSPOT_MONITOR:-"false"}
-HOTSPOT_URL=${HOTSPOT_URL:-"api.helium.io/v1/hotspots"}
-LOGFILE=${LOGFILE:-"stdout"}
-LOGPATH=${LOGPATH:-"/dev/"}
-PROJECT=${PROJECT:-"hnt_miner"}
-PROMETHEUS_PG_HOST=${PROMETHEUS_PG_HOST:-"localhost"}
-PROMETHEUS_PG_PORT=${PROMETHEUS_PG_PORT:-"9091"}
-SENSECAP_API_KEY=${SENSECAP_API_KEY:-""}
-SENSECAP_MONITOR=${SENSECAP_MONITOR:-"false"}
-SENSECAP_SERIAL_NUMBERS=${SENSECAP_SERIAL_NUMBERS:-""}
-TRACE=${TRACE:-"false"}
+
+HNT_BLOCKS_URL=${HNT_BLOCKS_URL:-"api.helium.io/v1/blocks"}
+HNT_BOBCAT_IPS=${HNT_BOBCAT_IPS:-""}
+HNT_BOBCAT_MONITOR=${HNT_BOBCAT_MONITOR:-"false"}
+HNT_DEBUG=${HNT_DEBUG:-"false"}
+HNT_HELIUM_MONITOR=${HNT_HELIUM_MONITOR:-"true"}
+HNT_HOTSPOT_ADDRESSES=${HNT_HOTSPOT_ADDRESSES:-""}
+HNT_HOTSPOT_MONITOR=${HNT_HOTSPOT_MONITOR:-"false"}
+HNT_HOTSPOT_URL=${HNT_HOTSPOT_URL:-"api.helium.io/v1/hotspots"}
+HNT_LOGFILE=${HNT_LOGFILE:-"stdout"}
+HNT_LOGPATH=${HNT_LOGPATH:-"/dev/"}
+HNT_NEBRA_IPS=${HNT_NEBRA_IPS:-""}
+HNT_NEBRA_MONITOR=${HNT_NEBRA_MONITOR:-"false"}
+HNT_PROJECT=${HNT_PROJECT:-"hnt_miner"}
+HNT_PROMETHEUS_PG_HOST=${HNT_PROMETHEUS_PG_HOST:-"localhost"}
+HNT_PROMETHEUS_PG_PORT=${HNT_PROMETHEUS_PG_PORT:-"9091"}
+HNT_SENSECAP_API_KEY=${HNT_SENSECAP_API_KEY:-""}
+HNT_SENSECAP_MONITOR=${HNT_SENSECAP_MONITOR:-"false"}
+HNT_SENSECAP_SERIAL_NUMBERS=${HNT_SENSECAP_SERIAL_NUMBERS:-""}
+HNT_TRACE=${HNT_TRACE:-"false"}
 
 setup() {
+  id=${id}.config
   > "${address_file}"
 
-  for a in ${HOTSPOT_ADDRESSES}; do
-    echo "${a}" >> "${address_file}"
-  done
 
-  sed -i "s%blocks_url=.*%blocks_url=${BLOCKS_URL}%" "${conf_file}"
-  sed -i "s%project=.*%project=${PROJECT}%" "${conf_file}"
-  sed -i "s%hotspot_url=.*%hotspot_url=${HOTSPOT_URL}%" "${conf_file}"
-  sed -i "s%helium_monitor=.*%helium_monitor=${HELIUM_MONITOR}%" "${conf_file}"
-  sed -i "s%prometheus_pg_host=.*%prometheus_pg_host=${PROMETHEUS_PG_HOST}%" "${conf_file}"
-  sed -i "s%prometheus_pg_port=.*%prometheus_pg_port=${PROMETHEUS_PG_PORT}%" "${conf_file}"
-  sed -i "s%bobcat_monitor=.*%bobcat_monitor=${BOBCAT_MONITOR}%" "${conf_file}"
-  sed -i "s%hotspot_monitor=.*%hotspot_monitor=${HOTSPOT_MONITOR}%" "${conf_file}"
-  sed -i "s%bobcat_ips=.*%bobcat_ips=${BOBCAT_IPS}%" "${conf_file}"
-  sed -i "s%debug=.*%debug=${DEBUG}%" "${conf_file}"
-  sed -i "s%trace=.*%trace=${TRACE}%" "${conf_file}"
-  sed -i "s%logpath=.*%logpath=${LOGPATH}%" "${conf_file}"
-  sed -i "s%logfile=.*%logfile=${LOGFILE}%" "${conf_file}"
-  sed -i "s%sensecap_api_key=.*%sensecap_api_key=${SENSECAP_API_KEY}%" "${conf_file}"
-  sed -i "s%sensecap_monitor=.*%sensecap_monitor=${SENSECAP_MONITOR}%" "${conf_file}"
-  sed -i "s%sensecap_serial_numbers=.*%sensecap_serial_numbers=${SENSECAP_SERIAL_NUMBERS}%" "${conf_file}"
+  for v in $(set -o posix; set | sed 's% %:#:%g'); do
+    if [[ "${v}" == "HNT_"*  ]]; then
+
+      KEY=$(echo "${v}" | sed 's%=.*%%;s%__%##%g;s%HNT_%%;s%##%_%g' | tr 'A-Z' 'a-z')
+      VAL=$(echo "${v}" | sed "s%.*=%%;s%[']%%g")
+
+      echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - Configuring [${KEY}]: ${VAL//:#:/ }"
+
+      if [ "${KEY}" == "hotspot_addresses" ]; then
+        VAL=${VAL//:#:/ }
+        for a in ${VAL}; do
+          echo "${a}" >> "${address_file}"
+        done
+     
+      else
+        if [[ "${VAL}" == *":#:"* ]]; then
+          sed -i "s%^${KEY}=.*%${KEY}=\"${VAL//:#:/ }\"%" "${conf_file}"
+        else
+          sed -i "s%^${KEY}=.*%${KEY}=${VAL}%" "${conf_file}"
+        fi
+      fi
+
+    fi
+  done
 }
 
 help() {
@@ -74,38 +84,32 @@ Description:
   SENSECAP_SERIAL_NUMBERS	# The sensecap serial numbers of the devices to monitor. Ex: 'serial1 serial2 serial3 etc'
   TRACE				# Turn on trace logging. Boolean: [ true | false ]
 
-Defaults:
-  VARIABLE		DEFAULT
-
-  BLOCKS_URL			'${BLOCKS_URL}'
-  BOBCAT_IPS			'${BOBCAT_IPS}' 
-  BOBCAT_MONITOR		'${BOBCAT_MONITOR}'
-  DEBUG				'${DEBUG}'
-  HELIUM_MONITOR		'${HELIUM_MONITOR}'
-  HOTSPOT_ADDRESSES		'${HOTSPOT_ADDRESSES}'
-  HOTSPOT_MONITOR		'${HOTSPOT_MONITOR}'
-  HOTSPOT_URL			'${HOTSPOT_URL}'
-  LOGFILE			'${LOGFILE}'
-  LOGPATH			'${LOGPATH}'
-  PROJECT			'${PROJECT}'
-  PROMETHEUS_PG_HOST		'${PROMETHEUS_PG_HOST}'
-  PROMETHEUS_PG_PORT		'${PROMETHEUS_PG_PORT}'
-  SENSECAP_API_KEY		'${SENSECAP_API_KEY}'
-  SENSECAP_MONITOR		'${SENSECAP_MONITOR}'
-  SENSECAP_SERIAL_NUMBERS	'${SENSECAP_SERIAL_NUMBERS}'
-  TRACE				'${TRACE}'
 
 Examples:
 
   docker run -e PROJECT=test_monitoring -e BOBCAT_MONITOR=true -e BOBCAT_IPS="192.168.1.1" hnt_monitor
 
+
+Current variable configuration:
+
 "
+
+  for v in $(set -o posix; set | sed 's% %:#:%g'); do
+    if [[ "${v}" == "HNT_"*  ]]; then
+
+      KEY=$(echo "${v}" | sed 's%=.*%%')
+      VAL=$(echo "${v}" | sed 's%.*=%%')
+
+      echo "${KEY}: ${VAL}"
+
+    fi
+  done
 }
 
 
 case $OPTION in
            help)
-             help
+             help | less
              ;;
            run)
              setup

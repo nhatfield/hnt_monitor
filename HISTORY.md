@@ -2,6 +2,8 @@ vNext
 
 - **TechTask** - add support for nebra miner
 - **TechTask** - add [docker hub](https://hub.docker.com/repository/docker/nhatfield/hnt_monitor) image
+- **TechTask** - sensecap collection updated to collector and etl separation
+- **BugFix** - witness etl data not pushed to grafana
 
 # 3.3.1
 

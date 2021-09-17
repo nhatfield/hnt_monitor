@@ -23,7 +23,7 @@ witness() {
 if [ "${hotspot_monitor}" == "true" ]; then
   for a in ${addresses}; do
     get_hotspot_name
-    witness
+    witness &
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})" 

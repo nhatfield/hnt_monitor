@@ -43,6 +43,10 @@ nebra_success_payload() {
   jq 'select(.AN != null)' <<< "${payload}"
 }
 
+sensecap_success_payload() {
+  jq 'select(.data.name != null)' <<< "${payload}"
+}
+
 get_cursor() {
   p=${1:-"${payload}"}
   cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${p}") || log_info "cursor data empty"
