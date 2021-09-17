@@ -62,7 +62,7 @@ cleanup_err() {
 cleanup() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - cleaning up"
   rm -rf conf/ || true
-  docker rm -f ${container} 2>&1 >/dev/null || true
+  docker rm -f ${container} >/dev/null || true
 }
 
 test
