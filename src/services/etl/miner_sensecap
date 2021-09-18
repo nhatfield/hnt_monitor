@@ -14,20 +14,7 @@ sensecap_data() {
   get_miner_sensecap_data
   send_miner_sensecap_data
 
-  log_debug "sensecap cpu temperature $(jq '.data.cpuTemperature' <<< "${payload}")"
-  log_debug "sensecap cpu used $(jq '.data.cpuUsed' <<< "${payload}")"
-  log_debug "sensecap memory total $(jq '.data.memoryTotal' <<< "${payload}")"
-  log_debug "sensecap memory used $(jq '.data.memoryUsed' <<< "${payload}")"
-  log_debug "sensecap sd total $(jq '.data.sdTotal' <<< "${payload}")"
-  log_debug "sensecap sd used $(jq '.data.sdUsed' <<< "${payload}")"
-  log_debug "sensecap antenna gain $(jq '.data.gain' <<< "${payload}")"
-  log_debug "sensecap relayed $(jq '.data.relayed' <<< "${payload}")"
-  log_debug "sensecap is healthy $(jq '.data.isHealth' <<< "${payload}")"
-  log_debug "sensecap helium block_height $(jq '.data.totalHeight' <<< "${payload}")"
-  log_debug "sensecap block height $(jq '.data.height' <<< "${payload}")"
-  log_debug "sensecap connected $(jq '.data.connected' <<< "${payload}")"
-  log_debug "sensecap dialable $(jq '.data.dialable' <<< "${payload}")"
-  log_debug "sensecap nat type $(jq '.data.natType' <<< "${payload}")"
+  log_debug "sensecap data:\n\n  cpu_temperature: ${cputemp}\n  cpu_used: ${cpuused}\n  memory_total: ${memtotal}\n  memory_used: ${memused}\n  sd_total: ${sdtotal}\n  sd_used: ${sdused}\n  antenna_gain: ${gain}\n  relayed_status: ${relayed}\n  is_healthy: ${healthy}\n  block_height: ${totalheight}\n  miner_height: ${height}\n  connected_status: ${connected}\n  dialable_status: ${dialable}\n  nat_type: ${nattype}\n  height_gap: ${gap}\n"
 }
 
 

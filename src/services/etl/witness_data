@@ -15,8 +15,7 @@ witness() {
   get_witness_count
   send_witness_count
 
-  log_debug "witnesses count ${witnesses_count}"
-  log_debug "witnessed count ${witnessed_count}" 
+  log_debug "hostspot witness data:\n\n  witnesses_count: ${witnesses_count}\n  witnessed_count: ${witnessed_count}\n"
 }
 
 

@@ -15,7 +15,7 @@ bobcat_temp() {
   get_miner_bobcat_temp
   send_miner_bobcat_temp
 
-  log_debug "Temperature data cpu0: ${temp0}; cpu1: ${temp1}"
+  log_debug "bobcat temperature data:\n\n  cpu0: ${temp0}\n  cpu1: ${temp1}\n"
 }
 
 bobcat_status() {
@@ -25,7 +25,7 @@ bobcat_status() {
   get_miner_bobcat_status
   send_miner_bobcat_status
 
-  log_debug "Status data \n  status: ${status}\n  gap: ${gap}\n  miner_height: ${miner_height}\n  block_height: ${blockchain_height}\n  epoch: ${epoch}\n"
+  log_debug "bobcat status data:\n\n  status: ${status}\n  height_gap: ${gap}\n  miner_height: ${miner_height}\n  block_height: ${blockchain_height}\n  epoch: ${epoch}\n"
 }
 
 

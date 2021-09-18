@@ -14,7 +14,7 @@ block_height() {
   get_height
   send_block_height
 
-  log_debug "block height ${height}"
+  log_debug "hotspot block data:\n\n  block_height: ${height}\n"
 }
 
 if [ "${helium_monitor}" == "true" ]; then

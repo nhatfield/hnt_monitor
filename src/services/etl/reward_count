@@ -25,8 +25,6 @@ reward_count() {
 
   get_reward_timestamps
 
-  log_debug "rewards timestamps\n${rewards}\n\n"
-
   for r in ${rewards}; do
     time=$(date -d ${r} +%s)    
 
@@ -53,11 +51,8 @@ reward_count() {
 
   send_reward_counts
 
-  log_debug "rewards in 15 minute ${rewards_15m}"
-  log_debug "rewards in 1 hour ${rewards_1h}"
-  log_debug "rewards in 1 day ${rewards_1d}" 
-  log_debug "rewards in 7 days ${rewards_7d}"
-  log_debug "rewards in 30 days ${rewards_30d}"
+  log_debug "rewards timestamps\n\n${rewards}\n"
+  log_debug "hotspot reward count:\n\n  rewards_15m: ${rewards_15m}\n  rewards_1h: ${rewards_1h}\n  rewards_1d: ${rewards_1d}\n  rewards_7d: ${rewards_7d}\n  rewards_30d: ${rewards_30d}\n"
 }
 
 if [ "${hotspot_monitor}" == "true" ]; then

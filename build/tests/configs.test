@@ -32,7 +32,7 @@ configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%')
 vars=$(echo "${configs}" | sed 's%^%HNT_%' | tr 'a-z' 'A-Z')
 run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=test_run%' | tr '\n' ' ')
 
-test() {
+run_test() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
     
   cleanup 2>/dev/null || true
@@ -62,9 +62,9 @@ cleanup_err() {
 cleanup() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - cleaning up"
   rm -rf conf/ 2>/dev/null || true
-  docker rm -f ${container} 2>/dev/null || true
+  docker rm -f ${container} > /dev/null || true
 }
 
-test
+run_test
 cleanup
 echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - PASSED!"

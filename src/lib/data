@@ -83,7 +83,7 @@ EOF
   fi
 }
 
-send_miner_sensecap() {
+send_miner_sensecap_data() {
   if [ "${prometheus_pg_host}" ]; then
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_cpu_temperature of the sensecap miner cpu

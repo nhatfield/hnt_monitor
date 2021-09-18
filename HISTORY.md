@@ -1,5 +1,6 @@
 vNext
 
+- **TechTask** - add build test cases
 - **TechTask** - add support for nebra miner
 - **TechTask** - add [docker hub](https://hub.docker.com/repository/docker/nhatfield/hnt_monitor) image
 - **TechTask** - sensecap collection updated to collector and etl separation

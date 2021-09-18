@@ -15,7 +15,7 @@ reward_scale() {
   get_reward_scale
   send_reward_scale
 
-  log_debug "reward scale ${scale}"
+  log_debug "hotspot reward scale data:\n\n  reward_scale: ${scale}\n"
 }
 
 if [ "${hotspot_monitor}" == "true" ]; then

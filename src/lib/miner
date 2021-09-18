@@ -76,19 +76,19 @@ get_miner_sensecap_name() {
 }
 
 get_miner_sensecap_data() {
-  cputemp=$(jq '.data.cpuTemperature' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [cpu temp] on ${a}"
-  cpuused=$(jq '.data.cpuUsed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [cpu used] on ${a}"
-  memtotal=$(jq '.data.memoryTotal' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [memory total] on ${a}"
-  memused=$(jq '.data.memoryUsed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [memory used] on ${a}"
-  sdtotal=$(jq '.data.sdTotal' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [sd total] on ${a}"
-  sdused=$(jq '.data.sdUsed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [sd used] on ${a}"
-  gain=$(jq '.data.gain' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [atenna gain] on ${a}"
-  relayed=$(jq '.data.relayed' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [relayed status] on ${a}"
-  healthy=$(jq '.data.isHealth' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [health status] on ${a}"
-  totalheight=$(jq '.data.totalHeight' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [total height] on ${a}"
-  height=$(jq '.data.height' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
-  connected=$(jq '.data.connected' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [connected status] on ${a}"
-  dialable=$(jq '.data.dialable' <<< "${payload}" 2> /dev/null) || log_err "Could not collect [dialable status] on ${a}"
-  nattype=$(jq '.data.natType' <<< "${payload}" 2> /dev/null)   || log_err "Could not collect [nat type] on ${a}"
+  cputemp=$(jq '.data.cpuTemperature' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [cpu temp] on ${a}"
+  cpuused=$(jq '.data.cpuUsed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [cpu used] on ${a}"
+  memtotal=$(jq '.data.memoryTotal' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [memory total] on ${a}"
+  memused=$(jq '.data.memoryUsed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [memory used] on ${a}"
+  sdtotal=$(jq '.data.sdTotal' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [sd total] on ${a}"
+  sdused=$(jq '.data.sdUsed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [sd used] on ${a}"
+  gain=$(jq '.data.gain' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [atenna gain] on ${a}"
+  relayed=$(jq '.data.relayed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [relayed status] on ${a}"
+  healthy=$(jq '.data.isHealth' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [health status] on ${a}"
+  totalheight=$(jq '.data.totalHeight' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [total height] on ${a}"
+  height=$(jq '.data.height' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  connected=$(jq '.data.connected' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [connected status] on ${a}"
+  dialable=$(jq '.data.dialable' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [dialable status] on ${a}"
+  nattype=$(jq '.data.natType' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null)   || log_err "Could not collect [nat type] on ${a}"
   gap=$((height - totalheight))
 }
