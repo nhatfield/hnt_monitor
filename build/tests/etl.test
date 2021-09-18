@@ -1,0 +1,120 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+OPT=${1:-"run"}
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+cd ${DIR}
+
+. test.conf
+
+container=${1:-""}
+image=${2:-""}
+hotspot=${3:-"112VEhPPMYF95neEEwwgnckHej4bgZ1roo13SMx18RSJxLq6JuiK"}
+
+if [ ! "${container}" ]; then
+  echo "Missing container name"
+  exit 1
+fi
+
+if [ ! "${image}" ]; then
+  echo "Missing container image"
+  exit 1
+fi
+
+
+id=etl.test
+configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%' | grep "_monitor")
+vars=$(echo "${configs}" | sed 's%^%HNT_%' | tr 'a-z' 'A-Z')
+run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=true%' | tr '\n' ' ')
+run_vars="${run_vars} -e HNT_DEBUG=true -e HNT_BOBCAT_IPS=123 -e HNT_NEBRA_IPS=123 -e HNT_SENSECAP_SERIAL_NUMBERS=123 -e HNT_HOTSPOT_ADDRESSES=${hotspot} -e HNT_PROMETHEUS_PG_HOST=\"\" -e HNT_COLLECTOR_ENABLED=false"
+
+test() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
+    
+  cleanup 2>/dev/null || true
+  docker run -d ${run_vars} --name ${container} ${image} 1>/dev/null || cleanup_err
+
+  for j in json/*; do
+    miner=$(echo "${j}" | sed 's%.*/%%')
+
+    docker exec -i ${container} mkdir -p /opt/hnt_monitor/data/miner.${miner}/ || cleanup_err
+ 
+    for d in ${j}/*; do
+      for p in ${d}; do
+        endpoint=$(echo "${p}" | sed 's%.*/%%')
+        echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - uploading data [json/${miner}/123.${endpoint}]"
+        cp json/${miner}/${endpoint} json/${miner}/123.${endpoint} || cleanup_err
+        docker cp json/${miner}/123.${endpoint} ${container}:/opt/hnt_monitor/data/miner.${miner}/ || cleanup_err
+      done
+    done
+  done
+
+  for f in json/helium/*; do
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - uploading data [${f}]"
+    docker cp ${f} ${container}:/opt/hnt_monitor/data/ || cleanup_err
+  done
+
+  docker exec -i ${container} mv /opt/hnt_monitor/data/miner.123/ /opt/hnt_monitor/data/${hotspot} || cleanup_err
+  docker cp json/123/info ${container}:/opt/hnt_monitor/data/${hotspot} || cleanup_err
+
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - restarting service"
+  docker restart ${container} > /dev/null || cleanup_err
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - waiting for data to process ..."
+  sleep 90
+  logs=$(docker logs ${container})
+
+  for v in $(set -o posix; set | sed 's% %:#:%g'); do
+    if [[ "${v}" == "test_"*  ]]; then
+
+      KEY=$(echo "${v}" | sed 's%=.*%%;s%__%##%g;s%test_%%;s%##%_%g' | tr 'A-Z' 'a-z')
+      VAL=$(echo "${v}" | sed "s%.*=%%;s%[']%%g")
+
+      if [ ! "${KEY}" == "timestamps" ]; then
+        if [ "$(echo "${VAL}" | wc -l)" -eq 1 ]; then
+          echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${VAL//:#:/ }"
+          grep "${KEY}: ${VAL}" <<< "${logs}" || cleanup_err
+        else
+          for v in ${VAL}; do
+            echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${v}"
+            grep "${KEY}: ${v}" <<< "${logs}" || cleanup_err
+          done
+        fi
+      else
+        for t in ${VAL}; do
+          echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [timestamp]: ${t}"
+          grep "${t}" <<< "${logs}" || cleanup_err
+        done
+      fi
+    fi
+  done
+
+}
+
+cleanup_err() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - validation failed"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - docker logs:"
+  echo
+  docker logs ${container} || true
+  echo
+  cleanup
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - FAILED!"
+  echo "  - step: ${c}=test_run"
+  exit 1
+}
+
+cleanup() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - cleaning up"
+  docker rm -f ${container} > /dev/null || true
+  rm -f json/*/123*
+}
+
+test
+cleanup
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - PASSED!"

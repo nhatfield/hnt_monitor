@@ -1,0 +1,35 @@
+{
+    "data": {
+        "height": 1003444,
+        "connected": 1,
+        "dialable": 1,
+        "natType": 2,
+        "fan_status_list": [
+            {
+                "fan": 1,
+                "temperature": 52,
+                "time": 1631181015278
+            }
+        ],
+        "relay": false,
+        "cpuTemperature": 67,
+        "cpuUsed": 37.6,
+        "memoryTotal": 1900.79,
+        "memoryUsed": 690.07,
+        "name": "Fantastic Pecan Robin",
+        "sdTotal": 58776.86,
+        "sdUsed": 30533.79,
+        "version": {
+            "firmware": "2021.09.03.0"
+        },
+        "gain": 1.2,
+        "heliumOnline": true,
+        "lat": 40.21757423872224,
+        "lng": -118.42763826806683,
+        "totalHeight": 1003445,
+        "synced": true,
+        "online": true,
+        "isHealth": 2,
+        "relayed": 1
+    }
+}
