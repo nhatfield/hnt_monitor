@@ -79,17 +79,17 @@ test() {
       if [ ! "${KEY}" == "timestamps" ]; then
         if [ "$(echo "${VAL}" | wc -l)" -eq 1 ]; then
           echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${VAL//:#:/ }"
-          grep "${KEY}: ${VAL}" <<< "${logs}" || cleanup_err
+          grep -q "${KEY}: ${VAL}" <<< "${logs}" || cleanup_err
         else
           for v in ${VAL}; do
             echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${v}"
-            grep "${KEY}: ${v}" <<< "${logs}" || cleanup_err
+            grep -q "${KEY}: ${v}" <<< "${logs}" || cleanup_err
           done
         fi
       else
         for t in ${VAL}; do
           echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [timestamp]: ${t}"
-          grep "${t}" <<< "${logs}" || cleanup_err
+          grep -q "${t}" <<< "${logs}" || cleanup_err
         done
       fi
     fi

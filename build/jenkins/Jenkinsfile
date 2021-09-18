@@ -43,9 +43,11 @@ pipeline {
                       BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
                       CONTAINER="\${BRANCH}.${BUILDID}"
 
-                      for t in build/tests/*.test; do 
+                      cd build/tests
+                       
+                      for t in *.test; do 
                         echo "Running Test: \${t//.test/}"
-                        . \${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
+                        ./\${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
                       done
                     """
                 }
