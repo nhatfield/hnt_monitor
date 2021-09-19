@@ -19,10 +19,10 @@ get_miner_bobcat_status() {
     status=0
   fi
 
-  gap=$((miner_height - block_height)) || log_err "Could not collect [height gap] on ${a}"
   miner_height=$(jq -r '.miner_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
   blockchain_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
   epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [epoch timestamp] on ${a}"
+  gap=$((miner_height - blockchain_height)) || log_err "Could not collect [height gap] on ${a}"
 }
 
 get_miner_nebra_name() {

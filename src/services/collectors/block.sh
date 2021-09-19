@@ -11,8 +11,10 @@ lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
 
 get() {
-  url="${blocks_url}/${endpoint}"
+  url=${helium_test_url:-"${blocks_url}"}
+  url="${url}/${endpoint}"
   log_info "getting block ${endpoint} data"
+  log_debug "helium url: ${url}"
 
   n=0
   get_payload

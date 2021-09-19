@@ -16,7 +16,6 @@ cd ${DIR}
 
 container=${1:-""}
 image=${2:-""}
-nginx_container=${nginx_container:-""}
 hotspot="hotspot"
 
 if [ ! "${container}" ]; then
@@ -31,33 +30,16 @@ fi
 
 
 id=etl.test
+test_url="http://devbox.blackem.net:9999"
 configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%' | grep "_monitor")
 vars=$(echo "${configs}" | sed 's%^%HNT_%' | tr 'a-z' 'A-Z')
 run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=true%' | tr '\n' ' ')
-nginx_port=9999
 
 test() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
   cleanup 2>/dev/null || true
 
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - building nginx test container"
-  docker build -q -t nginx-test -f docker/nginx/Dockerfile . >/dev/null || cleanup_err
-
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - checking for nginx port collision on ${nginx_port}/tcp"
-  port_ver=$(docker ps -a | grep "${nginx_port}/tcp") || true
-  
-  while [ "${port_ver}" ]; do
-    echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: [$id] - nginx port ${nginx_port}/tcp is in use. checking for a different port to use"
-    ((nginx_port++)) || true
-    echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: [$id] - checking for nginx port collision on ${nginx_port}/tcp"
-    port_ver=$(docker ps -a | grep "${nginx_port}/tcp") || true
-  done
-
-  run_vars="${run_vars} -e HNT_DEBUG=true -e HNT_BOBCAT_IPS=\"123\" -e HNT_NEBRA_IPS=${hotspot} -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} -e HNT_HOTSPOT_ADDRESSES=${hotspot} -e HNT_PROMETHEUS_PG_HOST=\"\" -e bobcat_url=http://$(hostname):${nginx_port}"
-
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - running nginx test container on port ${nginx_port}/tcp"
-  nginx_container=$(docker run -d -p ${nginx_port}:${nginx_port} nginx-test) || cleanup_err
-  docker run -d ${run_vars} --name ${container} ${image} 1>/dev/null || cleanup_err
+  docker run -d ${run_vars} -e HNT_DEBUG=true -e HNT_BOBCAT_IPS="123 456" -e HNT_NEBRA_IPS="123 456" -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} -e HNT_HOTSPOT_ADDRESSES=${hotspot} -e HNT_PROMETHEUS_PG_HOST=\"\" -e bobcat_test_url=${test_url}/bobcat -e helium_test_url=${test_url}/helium -e hotspot_test_url=${test_url} -e nebra_test_url=${test_url}/nebra/data -e sensecap_test_url=${test_url}/sensecap/data --name ${container} ${image} 1>/dev/null || cleanup_err
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - waiting for data to process ..."
   sleep 90
@@ -103,10 +85,7 @@ cleanup_err() {
 
 cleanup() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - cleaning up"
-  #docker rm -f ${container} > /dev/null || true
-#  if [ "${nginx_container}" ]; then
-#    docker rm -f ${nginx_container} > /dev/null || true
-#  fi
+  docker rm -f ${container} > /dev/null || true
 }
 
 test

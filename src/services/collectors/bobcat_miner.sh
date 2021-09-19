@@ -12,9 +12,10 @@ lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
 
 get() {
-  url=${bobcat_url:-"http://${a}/"}
+  url=${bobcat_test_url:-"http://${a}/"}
   url="${url}/${endpoint}.json"
   log_info "getting ${miner} ${endpoint} data for ${a}"
+  log_debug "${miner} url: ${url}"
 
   n=0
   get_payload

@@ -12,8 +12,10 @@ lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
 
 get() {
-  url="http://${a}/?json=true"
+  url=${nebra_test_url:-"http://${a}/?json=true"}
+  url="${url}"
   log_info "getting ${miner} ${endpoint} for ${a}"
+  log_debug "${miner} url: ${url}"
 
   n=0
   get_payload

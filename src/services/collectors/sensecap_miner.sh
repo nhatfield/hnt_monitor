@@ -12,9 +12,10 @@ lock_file=".${endpoint}.lock"
 id=collector.sensecap.${endpoint}
 
 get() {
-  url="https://status.sensecapmx.cloud/api/openapi/device/view_device?sn=${a}&api_key=${sensecap_api_key}"
+  url=${sensecap_test_url:-"https://status.sensecapmx.cloud/api/openapi/device/view_device?sn=${a}&api_key=${sensecap_api_key}"}
+  url="${url}"
   log_info "getting sensecap ${endpoint} for ${a}"
-
+  log_debug "${miner} url: ${url}"
 
   n=0
   get_payload
