@@ -1,9 +1,9 @@
 get_payload() {
-  payload=$(curl -s "${url}") || log_err "api timeout"
+  payload=$(curl -s "${url}" || jq '.') || log_err "api timeout"
 }
 
 next_payload() {
-  new_payload=$(curl -s "${url}&cursor=${cursor}") || log_err "api timeout"
+  new_payload=$(curl -s "${url}&cursor=${cursor}" | jq '.') || log_err "api timeout"
 }
 
 send_payload() {

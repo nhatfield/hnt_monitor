@@ -1,7 +1,9 @@
 vNext
 
+- **TechTask** - add calculated height gap for all miners
 - **TechTask** - add build test cases
 - **TechTask** - add support for nebra miner
+- **TechTask** - add support for longap miner
 - **TechTask** - add [docker hub](https://hub.docker.com/repository/docker/nhatfield/hnt_monitor) image
 - **TechTask** - sensecap collection updated to collector and etl separation
 - **BugFix** - witness etl data not pushed to grafana

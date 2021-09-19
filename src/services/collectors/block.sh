@@ -11,7 +11,7 @@ lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
 
 get() {
-  url="https://${blocks_url}/${endpoint}"
+  url="${blocks_url}/${endpoint}"
   log_info "getting block ${endpoint} data"
 
   n=0
