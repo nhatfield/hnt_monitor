@@ -39,6 +39,10 @@ bobcat_status_success_payload() {
   jq 'select(.status != null)' <<< "${payload}"
 }
 
+longap_success_payload() {
+  jq 'select(.[].publicKey != null)' <<< "${payload}"
+}
+
 nebra_success_payload() {
   jq 'select(.AN != null)' <<< "${payload}"
 }

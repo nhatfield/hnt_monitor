@@ -47,7 +47,9 @@ pipeline {
                        
                       for t in *.test; do 
                         echo "Running Test: \${t//.test/}"
-                        ./\${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}
+                        ./\${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || cat error.log
+                        echo
+                        echo
                       done
                     """
                 }

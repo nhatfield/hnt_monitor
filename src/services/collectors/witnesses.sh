@@ -12,7 +12,7 @@ lock_file=.${endpoint}.lock
 id=collector.${endpoint}
 
 get() {
-  url=${hotspot_test_url:-"https://${hotspot_url}/${a}/${endpoint}"}
+  url=${hotspot_test_url:-"${hotspot_url}/${a}/${endpoint}"}
   url="${url}/${a}/${endpoint}"
   log_info "getting hotspot ${endpoint} data for ${a}"
   log_debug "hotspot url: ${url}"

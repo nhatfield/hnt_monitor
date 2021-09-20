@@ -15,7 +15,8 @@ services:
       dockerfile: ./build/docker/Dockerfile
       context: .
     environment:
-      PROMETHEUS_PG_HOST: "prometheus_pushgateway"
+      DO_NOT_REMOVE: "setup"
+      HNT_PROMETHEUS_PG_HOST: "prometheus_pushgateway"
     networks:
       hnt_monitor:
         ipv4_address: 10.30.0.05

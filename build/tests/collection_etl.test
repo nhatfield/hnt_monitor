@@ -39,7 +39,7 @@ test() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
   cleanup 2>/dev/null || true
 
-  docker run -d ${run_vars} -e HNT_DEBUG=true -e HNT_BOBCAT_IPS="123 456" -e HNT_NEBRA_IPS="123 456" -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} -e HNT_HOTSPOT_ADDRESSES=${hotspot} -e HNT_PROMETHEUS_PG_HOST=\"\" -e bobcat_test_url=${test_url}/bobcat -e helium_test_url=${test_url}/helium -e hotspot_test_url=${test_url} -e nebra_test_url=${test_url}/nebra/data -e sensecap_test_url=${test_url}/sensecap/data --name ${container} ${image} 1>/dev/null || cleanup_err
+  docker run -d ${run_vars} -e HNT_DEBUG=true -e HNT_BOBCAT_IPS="123 456" -e HNT_NEBRA_IPS="123 456" -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} -e HNT_HOTSPOT_ADDRESSES=${hotspot} -e HNT_PROMETHEUS_PG_HOST=\"\" -e bobcat_test_url=${test_url}/bobcat -e helium_test_url=${test_url}/helium -e hotspot_test_url=${test_url} -e nebra_test_url=${test_url}/nebra/data -e longap_test_url=${test_url}/longap/status -e sensecap_test_url=${test_url}/sensecap/data --name ${container} ${image} 1>/dev/null || cleanup_err
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - waiting for data to process ..."
   sleep 90
@@ -52,6 +52,7 @@ test() {
       VAL=$(echo "${v}" | sed "s%.*=%%;s%[']%%g")
 
       if [ ! "${KEY}" == "timestamps" ]; then
+        conf_var=${KEY}
         if [ "$(echo "${VAL}" | wc -l)" -eq 1 ]; then
           echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${VAL//:#:/ }"
           grep -q "${KEY}: ${VAL}" <<< "${logs}" || cleanup_err
@@ -63,6 +64,7 @@ test() {
         fi
       else
         for t in ${VAL}; do
+          conf_var="[timestamp]"
           echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [timestamp]: ${t}"
           grep -q "${t}" <<< "${logs}" || cleanup_err
         done
@@ -70,14 +72,22 @@ test() {
     fi
   done
 
+  conf_var=error.status
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - checking for errors in the logs"
+  if [ "$(grep "\[ERROR\]" <<< "${logs}" | wc -l)" -ge 1 ]; then
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - detected errors in the logs"
+    grep "\[ERROR\]" <<< "${logs}" || true
+    cleanup_err
+  fi
 }
 
 cleanup_err() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - validation failed"
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - docker logs:"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - dumping docker logs to error.log"
+  echo 
+  docker logs ${container} >> error.log || true
   echo
-  docker logs ${container} || true
-  echo
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - last validation: ${conf_var}"
   cleanup
   echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - FAILED!"
   exit 1

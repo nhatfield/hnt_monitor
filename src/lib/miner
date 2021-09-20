@@ -20,9 +20,33 @@ get_miner_bobcat_status() {
   fi
 
   miner_height=$(jq -r '.miner_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
-  blockchain_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
+  block_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
   epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [epoch timestamp] on ${a}"
-  gap=$((miner_height - blockchain_height)) || log_err "Could not collect [height gap] on ${a}"
+  gap=$((miner_height - block_height)) || log_err "Could not collect [height gap] on ${a}"
+}
+
+get_miner_longap_name() {
+  name=$(jq -r '.[].name' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_warn "Could not collect [name] on ${a}"
+}
+
+get_miner_longap_data() {
+  stat=$(jq -r '.[].status' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [status] on ${a}"
+  if [ "${stat}" == "online" ]; then
+    status=1
+  else
+    status=0
+  fi
+
+  block_height=$(jq -r '.[].helium.blockchain.height' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
+  miner_height=$(jq -r '.[].miner.blockHeight' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+
+  conn=$(jq -r '.[].miner.connected' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [connection status] on ${a}"
+  if [ "${conn}" == "true" ]; then
+    connected=1
+  else
+    connected=0
+  fi
+  gap=$((miner_height - block_height))
 }
 
 get_miner_nebra_name() {
