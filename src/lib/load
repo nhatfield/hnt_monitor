@@ -145,10 +145,10 @@ ${project}_${name//-/_}_relayed_status{instance="${name}"} ${relayed}
 ${project}_${name//-/_}_is_healthy{instance="${name}"} ${healthy}
 # HELP ${project}_${name//-/_}_block_height of helium blockchain
 # TYPE ${project}_${name//-/_}_block_height
-${project}_${name//-/_}_helium_block_height{instance="${name}"} ${totalheight}
+${project}_${name//-/_}_block_height{instance="${name}"} ${block_height}
 # HELP ${project}_${name//-/_}_miner_height of the sensecap miner
 # TYPE ${project}_${name//-/_}_miner_height gauge
-${project}_${name//-/_}_block_height{instance="${name}"} ${height}
+${project}_${name//-/_}_miner_height{instance="${name}"} ${miner_height}
 # HELP ${project}_${name//-/_}_connected status of the sensecap miner P2P Outbound Status. -1: unknown, 0: unhealthy, 1: healthy
 # TYPE ${project}_${name//-/_}_connected gauge
 ${project}_${name//-/_}_connected{instance="${name}"} ${connected}

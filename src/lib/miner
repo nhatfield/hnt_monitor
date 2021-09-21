@@ -22,7 +22,7 @@ get_miner_bobcat_status() {
   miner_height=$(jq -r '.miner_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
   block_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
   epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [epoch timestamp] on ${a}"
-  gap=$((miner_height - block_height)) || log_err "Could not collect [height gap] on ${a}"
+  gap=$((block_height - miner_height)) || log_err "Could not collect [height gap] on ${a}"
 }
 
 get_miner_longap_name() {
@@ -46,7 +46,7 @@ get_miner_longap_data() {
   else
     connected=0
   fi
-  gap=$((miner_height - block_height))
+  gap=$((block_height - miner_height))
 }
 
 get_miner_nebra_name() {
@@ -57,7 +57,7 @@ get_miner_nebra_data() {
   block_height=$(jq -r '.BCH' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
   frequency=$(jq -r '.FR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null)  || log_err "Could not collect [frequency] on ${a}"
   miner_height=$(jq -r '.MH' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
-  gap=$((miner_height - block_height))
+  gap=$((block_height - miner_height))
 
   status=$(jq -r '.BSP' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [status] on ${a}"
   if [[ "${status}" == *"load"* ]]; then
@@ -109,10 +109,10 @@ get_miner_sensecap_data() {
   gain=$(jq '.data.gain' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [atenna gain] on ${a}"
   relayed=$(jq '.data.relayed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [relayed status] on ${a}"
   healthy=$(jq '.data.isHealth' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [health status] on ${a}"
-  totalheight=$(jq '.data.totalHeight' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [total height] on ${a}"
-  height=$(jq '.data.height' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  block_height=$(jq '.data.totalHeight' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [total height] on ${a}"
+  miner_height=$(jq '.data.height' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
   connected=$(jq '.data.connected' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [connected status] on ${a}"
   dialable=$(jq '.data.dialable' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [dialable status] on ${a}"
   nattype=$(jq '.data.natType' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null)   || log_err "Could not collect [nat type] on ${a}"
-  gap=$((height - totalheight))
+  gap=$((block_height - miner_height))
 }
