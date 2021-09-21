@@ -14,6 +14,7 @@ cd ${DIR}
 OPT=${1:-"intro"}
 HNT_HOTSPOT_ADDRESSES=${HNT_HOTSPOT_ADDRESSES:-""}
 YAML=${YAML:-"hnt_monitor.yml"}
+RELEASE_BRANCH=${RELEASE_BRANCH:-"master"}
 
 intro() {
   clear
@@ -21,9 +22,15 @@ intro() {
   echo
   echo "What do you want to do?"
   echo
-  echo "1. Install"
-  echo "2. Upgrade"
-  echo "3. Exit"
+  echo "1. Install   [ Install dependencies, setup, and deploy the full monitoring stack ]"
+  echo "2. Settings  [ Update miner addresses, serial numbers, ips, etc ]"
+  echo "3. Upgrade   [ Upgrade an existing setup to the latest stable release ]"
+  echo "4. Deploy    [ Deploy the monitoring stack only ]"
+  echo "5. View      [ View the current configuration ]"
+  echo "6. Donate    [ Display the HNT wallet backing this project ]"
+  echo "7. Exit      [ Exit the program ]"
+  echo
+  echo
   read title
   
   while [ ! "${title}" ]; do
@@ -34,12 +41,27 @@ intro() {
   case ${title} in 
                 install|Install|INSTALL|1)
                   prereq
-                  install
+                  setup
+                  deploy
                   ;;
-                upgrade|Upgrade|UPGRADE|2)
+                setting|settings|Setting|Settings|SETTING|SETTINGS|2)
+                  setup
+                  config
+                  ;;
+                upgrade|Upgrade|UPGRADE|3)
                   upgrade
                   ;;
-                exit|Exit|EXIT|3)
+                deploy|Deploy|DEPLOY|4)
+                  deploy
+                  ;;
+                view|View|VIEW|5)
+                  view
+                  intro
+                  ;;
+                donate|Donate|DONATE|6)
+                  donate
+                  ;;
+                exit|Exit|EXIT|7)
                   exit 0
                   ;;
                 *)
@@ -49,6 +71,15 @@ intro() {
                   ;;
   esac
 }
+
+view() {
+  clear
+  grep "HNT_" "${YAML}"
+  echo
+  echo
+  echo "Press any key to continue ..."
+  read resp
+} 
 
 prereq() {
   if [ ! "$(which docker 2>/dev/null)" ] || [ ! "$(which docker-compose 2>/dev/null)" ]; then
@@ -67,7 +98,7 @@ prereq() {
   fi
 }
 
-install() {
+setup() {
   clear
   echo "Which miner do you want to add?"
   echo
@@ -75,6 +106,9 @@ install() {
   echo "2. LongAP"
   echo "3. Nebra"
   echo "4. Sensecap"
+  echo "5. Deploy"
+  echo "6. back"
+  echo "7. exit"
   echo
   read install
 
@@ -96,14 +130,39 @@ install() {
                   sensecap|Sensecap|SENSECAP|4)
                     sensecap
                     ;;
+                  deploy|Deploy|DEPLOY|5)
+                    deploy
+                    ;;
+                  back|6)
+                    intro
+                    exit 0
+                    ;;
+                  exit|7)
+                    exit 0
+                    ;;
   esac
 }
 
-ips() {
-  echo "${message}"
+address_endp() {
+  echo "What are the hotspot addresses of the ${id} miner(s)? Please separate them by a [space]"
+  echo "ex: 112GezswE 114vTyhUnKo"
+  echo
+  read ips
+}
+
+ips_endp() {
+  echo "What are the PRIVATE IP addresses of your ${id} miner(s)? Please separate them by a [space]"
   echo "ex: 192.168.0.1 10.10.0.3 172.16.2.5"
   echo
   read ips
+}
+
+end_point() {
+  if [ "$(grep "${endpoints}" ${YAML} 2>/dev/null)" ]; then
+    sed -i "s%${endpoints}:.*%${endpoints}: \"${ips}\"%" ${YAML}
+  else
+    sed -i "s%${monitor}:\(.*\)%${monitor}:\1\n      ${endpoints}: \"${ips}\"%" ${YAML}
+  fi
 }
 
 mon() {
@@ -116,32 +175,86 @@ mon() {
 
 bobcat() {
   clear
-  message="What are the PRIVATE IP addresses of your bobcat miner(s)? Please separate them by a [space]"
-  ips
+  
+  id=bobcat
+  ips_endp
 
   monitor=HNT_BOBCAT_MONITOR
   mon
 
-  if [ "$(grep "HNT_BOBCAT_IPS" ${YAML} 2>/dev/null)" ]; then
-    sed -i "s%HNT_BOBCAT_IPS:.*%HNT_BOBCAT_IPS: \"${ips}\"%" ${YAML}
-  else
-    sed -i "s%${monitor}:\(.*\)%${monitor}:\1\n      HNT_BOBCAT_IPS: \"${ips}\"%" ${YAML}
-  fi
+  endpoints=HNT_BOBCAT_IPS
+  end_point
+
+  hotspot
+  end
+}
+
+longap() {
+  clear
+
+  id=longap
+  address_endp
+
+  monitor=HNT_LONGAP_MONITOR
+  mon
+
+  endpoints=HNT_LONGAP_ADDRESSES
+  end_point
+
+  hotspot
+  end
+}
+
+nebra() {
+  clear
+
+  id=nebra
+  ips_endp
+
+  monitor=HNT_NEBRA_MONITOR
+  mon
+
+  endpoints=HNT_NEBRA_IPS
+  end_point
+
+  hotspot
+  end
+}
+
+sensecap() {
+  clear
+
+  id=sensecap
+  echo "What are the serial numbers of the ${id} miner(s)? Please separate them by a [space]"
+  echo "ex: serial1 serial2"
+  echo
+  read ips
+
+  monitor=HNT_SENSECAP_MONITOR
+  mon
+
+  endpoints=HNT_SENSECAP_SERIAL_NUMBER
+  end_point
+
+  echo
+  echo "Enter your sensecap api key"
+  echo
+  read ips
+  
+  end_point
 
   hotspot
   end
 }
 
 hotspot() {
-  echo "What are the hotspot addresses of the bobcat miner(s)? Please separate them by a [space]"
-  echo "ex: 112GezswE 114vTyhUnKo"
-  echo
-  read addr
+  clear
+  address_endp
 
   if [ "${HNT_HOTSPOT_ADDRESSES}" ]; then
-    HNT_HOTSPOT_ADDRESSES="${HNT_HOTSPOT_ADDRESSES} ${addr}"
+    HNT_HOTSPOT_ADDRESSES="${HNT_HOTSPOT_ADDRESSES} ${ips}"
   else
-    HNT_HOTSPOT_ADDRESSES="${addr}"
+    HNT_HOTSPOT_ADDRESSES="${ips}"
   fi
 }
 
@@ -157,13 +270,10 @@ end() {
 
   case ${end_resp} in
                    y|Y|yes|Yes|YES)
-                     install
-                     exit 0
+                     setup
                      ;;
                    n|N|no|No|NO)
                      config
-                     deploy
-                     exit 0
                      ;;
                    *)
                      echo "invalid response: ${end_resp}"
@@ -173,6 +283,8 @@ end() {
 }
 
 config() {
+  HNT_HOTSPOT_ADDRESSES=$(echo "${HNT_HOTSPOT_ADDRESSES}" | tr ' ' '\n' | sort -u | sed 's^$%%' | tr '\n' ' ')
+
   if [ "$(grep "HNT_HOTSPOT_ADDRESSES" ${YAML} 2>/dev/null)" ]; then
     sed -i "s%HNT_HOTSPOT_ADDRESSES:.*%HNT_HOTSPOT_ADDRESSES: \"${HNT_HOTSPOT_ADDRESSES}\"%" ${YAML}
   else
@@ -187,19 +299,33 @@ deploy() {
   read deploy
 
   while [ ! "${deploy}" ]; do
-    echo "Please choose a valid option or cancel the script [CTRL+C]"
+    echo "Please choose a valid option: [yes|no]"
     read deploy
   done
 
   case ${deploy} in 
                  y|Y|yes|Yes|YES)
                    docker-compose -f ${YAML} up -d --build
+                   finish
+                   donate
                    ;;
                  *)
                    echo "Action cancelled"
                    exit 0
                    ;;
   esac
+}
+
+finish() {
+  clear
+  echo "You're all set! Take a look at the docs to setup the application interface"
+  echo
+  echo "Grafana:                 http://localhost:3000"
+  echo "Prometheus Server:       http://localhost:3000"
+  echo "Prometheus Push Gateway: http://localhost:9091"
+  echo
+  echo "Docs:                    https://github.com/nhatfield/hnt_monitor#whats-next"
+  read resp
 }
 
 update() {
@@ -215,7 +341,6 @@ version() {
 donate() {
   clear
   echo
-  echo "                                                           HNT: 1359NhpbxJg1jRpDenJvrmD2P3ZN3hWGSGzUF6Uyn828zYdyYVt"
   cat .donate
 }
 
@@ -232,6 +357,9 @@ case ${OPT} in
               ;;
             update|upgrade)
               update
+              ;;
+            view)
+              view
               ;;
             version | -v | --version)
               version
