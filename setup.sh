@@ -16,6 +16,14 @@ HNT_HOTSPOT_ADDRESSES=${HNT_HOTSPOT_ADDRESSES:-""}
 YAML=${YAML:-"hnt_monitor.yml"}
 RELEASE_BRANCH=${RELEASE_BRANCH:-"master"}
 
+os=$(uname)
+
+if [ "${os}" == "Darwin" ]; then
+  sedi="sed -i ''"
+else
+  sedi="sed -i"
+fi
+
 intro() {
   clear
   version
@@ -74,7 +82,7 @@ intro() {
 
 view() {
   clear
-  grep "HNT_" "${YAML}"
+  grep "HNT_" "${YAML}" | sed 's%^      %%'
   echo
   echo
   echo "Press any key to continue ..."
@@ -132,6 +140,7 @@ setup() {
                     ;;
                   deploy|Deploy|DEPLOY|5)
                     deploy
+                    exit 0
                     ;;
                   back|6)
                     intro
@@ -159,17 +168,17 @@ ips_endp() {
 
 end_point() {
   if [ "$(grep "${endpoints}" ${YAML} 2>/dev/null)" ]; then
-    sed -i "s%${endpoints}:.*%${endpoints}: \"${ips}\"%" ${YAML}
+    ${sedi} "s%${endpoints}:.*%${endpoints}: \"${ips}\"%" "${YAML}"
   else
-    sed -i "s%${monitor}:\(.*\)%${monitor}:\1\n      ${endpoints}: \"${ips}\"%" ${YAML}
+    ${sedi} "s%${monitor}:\(.*\)%${monitor}:\1\n      ${endpoints}: \"${ips}\"%" "${YAML}"
   fi
 }
 
 mon() {
   if [ "$(grep "${monitor}" ${YAML} 2>/dev/null)" ]; then
-    sed -i "s%${monitor}:.*%${monitor}: \"true\"%" ${YAML}
+    ${sedi} "s%${monitor}:.*%${monitor}: \"true\"%" "${YAML}"
   else
-    sed -i "s%DO_NOT_REMOVE:\(.*\)%DO_NOT_REMOVE:\1\n      ${monitor}: \"true\"%" ${YAML}
+    ${sedi} "s%DO_NOT_REMOVE:\(.*\)%DO_NOT_REMOVE:\1\n      ${monitor}: \"true\"%" "${YAML}"
   fi
 }
 
@@ -283,13 +292,15 @@ end() {
 }
 
 config() {
-  HNT_HOTSPOT_ADDRESSES=$(echo "${HNT_HOTSPOT_ADDRESSES}" | tr ' ' '\n' | sort -u | sed 's^$%%' | tr '\n' ' ')
+  HNT_HOTSPOT_ADDRESSES=$(echo "${HNT_HOTSPOT_ADDRESSES}" | tr ' ' '\n' | sort -u | sed 's%^$%%' | tr '\n' ' ')
 
   if [ "$(grep "HNT_HOTSPOT_ADDRESSES" ${YAML} 2>/dev/null)" ]; then
-    sed -i "s%HNT_HOTSPOT_ADDRESSES:.*%HNT_HOTSPOT_ADDRESSES: \"${HNT_HOTSPOT_ADDRESSES}\"%" ${YAML}
+    ${sedi} "s%HNT_HOTSPOT_ADDRESSES:.*%HNT_HOTSPOT_ADDRESSES: \"${HNT_HOTSPOT_ADDRESSES}\"%" ${YAML}
   else
-    sed -i "s%DO_NOT_REMOVE:\(.*\)%DO_NOT_REMOVE:\1\n      HNT_HOTSPOT_ADDRESSES: \"${HNT_HOTSPOT_ADDRESSES}\"%" ${YAML}
+    ${sedi} "s%DO_NOT_REMOVE:\(.*\)%DO_NOT_REMOVE:\1\n      HNT_HOTSPOT_ADDRESSES: \"${HNT_HOTSPOT_ADDRESSES}\"%" ${YAML}
   fi
+
+  rm -f "${YAML}"\'\'
 }
 
 deploy() {
@@ -329,7 +340,7 @@ finish() {
 }
 
 update() {
-  git checkout master
+  git checkout "${RELEASE_BRANCH}"
   git pull
   deploy
 }
