@@ -182,23 +182,23 @@ $> docker logs -f hnt_monitor
 
 | Name | Default | Description | Required |
 |:----:|---------|-------------|----------|
-| `BLOCKS_URL` | `api.helium.io/v1/blocks` | The helium blocks api url. | `no` |
-| `BOBCAT_IPS` | | If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
-| `BOBCAT_MONITOR` | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
-| `DEBUG` | `false` | Turn on debug logging. Boolean: `(true or false)` | `no` |
-| `HELIUM_MONITOR` | `true` | Enable or disable helium monitoring. Boolean: `(true or false)` | `no` |
-| `HOTSPOT_ADDRESSES` | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `no` |
-| `HOTSPOT_MONITOR` | `false` | Enable hotspot monitoring from helium api. Boolean: `(true or false)` | `no` |
-| `HOTSPOT_URL` | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
-| `LOGFILE` | `stdout` | Send logs to this file | `no` |
-| `LOGPATH` | `/dev/` | Send logs to this path | `no` |
-| `PROJECT` | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
-| `PROMETHEUS_PG_HOST` | `localhost` | The prometheus push gateway hostname. | `yes` |
-| `PROMETHEUS_PG_PORT` | `9091` | The prometheus push gateway port. | `no` |
-| `SENSECAP_API_KEY` | | Api key for sensecap | `no` |
-| `SENSECAP_MONITOR` | `false` | Enable or disable sensecap monitoring. Boolean: `(true or false)` | `no` |
-| `SENSECAP_SERIAL_NUMBERS` | | If sensecap monitoring enabled, list of Serial numbers of the sensecap miners | `no` |
-| `TRACE` | `false` | Turn on trace logging. Produces more logs than debug. Boolean: `(true or false)` | `no` |
+| `HNT_BLOCKS_URL` | `api.helium.io/v1/blocks` | The helium blocks api url. | `no` |
+| `HNT_BOBCAT_IPS` | | If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
+| `HNT_BOBCAT_MONITOR` | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_DEBUG` | `false` | Turn on debug logging. Boolean: `(true or false)` | `no` |
+| `HNT_HELIUM_MONITOR` | `true` | Enable or disable helium monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_HOTSPOT_ADDRESSES` | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `no` |
+| `HNT_HOTSPOT_MONITOR` | `false` | Enable hotspot monitoring from helium api. Boolean: `(true or false)` | `no` |
+| `HNT_HOTSPOT_URL` | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
+| `HNT_LOGFILE` | `stdout` | Send logs to this file | `no` |
+| `HNT_LOGPATH` | `/dev/` | Send logs to this path | `no` |
+| `HNT_PROJECT` | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
+| `HNT_PROMETHEUS_PG_HOST` | `localhost` | The prometheus push gateway hostname. | `yes` |
+| `HNT_PROMETHEUS_PG_PORT` | `9091` | The prometheus push gateway port. | `no` |
+| `HNT_SENSECAP_API_KEY` | | Api key for sensecap | `no` |
+| `HNT_SENSECAP_MONITOR` | `false` | Enable or disable sensecap monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_SENSECAP_SERIAL_NUMBERS` | | If sensecap monitoring enabled, list of Serial numbers of the sensecap miners | `no` |
+| `HNT_TRACE` | `false` | Turn on trace logging. Produces more logs than debug. Boolean: `(true or false)` | `no` |
 
 
 ## What's next
