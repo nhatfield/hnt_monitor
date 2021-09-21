@@ -1,41 +1,64 @@
 # HNT Miner Monitor
 
+![Grafana style for your miner](docs/images/grafana-title.png)
+
 ## Overview
 
 This repo is used to produce metrics from miner api's and the Helium blockchain. We can use the metrics to diagnose, alert, and prevent poor mining performance. Currently we extract the following metrics:
 
 **Hotspot API**
 
-- rewards (15 minute, 1 hour, 1 day, 7 days, 30 days)
+- block height
+- reward counts (15 minute, 1 hour, 1 day, 7 days, 30 days)
+- reward scale
 - witnessed
 - witnesses
-- reward scale
-- block height
 
 **Bobcat API**
 
-- cpu temperatures
 - block height
+- cpu temperatures
 - miner height
 - height gap
 - sync status
 
+**LongAP**
+
+- block height
+- height gap
+- miner connected
+- miner height
+- online status
+
+**Nebra**
+
+- block height
+- bluetooth connected
+- frequency
+- height gap
+- lora status
+- miner connected
+- miner height
+- relayed
+- sync status
+
 **Sensecap API**
 
+- antenna gain
+- block height
 - cpu temperature
 - cpu used
+- dialable
+- height gap
+- is healthy
 - memory total
 - memory used
+- nat type
+- miner connected
+- miner height
+- relayed
 - sd total
 - sd used
-- antenna gain
-- relayed
-- is healthy
-- helium block_height
-- block height
-- connected
-- dialable
-- nat type
 
 ## Prerequisite
 
@@ -56,6 +79,16 @@ You should have your monitoring platform setup by using prometheus and grafana. 
 With docker we can create the entire monitoring stack
 
 ## Quick Start
+
+**Setup**
+
+The setup.sh script will install the necessary software and walk you through setting up the monitor stack. Follow the prompts, input your miners, and let the script install the platform
+
+```bash
+$> ./setup.sh
+```
+
+## Deep Dive
 
 **Without Docker**
 
