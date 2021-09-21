@@ -102,6 +102,13 @@ prereq() {
       apt-get upgrade -y
       apt-get install docker docker-compose -y
       service docker start || systemctl start docker
+    else
+      if [ ! "$(which brew 2>/dev/null)" ] || [ ! "$(which cask 2>/dev/null)" ]; then
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        brew install cask
+      fi
+      brew install docker-compose
+      cask install docker
     fi
   fi
 }
@@ -368,6 +375,9 @@ case ${OPT} in
               ;;
             update|upgrade)
               update
+              ;;
+            prereq)
+              prereq
               ;;
             view)
               view
