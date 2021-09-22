@@ -11,6 +11,7 @@ services:
   hnt_monitor:
     container_name: hnt_monitor
     image: hnt_monitor:latest
+    restart: always
     build:
       dockerfile: ./build/docker/Dockerfile
       context: .
@@ -26,6 +27,7 @@ services:
   prometheus_pushgateway:
     container_name: prometheus_pushgateway
     image: prom/pushgateway
+    restart: always
     ports:
       - "9091:9091"
     networks:
@@ -35,6 +37,7 @@ services:
   prometheus:
     container_name: prometheus
     image: prom/prometheus
+    restart: always
     ports:
       - "9090:9090"
     networks:
@@ -46,6 +49,7 @@ services:
   grafana:
     container_name: grafana
     image: grafana/grafana
+    restart: always
     ports:
       - "3000:3000"
     networks:

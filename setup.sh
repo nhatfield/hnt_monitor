@@ -2,6 +2,7 @@
 
 set -euo pipefail
 
+
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -19,7 +20,7 @@ RELEASE_BRANCH=${RELEASE_BRANCH:-"master"}
 os=$(uname)
 
 if [ "${os}" == "Darwin" ]; then
-  sedi="sed -i ''"
+  sedi="gsed -i"
 else
   sedi="sed -i"
 fi
@@ -48,6 +49,8 @@ intro() {
 
   case ${title} in 
                 install|Install|INSTALL|1)
+                  clear
+                  echo "Starting installation ..."
                   prereq
                   setup
                   deploy
@@ -90,7 +93,9 @@ view() {
 } 
 
 prereq() {
+  echo "Verifying software dependencies are installed"
   if [ ! "$(which docker 2>/dev/null)" ] || [ ! "$(which docker-compose 2>/dev/null)" ]; then
+    echo "Docker was not detected. Installing..."
     if [ "$(which yum 2>/dev/null)" ]; then
       yum update -y
       yum install -y epel-release
@@ -103,12 +108,37 @@ prereq() {
       apt-get install docker docker-compose -y
       service docker start || systemctl start docker
     else
-      if [ ! "$(which brew 2>/dev/null)" ] || [ ! "$(which cask 2>/dev/null)" ]; then
+      if [ ! "$(which brew 2>/dev/null)" ]; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      fi
+  
+      if [ ! "$(which cask 2>/dev/null)" ]; then
         brew install cask
       fi
-      brew install docker-compose
-      cask install docker
+
+      fail=""
+      brew install --cask docker-toolbox || fail=true
+
+      if [ "${fail}" == "true" ]; then
+        echo -e "\n\nCould not install the docker-toolbox. Check your System & Privacy settings under System Preferences and allow the blocked app \"Oracle VirtualBox\". Then re-run the setup again"
+        exit 1
+      fi
+
+      brew install docker-machine || brew link --overwrite docker-machine
+      docker-machine create --driver "virtualbox" devbox || true
+      docker-machine start devbox
+      eval "$(docker-machine env devbox)"
+
+      if [ ! "$(grep 'docker-machine env devbox' "${HOME}"/.zshrc 2>/dev/null)" ]; then
+        echo 'if ! docker-machine status devbox | grep -q "Running"; then' >> "${HOME}"/.zshrc
+        echo '  docker-machine start devbox' >> "${HOME}"/.zshrc
+        echo 'fi' >> "${HOME}"/.zshrc
+        echo 'eval "$(docker-machine env devbox)"' >> "${HOME}"/.zshrc
+      fi
+
+      if [ ! "$(which gsed 2>/dev/null)" ]; then
+        brew install gnu-sed
+      fi
     fi
   fi
 }
@@ -343,6 +373,10 @@ finish() {
   echo "Prometheus Push Gateway: http://localhost:9091"
   echo
   echo "Docs:                    https://github.com/nhatfield/hnt_monitor#whats-next"
+  echo "Donate:                  HNT: 1359NhpbxJg1jRpDenJvrmD2P3ZN3hWGSGzUF6Uyn828zYdyYVt"
+  echo
+  echo
+  echo "Press any key to continue ..."
   read resp
 }
 
@@ -358,8 +392,10 @@ version() {
 
 donate() {
   clear
-  echo
   cat .donate
+  echo "Yes the QR code works. HNT wallet address =)"
+  echo "Make your terinal window large enough to see the whole QR. Center your scanner and slowly pull your scanner away from the code until it accepts."
+  echo "Thank you =)"
 }
 
 case ${OPT} in
