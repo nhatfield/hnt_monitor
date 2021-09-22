@@ -62,25 +62,27 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 
 ## Prerequisite
 
-**Without Docker**
+**Prerequisite: without docker**
 
 - [prometheus push gateway](https://github.com/prometheus/pushgateway)
 - [prometheus](https://prometheus.io/docs/prometheus/latest/installation)
 - [grafana](https://grafana.com/docs/grafana/latest/installation/docker)
 
-You should have your monitoring platform setup by using prometheus and grafana. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
+if you plan to not use docker to manage your metric collection, you should at least have your monitoring platform setup by using `prometheus`, `prometheus push gateway`, and `grafana`. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
 
-**Docker**
+**Prerequisite: using docker**
 
-- [docker](https://docker.io)
-- [docker-compose](https://docs.docker.com/compose/install/)
-- Disable SELinux (unless you want to deal with adding ports and services manually)
+You can install `docker` by running the `setup.sh` script with the `prereq` command. This will install `docker` and `docker-compose`.
 
-With docker we can create the entire monitoring stack
+```bash
+$> ./setup.sh prereq
+```
+
+With docker we can create the entire monitoring stack using `docker-compose`.
 
 ## Quick Start
 
-**Setup**
+**Quick Start: setup & installation**
 
 The setup.sh script will install the necessary software and walk you through setting up the monitor stack. Follow the prompts, input your miners, and let the script install the platform
 
@@ -90,7 +92,7 @@ $> ./setup.sh
 
 ## Deep Dive
 
-**Without Docker**
+**Deep Dive: without docker**
 
 Navitage to the `src/conf/` directory and add your miner address to the `address.list` file. Then update the `hnt_monitor.conf` file with your prometheus push gateway host and port. Then run the hnt monitor script manually. You can visit the `host:port` of the machine running prometheus pushgaeway and see the new metrics
 
@@ -104,7 +106,7 @@ Run in the background if you want to make it a service
 $> ./src/bin/hnt_monitor &
 ```
 
-**Docker**
+**Deep Dive: docker without docker-compose**
 
 Run the hnt monitor script standalone
 
@@ -114,11 +116,17 @@ $> docker run --rm -it hnt_monitor help     # help menu
 $> docker run -d -e HOTSPOT_MONITOR=true -e HOTSPOT_ADDRESSES="12345..." -e PROMETHEUS_PG_HOST=my.prometheus-pushgateway.host hnt_monitor  # Enable hotspot monitoring from helium api
 ```
 
-## Docker
+**Deep Dive: docker with docker-compose**
 
-The entire monitoring stack is available in docker containers. Update the configs and deploy the services.
+**automated setup & deploy**
 
-**Configs**
+The entire monitoring stack is available in docker containers. Run the `setup.sh` script to configure the docker-compose settings and launch the stack.
+
+```bash
+$> ./setup.sh
+```
+
+**manual setup & deploy**
 
 Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monitor` service environment variables.
 
@@ -130,10 +138,11 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
       dockerfile: ./build/docker/Dockerfile
       context: .
     environment:
-      HOTSPOT_MONITOR: "true"
-      HOTSPOT_ADDRESSES: "<myminersaddress> "   # Update your miner address on this line before launching the stack
-      PROMETHEUS_PG_HOST: "prometheus_pushgateway"
-      DEBUG: "true"
+      DO_NOT_REMOVE: "setup"
+      HNT_HOTSPOT_MONITOR: "true"
+      HNT_HOTSPOT_ADDRESSES: "<myminersaddress> "   # Update your miner address on this line before launching the stack
+      HNT_PROMETHEUS_PG_HOST: "prometheus_pushgateway"
+      HNT_DEBUG: "true"
     networks:
       hnt_monitor:
         ipv4_address: 10.30.0.05
@@ -141,44 +150,41 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
       - prometheus_pushgateway
 ```
 
-Check the variables table below for more options that the hnt_monitor supports
-
-
-**Run**
+Check the variables table below for more options that the `hnt_monitor` supports. Once you're satisfied, you can run the `docker-compose` below to launch the stack.
 
 ```
 $> docker-compose -f hnt_monitor.yml up -d
 ```
 
-Once the docker-compose completes, you can verify the endpoints in your browser. Open your favorite web browser and check the following endpoints
+Once the `docker-compose` completes, you can verify the endpoints in your browser. Open your favorite web browser and check the following endpoints
 
 | Application | Endpoint |
 |:-----------:|----------|
-| grafana | my.host.com:3000 |
-| prometheus | my.host.com:9090 |
-| prometheus pushgateway | my.host.com:9091 |
+| grafana | http://localhost:3000 |
+| prometheus | http://localhost:9090 |
+| prometheus pushgateway | http://localhost:9091 |
 
-**Prometheus Push Gateway**
+# Verify Installtation
 
-Check the prometheus push gateway to see metrics have been pushed from the hnt_monitor.
+**Verify Instllation: prometheus push gateway**
+
+Check the prometheus push gateway to see metrics have been pushed from the `hnt_monitor`. This service is listening 9091, navigate to `http://localhost:9091` in your browser. You should see a screen like below, with all of the available metrics from the miner collector.
 
 ![prometheuspg](docs/images/prometheus-pg.png)
 
-
-
-**Help Menu**
-
-```bash
-$> docker run -it --rm hnt_monitor help
-```
-
-**Logs**
+**Verify Instllation: docker logs**
 
 ```bash
 $> docker logs -f hnt_monitor
 ```
 
-**Variables**
+# Help 
+
+```bash
+$> docker run -it --rm hnt_monitor help
+```
+
+# Variables
 
 | Name | Default | Description | Required |
 |:----:|---------|-------------|----------|
@@ -192,6 +198,10 @@ $> docker logs -f hnt_monitor
 | `HNT_HOTSPOT_URL` | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
 | `HNT_LOGFILE` | `stdout` | Send logs to this file | `no` |
 | `HNT_LOGPATH` | `/dev/` | Send logs to this path | `no` |
+| `HNT_LONGAP_ADDRESSES` | | If longap monitoring enabled, list of ips. Ex: 'address1 address2 address3' | `no` |
+| `HNT_LONGAP_MONITOR` | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_NEBRA_IPS` | | If nebra monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
+| `HNT_NEBRA_MONITOR` | `false` | Enable or disable nebra monitoring. Boolean: `(true or false)` | `no` |
 | `HNT_PROJECT` | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
 | `HNT_PROMETHEUS_PG_HOST` | `localhost` | The prometheus push gateway hostname. | `yes` |
 | `HNT_PROMETHEUS_PG_PORT` | `9091` | The prometheus push gateway port. | `no` |

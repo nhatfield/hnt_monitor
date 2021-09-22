@@ -1,6 +1,6 @@
 # Scheduling
 
-**Without Docker**
+**Scheduling: without docker**
 
 You can update the frequency of the data collection in the conf file `hnt_monitor.conf`. The intervals are in (seconds).
 
@@ -17,10 +17,9 @@ witness_interval=86400
 
 The default settings on collections are good in most cases. IF you find thqt you need to change them intervals, you have the option to do so.
 
-**Docker**
+**Scheduling: using docker**
 
-If you're using docker to manage the collections, you can change the collection intervals by supplying the correct variable during startup. 
-
+If you're using docker to manage the collections, you can change the collection intervals by supplying the correct variables. 
 
 ```bash
 $> docker run -d -e REWARDS_INTERVAL=300 hnt_monitor
@@ -64,14 +63,14 @@ Each collector has an interval to set. Go with the defaults or change to your ow
 | `HNT_INFO_INTERVAL` | Frequency in seconds to collect miner information | `86400` |
 | `HNT_REWARD_INTERVAL` | Frequency in seconds to collect miner rewards | `300` |
 | `HNT_WITNESS_INTERVAL` | Frequency in seconds to collect miner wintess data | `86400` |
-| `DATA_CLEANUP_INTERVAL` | Frequency in seconds to cleanup miner data | `86400` |
-| `BLOCKS_INTERVAL` | Frequency in seconds to collect blockchain data | `60` |
-| `INFO_INTERVAL` | Frequency in seconds to collect hotspot miner data | `86400` |
-| `REWARDS_INTERVAL` | Frequency in seconds to collect reward data | `300` |
-| `WITNESS_INTERVAL` | Frequency in seconds to collect witness data | `3600` |
-| `BOBCAT_STATUS_INTERVAL` | Frequency in seconds to collect bobcat miner status data | `300` |
-| `BOBCAT_TEMPERATURE_INTERVAL` | Frequency in seconds to collect bobcat miner temperature data | `60` |
-| `BOBCAT_INFO_INTERVAL` | Frequency in seconds to collect bobcat miner info data | `21600` |
-| `LONGAP_DATA_INTERVAL` | Frequency in seconds to collect longap miner data | `60` |
-| `NEBRA_DATA_INTERVAL` | Frequency in seconds to collect nebra miner data | `60` |
-| `SENSECAP_DATA_INTERVAL` | Frequency in seconds to collect sensecap miner data | `60` |
+| `HNT_DATA_CLEANUP_INTERVAL` | Frequency in seconds to cleanup miner data | `86400` |
+| `HNT_BLOCKS_INTERVAL` | Frequency in seconds to collect blockchain data | `60` |
+| `HNT_INFO_INTERVAL` | Frequency in seconds to collect hotspot miner data | `86400` |
+| `HNT_REWARDS_INTERVAL` | Frequency in seconds to collect reward data | `300` |
+| `HNT_WITNESS_INTERVAL` | Frequency in seconds to collect witness data | `3600` |
+| `HNT_BOBCAT_STATUS_INTERVAL` | Frequency in seconds to collect bobcat miner status data | `300` |
+| `HNT_BOBCAT_TEMPERATURE_INTERVAL` | Frequency in seconds to collect bobcat miner temperature data | `60` |
+| `HNT_BOBCAT_INFO_INTERVAL` | Frequency in seconds to collect bobcat miner info data | `21600` |
+| `HNT_LONGAP_DATA_INTERVAL` | Frequency in seconds to collect longap miner data | `60` |
+| `HNT_NEBRA_DATA_INTERVAL` | Frequency in seconds to collect nebra miner data | `60` |
+| `HNT_SENSECAP_DATA_INTERVAL` | Frequency in seconds to collect sensecap miner data | `60` |
