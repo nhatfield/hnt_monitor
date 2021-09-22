@@ -12,13 +12,15 @@ lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
 
 get() {
-  url="https://${hotspot_url}/${a}"
+  url=${hotspot_test_url:-"${hotspot_url}"}
+  url="${url}/${a}"
   log_info "getting hotspot ${endpoint} data for ${a}"
+  log_debug "hotspot url: ${url}"
 
   n=0
   get_payload
   
-  while [ ! "$(success_payload)" ]; do
+  while [ ! "$(blockchain_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
       rm_lock "${data_dir}/${a}/${lock_file}"

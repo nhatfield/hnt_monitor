@@ -1,9 +1,9 @@
 get_payload() {
-  payload=$(curl -s "${url}") || log_err "api timeout"
+  payload=$(curl -sL "${url}" || jq '.' 2>/dev/null) || log_err "api timeout"
 }
 
 next_payload() {
-  new_payload=$(curl -s "${url}&cursor=${cursor}") || log_err "api timeout"
+  new_payload=$(curl -sL "${url}&cursor=${cursor}" | jq '.' 2>/dev/null) || log_err "api timeout"
 }
 
 send_payload() {
@@ -23,23 +23,35 @@ send_payload() {
   fi
 }
 
-success_payload() {
-  jq 'select(.data != null)' <<< "${payload}"
+blockchain_success_payload() {
+  jq 'select(.data != null)' <<< "${payload}" 2>/dev/null
 }
 
 bobcat_miner_success_payload() {
-  jq 'select(.miner != null)' <<< "${payload}"
+  jq 'select(.miner != null)' <<< "${payload}" 2>/dev/null
 }
 
 bobcat_temp_success_payload() {
-  jq 'select(.unit != null)' <<< "${payload}"
+  jq 'select(.unit != null)' <<< "${payload}" 2>/dev/null
 }
 
 bobcat_status_success_payload() {
-  jq 'select(.status != null)' <<< "${payload}"
+  jq 'select(.status != null)' <<< "${payload}" 2>/dev/null
+}
+
+longap_success_payload() {
+  jq 'select(.[].publicKey != null)' <<< "${payload}" 2>/dev/null
+}
+
+nebra_success_payload() {
+  jq 'select(.AN != null)' <<< "${payload}" 2>/dev/null
+}
+
+sensecap_success_payload() {
+  jq 'select(.data.name != null)' <<< "${payload}" 2>/dev/null
 }
 
 get_cursor() {
   p=${1:-"${payload}"}
-  cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${p}") || log_info "cursor data empty"
+  cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${p}" 2>/dev/null) || log_info "cursor data empty"
 }

@@ -11,10 +11,9 @@ pipeline {
         ).trim()
 
         PROJECT = 'hnt_monitor'
-        REPOSITORY = 'registry.blackem.net/hnt'
+        REPOSITORY = 'nhatfield'
         DEV_REPOSITORY = 'registry.blackem.net/hnt'
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        DOCKER_KEY = credentials('Docker_NHatfield')
     }
 
     agent any
@@ -30,6 +29,33 @@ pipeline {
                       set +x
                       BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
                       docker build -t ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} -f build/docker/Dockerfile . 
+                    """
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    env.STAGE = "${STAGE_NAME}"
+                    sh """
+                      set +x
+                      BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
+                      CONTAINER="\${BRANCH}.${BUILDID}"
+
+                      cd build/tests
+                       
+                      for t in *.test; do 
+                        > error.log
+                        echo "Running Test: \${t//.test/}"
+                        ./\${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || failed=true 
+                        if [ "\${failed}" == "true" ]; then
+                          cat error.log
+                          exit 1
+                        fi
+                        echo
+                        echo
+                      done
                     """
                 }
             }
@@ -60,6 +86,8 @@ pipeline {
                       BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
                       if [ ${env.GIT_BRANCH} = "master" ]; then
                         docker tag ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} ${REPOSITORY}/${PROJECT}:${VERSION}
+                        docker tag ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} ${REPOSITORY}/${PROJECT}:latest
+                        docker login -u nhatfield -p ${DOCKER_KEY}
                         docker push ${REPOSITORY}/${PROJECT}
                       else
                         docker push ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID}

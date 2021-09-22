@@ -1,7 +1,7 @@
 # Grafana Setup
 
 ## Login
-Now that you have the full stack running, it's time to setup grafana. The first thing we need to do is login to the UI and update the default password. 
+Now that you have the full stack running, it's time to setup grafana. The first thing we need to do is login to the UI and update the default password. The credentials are set as user: `admin` pass: `admin`
 
 ![login](images/grafana-login.png)
 

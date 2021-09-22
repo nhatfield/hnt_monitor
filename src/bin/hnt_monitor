@@ -36,17 +36,27 @@ rm_locks
 
 run() {
   while true; do
-  
+    # Set libs
+    for l in ../lib/*; do
+      . "${l}"
+    done
+    get_configs   
+ 
+
     if [ "${init}" == "true" ]; then
       when="30 days ago"
     else
       when=
     fi
 
-    run_collector
+    if [ "${collector_enabled}" == "true" ]; then
+      run_collector
+    fi
 
     if [ "${init}" == "false" ]; then
-      run_etl
+      if [ "${etl_enabled}" == "true" ]; then
+        run_etl
+      fi
       run_system
     else
       log_info "allowing collections to finish before processesing data"

@@ -6,40 +6,26 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-id=miner.sensecap
-data_dir="${data_dir}/${id}"
-make_dir "${data_dir}"
+id=etl.sensecap
+
+sensecap_data() {
+  log_info "processing data"
+
+  get_miner_sensecap_data
+  send_miner_sensecap_data
+
+  log_debug "sensecap data:\n\n  cpu_temperature: ${cputemp}\n  cpu_used: ${cpuused}\n  memory_total: ${memtotal}\n  memory_used: ${memused}\n  sd_total: ${sdtotal}\n  sd_used: ${sdused}\n  antenna_gain: ${gain}\n  relayed_status: ${relayed}\n  is_healthy: ${healthy}\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  p2p_connected: ${p2p_connected}\n  dialable_status: ${dialable}\n  nat_type: ${nattype}\n  height_gap: ${gap}\n"
+}
 
 
 if [ "${sensecap_monitor}" == "true" ]; then
-  log_info "Starting sensecap monitor run"
 
-  for M in ${sensecap_serial_numbers}; do
-    log_info "getting sensecap metrics for - ${M}"
-    url="https://status.sensecapmx.cloud/api/openapi/device/view_device?sn=${M}&api_key=${sensecap_api_key}"
-   
-    get_payload
+  for a in ${sensecap_serial_numbers}; do
     get_miner_sensecap_name
-    send_miner_sensecap
-
-    log_debug "sensecap cpu temperature $(jq '.data.cpuTemperature' <<< "${payload}")"
-    log_debug "sensecap cpu used $(jq '.data.cpuUsed' <<< "${payload}")"
-    log_debug "sensecap memory total $(jq '.data.memoryTotal' <<< "${payload}")"
-    log_debug "sensecap memory used $(jq '.data.memoryUsed' <<< "${payload}")"
-    log_debug "sensecap sd total $(jq '.data.sdTotal' <<< "${payload}")"
-    log_debug "sensecap sd used $(jq '.data.sdUsed' <<< "${payload}")"
-    log_debug "sensecap antenna gain $(jq '.data.gain' <<< "${payload}")"
-    log_debug "sensecap relayed $(jq '.data.relayed' <<< "${payload}")"
-    log_debug "sensecap is healthy $(jq '.data.isHealth' <<< "${payload}")"
-    log_debug "sensecap helium block_height $(jq '.data.totalHeight' <<< "${payload}")"
-    log_debug "sensecap block height $(jq '.data.height' <<< "${payload}")"
-    log_debug "sensecap connected $(jq '.data.connected' <<< "${payload}")"
-    log_debug "sensecap dialable $(jq '.data.dialable' <<< "${payload}")"
-    log_debug "sensecap nat type $(jq '.data.natType' <<< "${payload}")"
+    sensecap_data &
   done
 
-  log_info "Sensecap monitor run complete"
 else
-  log_debug "(sensecap_monitor=${sensecap_monitor})"
+  log_debug "Sensecap monitor collection is disabled. Hint: (sensecap_monitor=${sensecap_monitor})"
   true
 fi

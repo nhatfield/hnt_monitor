@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+OPT=${1:-"run"}
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+cd ${DIR}
+
+. test.conf
+
+container=${1:-""}
+image=${2:-""}
+hotspot="hotspot"
+
+if [ ! "${container}" ]; then
+  echo "Missing container name"
+  exit 1
+fi
+
+if [ ! "${image}" ]; then
+  echo "Missing container image"
+  exit 1
+fi
+
+
+id=etl.test
+test_url="http://devbox.blackem.net:9999"
+configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%' | grep "_monitor")
+vars=$(echo "${configs}" | sed 's%^%HNT_%' | tr 'a-z' 'A-Z')
+run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=true%' | tr '\n' ' ')
+
+test() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
+  cleanup 2>/dev/null || true
+
+  docker run -d ${run_vars} -e HNT_DEBUG=true \
+    -e HNT_BOBCAT_IPS="123 456" \
+    -e HNT_NEBRA_IPS="123 456" \
+    -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} \
+    -e HNT_HOTSPOT_ADDRESSES=${hotspot} \
+    -e HNT_LONGAP_ADDRESSES=${hotspot} \
+    -e HNT_PROMETHEUS_PG_HOST=\"\" \
+    -e bobcat_test_url=${test_url}/bobcat \
+    -e helium_test_url=${test_url}/helium \
+    -e hotspot_test_url=${test_url} \
+    -e nebra_test_url=${test_url}/nebra/data \
+    -e longap_test_url=${test_url}/longap/status \
+    -e sensecap_test_url=${test_url}/sensecap/data \
+    --name ${container} ${image} 1>/dev/null || cleanup_err
+
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - waiting for data to process ..."
+  sleep 90
+  logs=$(docker logs ${container})
+
+  for v in $(set -o posix; set | sed 's% %:#:%g'); do
+    if [[ "${v}" == "test_"*  ]]; then
+
+      KEY=$(echo "${v}" | sed 's%=.*%%;s%__%##%g;s%test_%%;s%##%_%g' | tr 'A-Z' 'a-z')
+      VAL=$(echo "${v}" | sed "s%.*=%%;s%[']%%g")
+
+      if [ ! "${KEY}" == "timestamps" ]; then
+        conf_var=${KEY}
+        if [ "$(echo "${VAL//:#:/ }" | tr ' ' '\n' | wc -l)" -eq 1 ]; then
+          echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${VAL//:#:/ }"
+          grep -q "${KEY}: ${VAL}" <<< "${logs}" || cleanup_err
+        else
+          for v in ${VAL//:#:/ }; do
+            echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${v}"
+            grep -q "${KEY}: ${v}" <<< "${logs}" || cleanup_err
+          done
+        fi
+      else
+        for t in ${VAL//:#:/ }; do
+          conf_var="[timestamp]"
+          echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [timestamp]: ${t}"
+          grep -q "${t}" <<< "${logs}" || cleanup_err
+        done
+      fi
+    fi
+  done
+
+  conf_var=error.status
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - checking for errors in the logs"
+  if [ "$(grep "\[ERROR\]" <<< "${logs}" | wc -l)" -ge 1 ]; then
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - detected errors in the logs"
+    grep "\[ERROR\]" <<< "${logs}" || true
+    cleanup_err
+  fi
+}
+
+cleanup_err() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - validation failed"
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - dumping docker logs to error.log"
+  docker logs ${container} >> error.log || true
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - last validation: ${conf_var}"
+  cleanup
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - FAILED!"
+  exit 1
+}
+
+cleanup() {
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - cleaning up"
+  docker rm -f ${container} > /dev/null || true
+}
+
+test
+cleanup
+echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - PASSED!"

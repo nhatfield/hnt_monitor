@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+id=etl.nebra
+
+nebra_data() {
+  log_info "processing data"
+  
+  get_miner_nebra_data
+  send_miner_nebra_data
+
+  log_debug "nebra data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  sync_status: ${sync_status}\n  frequency: ${frequency}\n  bluetooth_connected: ${bluetooth_connected}\n  lora_connected: ${lora_status}\n  miner_connected: ${miner_connected}\n  relayed: ${relayed}\n  height_gap: ${gap}\n sync_percent: ${sync_percent}\n"
+}
+
+if [ "${nebra_monitor}" == "true" ]; then
+
+  for a in ${nebra_ips}; do
+    get_miner_nebra_name
+    nebra_data &
+  done
+else
+  log_debug "Nebra monitor collection is disabled. Hint: (nebra_monitor=${nebra_monitor})"
+  true
+fi

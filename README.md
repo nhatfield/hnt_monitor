@@ -1,63 +1,98 @@
 # HNT Miner Monitor
 
+![Grafana style for your miner](docs/images/grafana-title.png)
+
 ## Overview
 
 This repo is used to produce metrics from miner api's and the Helium blockchain. We can use the metrics to diagnose, alert, and prevent poor mining performance. Currently we extract the following metrics:
 
 **Hotspot API**
 
-- rewards (15 minute, 1 hour, 1 day, 7 days, 30 days)
+- block height
+- reward counts (15 minute, 1 hour, 1 day, 7 days, 30 days)
+- reward scale
 - witnessed
 - witnesses
-- reward scale
-- block height
 
 **Bobcat API**
 
-- cpu temperatures
 - block height
+- cpu temperatures
 - miner height
 - height gap
 - sync status
 
+**LongAP**
+
+- block height
+- height gap
+- miner connected
+- miner height
+- online status
+
+**Nebra**
+
+- block height
+- bluetooth connected
+- frequency
+- height gap
+- lora status
+- miner connected
+- miner height
+- relayed
+- sync status
+
 **Sensecap API**
 
+- antenna gain
+- block height
 - cpu temperature
 - cpu used
+- dialable
+- height gap
+- is healthy
 - memory total
 - memory used
+- nat type
+- miner connected
+- miner height
+- relayed
 - sd total
 - sd used
-- antenna gain
-- relayed
-- is healthy
-- helium block_height
-- block height
-- connected
-- dialable
-- nat type
 
 ## Prerequisite
 
-**Without Docker**
+**Prerequisite: without docker**
 
 - [prometheus push gateway](https://github.com/prometheus/pushgateway)
 - [prometheus](https://prometheus.io/docs/prometheus/latest/installation)
 - [grafana](https://grafana.com/docs/grafana/latest/installation/docker)
 
-You should have your monitoring platform setup by using prometheus and grafana. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
+if you plan to not use docker to manage your metric collection, you should at least have your monitoring platform setup by using `prometheus`, `prometheus push gateway`, and `grafana`. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
 
-**Docker**
+**Prerequisite: using docker**
 
-- [docker](https://docker.io)
-- [docker-compose](https://docs.docker.com/compose/install/)
-- Disable SELinux (unless you want to deal with adding ports and services manually)
+You can install `docker` by running the `setup.sh` script with the `prereq` command. This will install `docker` and `docker-compose`.
 
-With docker we can create the entire monitoring stack
+```bash
+$> ./setup.sh prereq
+```
+
+With docker we can create the entire monitoring stack using `docker-compose`.
 
 ## Quick Start
 
-**Without Docker**
+**Quick Start: setup & installation**
+
+The setup.sh script will install the necessary software and walk you through setting up the monitor stack. Follow the prompts, input your miners, and let the script install the platform
+
+```bash
+$> ./setup.sh
+```
+
+## Deep Dive
+
+**Deep Dive: without docker**
 
 Navitage to the `src/conf/` directory and add your miner address to the `address.list` file. Then update the `hnt_monitor.conf` file with your prometheus push gateway host and port. Then run the hnt monitor script manually. You can visit the `host:port` of the machine running prometheus pushgaeway and see the new metrics
 
@@ -71,7 +106,7 @@ Run in the background if you want to make it a service
 $> ./src/bin/hnt_monitor &
 ```
 
-**Docker**
+**Deep Dive: docker without docker-compose**
 
 Run the hnt monitor script standalone
 
@@ -81,11 +116,17 @@ $> docker run --rm -it hnt_monitor help     # help menu
 $> docker run -d -e HOTSPOT_MONITOR=true -e HOTSPOT_ADDRESSES="12345..." -e PROMETHEUS_PG_HOST=my.prometheus-pushgateway.host hnt_monitor  # Enable hotspot monitoring from helium api
 ```
 
-## Docker
+**Deep Dive: docker with docker-compose**
 
-The entire monitoring stack is available in docker containers. Update the configs and deploy the services.
+**automated setup & deploy**
 
-**Configs**
+The entire monitoring stack is available in docker containers. Run the `setup.sh` script to configure the docker-compose settings and launch the stack.
+
+```bash
+$> ./setup.sh
+```
+
+**manual setup & deploy**
 
 Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monitor` service environment variables.
 
@@ -97,10 +138,11 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
       dockerfile: ./build/docker/Dockerfile
       context: .
     environment:
-      HOTSPOT_MONITOR: "true"
-      HOTSPOT_ADDRESSES: "<myminersaddress> "   # Update your miner address on this line before launching the stack
-      PROMETHEUS_PG_HOST: "prometheus_pushgateway"
-      DEBUG: "true"
+      DO_NOT_REMOVE: "setup"
+      HNT_HOTSPOT_MONITOR: "true"
+      HNT_HOTSPOT_ADDRESSES: "<myminersaddress> "   # Update your miner address on this line before launching the stack
+      HNT_PROMETHEUS_PG_HOST: "prometheus_pushgateway"
+      HNT_DEBUG: "true"
     networks:
       hnt_monitor:
         ipv4_address: 10.30.0.05
@@ -108,64 +150,65 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
       - prometheus_pushgateway
 ```
 
-Check the variables table below for more options that the hnt_monitor supports
-
-
-**Run**
+Check the variables table below for more options that the `hnt_monitor` supports. Once you're satisfied, you can run the `docker-compose` below to launch the stack.
 
 ```
 $> docker-compose -f hnt_monitor.yml up -d
 ```
 
-Once the docker-compose completes, you can verify the endpoints in your browser. Open your favorite web browser and check the following endpoints
+Once the `docker-compose` completes, you can verify the endpoints in your browser. Open your favorite web browser and check the following endpoints
 
 | Application | Endpoint |
 |:-----------:|----------|
-| grafana | my.host.com:3000 |
-| prometheus | my.host.com:9090 |
-| prometheus pushgateway | my.host.com:9091 |
+| grafana | http://localhost:3000 |
+| prometheus | http://localhost:9090 |
+| prometheus pushgateway | http://localhost:9091 |
 
-**Prometheus Push Gateway**
+# Verify Installtation
 
-Check the prometheus push gateway to see metrics have been pushed from the hnt_monitor.
+**Verify Instllation: prometheus push gateway**
+
+Check the prometheus push gateway to see metrics have been pushed from the `hnt_monitor`. This service is listening 9091, navigate to `http://localhost:9091` in your browser. You should see a screen like below, with all of the available metrics from the miner collector.
 
 ![prometheuspg](docs/images/prometheus-pg.png)
 
-
-
-**Help Menu**
-
-```bash
-$> docker run -it --rm hnt_monitor help
-```
-
-**Logs**
+**Verify Instllation: docker logs**
 
 ```bash
 $> docker logs -f hnt_monitor
 ```
 
-**Variables**
+# Help 
+
+```bash
+$> docker run -it --rm hnt_monitor help
+```
+
+# Variables
 
 | Name | Default | Description | Required |
 |:----:|---------|-------------|----------|
-| `BLOCKS_URL` | `api.helium.io/v1/blocks` | The helium blocks api url. | `no` |
-| `BOBCAT_IPS` | | If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
-| `BOBCAT_MONITOR` | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
-| `DEBUG` | `false` | Turn on debug logging. Boolean: `(true or false)` | `no` |
-| `HELIUM_MONITOR` | `true` | Enable or disable helium monitoring. Boolean: `(true or false)` | `no` |
-| `HOTSPOT_ADDRESSES` | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `no` |
-| `HOTSPOT_MONITOR` | `false` | Enable hotspot monitoring from helium api. Boolean: `(true or false)` | `no` |
-| `HOTSPOT_URL` | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
-| `LOGFILE` | `stdout` | Send logs to this file | `no` |
-| `LOGPATH` | `/dev/` | Send logs to this path | `no` |
-| `PROJECT` | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
-| `PROMETHEUS_PG_HOST` | `localhost` | The prometheus push gateway hostname. | `yes` |
-| `PROMETHEUS_PG_PORT` | `9091` | The prometheus push gateway port. | `no` |
-| `SENSECAP_API_KEY` | | Api key for sensecap | `no` |
-| `SENSECAP_MONITOR` | `false` | Enable or disable sensecap monitoring. Boolean: `(true or false)` | `no` |
-| `SENSECAP_SERIAL_NUMBERS` | | If sensecap monitoring enabled, list of Serial numbers of the sensecap miners | `no` |
-| `TRACE` | `false` | Turn on trace logging. Produces more logs than debug. Boolean: `(true or false)` | `no` |
+| `HNT_BLOCKS_URL` | `api.helium.io/v1/blocks` | The helium blocks api url. | `no` |
+| `HNT_BOBCAT_IPS` | | If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
+| `HNT_BOBCAT_MONITOR` | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_DEBUG` | `false` | Turn on debug logging. Boolean: `(true or false)` | `no` |
+| `HNT_HELIUM_MONITOR` | `true` | Enable or disable helium monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_HOTSPOT_ADDRESSES` | | Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc' | `no` |
+| `HNT_HOTSPOT_MONITOR` | `false` | Enable hotspot monitoring from helium api. Boolean: `(true or false)` | `no` |
+| `HNT_HOTSPOT_URL` | `api.helium.io/v1/hotspots` | The helium hotspot api url. | `no` |
+| `HNT_LOGFILE` | `stdout` | Send logs to this file | `no` |
+| `HNT_LOGPATH` | `/dev/` | Send logs to this path | `no` |
+| `HNT_LONGAP_ADDRESSES` | | If longap monitoring enabled, list of ips. Ex: 'address1 address2 address3' | `no` |
+| `HNT_LONGAP_MONITOR` | `false` | Enable or disable bobcat monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_NEBRA_IPS` | | If nebra monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
+| `HNT_NEBRA_MONITOR` | `false` | Enable or disable nebra monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_PROJECT` | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
+| `HNT_PROMETHEUS_PG_HOST` | `localhost` | The prometheus push gateway hostname. | `yes` |
+| `HNT_PROMETHEUS_PG_PORT` | `9091` | The prometheus push gateway port. | `no` |
+| `HNT_SENSECAP_API_KEY` | | Api key for sensecap | `no` |
+| `HNT_SENSECAP_MONITOR` | `false` | Enable or disable sensecap monitoring. Boolean: `(true or false)` | `no` |
+| `HNT_SENSECAP_SERIAL_NUMBERS` | | If sensecap monitoring enabled, list of Serial numbers of the sensecap miners | `no` |
+| `HNT_TRACE` | `false` | Turn on trace logging. Produces more logs than debug. Boolean: `(true or false)` | `no` |
 
 
 ## What's next
