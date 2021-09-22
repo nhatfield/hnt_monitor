@@ -47,7 +47,11 @@ pipeline {
                        
                       for t in *.test; do 
                         echo "Running Test: \${t//.test/}"
-                        ./\${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || cat error.log
+                        ./\${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || failed=true 
+                        if [ "${failed}" == "true" ]; then
+                          cat error.log
+                          exit 1
+                        fi
                         echo
                         echo
                       done

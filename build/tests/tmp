@@ -1,0 +1,27 @@
+#!/bin/bash
+
+. test.conf
+
+for v in $(set -o posix; set | sed 's% %:#:%g'); do
+    if [[ "${v}" == "test_"*  ]]; then
+
+      KEY=$(echo "${v}" | sed 's%=.*%%;s%__%##%g;s%test_%%;s%##%_%g' | tr 'A-Z' 'a-z')
+      VAL=$(echo "${v}" | sed "s%.*=%%;s%[']%%g")
+    
+      if [ ! "${KEY}" == "timestamps" ]; then
+        conf_var=${KEY}
+        if [ "$(echo "${VAL}" | tr ':#:' '\n' | wc -l)" -eq 1 ]; then
+          echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${VAL//:#:/ }"
+        else
+          for v in ${VAL//:#:/ }; do
+            echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [${KEY}]: ${v}"
+          done
+        fi
+      else
+        for t in ${VAL//:#:/ }; do
+          conf_var="[timestamp]"
+          echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - validating [timestamp]: ${t}"
+        done
+      fi
+    fi
+  done
