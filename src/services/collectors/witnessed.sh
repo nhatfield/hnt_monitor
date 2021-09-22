@@ -29,7 +29,7 @@ get() {
     get_payload
   done
 
-  send_payload append "${data_dir}/${a}/${data_format}.${endpoint}"
+  send_payload write "${data_dir}/${a}/${data_format}.${endpoint}"
   log_info "${a} hotspot ${endpoint} data ready to process"
   log_debug "${endpoint} data \n${payload}\n\n"
 
