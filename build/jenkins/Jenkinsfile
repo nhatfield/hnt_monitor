@@ -46,6 +46,7 @@ pipeline {
                       cd build/tests
                        
                       for t in *.test; do 
+                        > error.log
                         echo "Running Test: \${t//.test/}"
                         ./\${t} \${CONTAINER} ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} || failed=true 
                         if [ "\${failed}" == "true" ]; then
