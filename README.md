@@ -29,6 +29,7 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 - miner connected
 - miner height
 - online status
+- sync status
 
 **Nebra**
 
@@ -40,6 +41,7 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 - miner connected
 - miner height
 - relayed
+- sync percent
 - sync status
 
 **Sensecap API**
