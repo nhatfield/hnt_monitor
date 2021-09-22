@@ -59,8 +59,8 @@ intro() {
                   setup
                   config
                   ;;
-                upgrade|Upgrade|UPGRADE|3)
-                  upgrade
+                update|Update|UPDATE|upgrade|Upgrade|UPGRADE|3)
+                  update
                   ;;
                 deploy|Deploy|DEPLOY|4)
                   deploy

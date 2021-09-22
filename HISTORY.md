@@ -1,5 +1,8 @@
 vNext
 
+# 4.0.2
+- **BugFix** - setup.sh was upgrade command was not working
+
 # 4.0.1
 - **BugFix** - setup.sh was not setting hotspot_monitor to true
 
