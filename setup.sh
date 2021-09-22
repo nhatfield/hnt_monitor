@@ -297,6 +297,9 @@ hotspot() {
   clear
   address_endp
 
+  monitor=HNT_HOTSPOT_MONITOR
+  mon
+
   if [ "${HNT_HOTSPOT_ADDRESSES}" ]; then
     HNT_HOTSPOT_ADDRESSES="${HNT_HOTSPOT_ADDRESSES} ${ips}"
   else
