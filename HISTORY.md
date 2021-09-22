@@ -1,5 +1,7 @@
 vNext
 
+# 4.1.0
+
 - **Enchancement** - update the hnt_monitor.sh script user experience for sensecap
 - **Enchancement** - update the reademe, fixed typos
 - **Enchancement** - setup.sh script moved to hnt_monitor.sh
