@@ -1,5 +1,8 @@
 vNext
 
+# 4.0.1
+- **BugFix** - setup.sh was not setting hotspot_monitor to true
+
 # 4.0.0
 
 - **Enchancement** - add default dashboard json
