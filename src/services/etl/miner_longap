@@ -14,7 +14,7 @@ longap_data() {
   get_miner_longap_data
   send_miner_longap_data
 
-  log_debug "longap data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  status: ${status}\n  connected: ${connected}\n  height_gap: ${gap}\n"
+  log_debug "longap data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  sync_status: ${sync_status}\n  block_connected: ${block_connected}\n  height_gap: ${gap}\n"
 }
 
 if [ "${longap_monitor}" == "true" ]; then

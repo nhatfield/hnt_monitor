@@ -15,9 +15,9 @@ send_miner_bobcat_status() {
   if [ "${prometheus_pg_host}" ]; then
     log_info "Data pushed to sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_${name//-/_}_status of the bobcat synced to blockchain 0: no, 1: yes
-# TYPE ${project}_${name//-/_}_status gauge
-${project}_${name//-/_}_status{instance="${name}"} ${status}
+# HELP ${project}_${name//-/_}_sync_status of the bobcat synced to blockchain 0: synching, 1: syncd
+# TYPE ${project}_${name//-/_}_sync_status gauge
+${project}_${name//-/_}_sync_status{instance="${name}"} ${sync_status}
 # HELP ${project}_${name//-/_}_height_gap of the bobcat height to blockchain
 # TYPE ${project}_${name//-/_}_height_gap gauge
 ${project}_${name//-/_}_height_gap{instance="${name}"} ${gap}
@@ -54,18 +54,21 @@ send_miner_longap_data() {
   if [ "${prometheus_pg_host}" ]; then
     log_info "Data pushed to sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_${name//-/_}_status of the longap miner 0: offline, 1: online
-# TYPE ${project}_${name//-/_}_status gauge
-${project}_${name//-/_}_status{instance="${name}"} ${status}
-# HELP ${project}_${name//-/_}_block_height of longap miner
+# HELP ${project}_${name//-/_}_online_status of the longap miner running 0: offline, 1: online
+# TYPE ${project}_${name//-/_}_online_status gauge
+${project}_${name//-/_}_online_status{instance="${name}"} ${online_status}
+# HELP ${project}_${name//-/_}_sync_status of the longap miner synced to blockchain 0: synching, 1: syncd
+# TYPE ${project}_${name//-/_}_sync_status gauge
+${project}_${name//-/_}_sync_status{instance="${name}"} ${sync_status}
+# HELP ${project}_${name//-/_}_block_height of the longap miner
 # TYPE ${project}_${name//-/_}_block_height gauge
 ${project}_${name//-/_}_block_height{instance="${name}"} ${block_height}
-# HELP ${project}_${name//-/_}_miner_height of longap miner
+# HELP ${project}_${name//-/_}_miner_height of the longap miner
 # TYPE ${project}_${name//-/_}_miner_height gauge
 ${project}_${name//-/_}_miner_height{instance="${name}"} ${miner_height}
-# HELP ${project}_${name//-/_}_connected status of longap miner to blockchain. 0: no, 1: yes
-# TYPE ${project}_${name//-/_}_connected gauge
-${project}_${name//-/_}_connected{instance="${name}"} ${connected}
+# HELP ${project}_${name//-/_}_block_connected status of the longap miner to blockchain. 0: not connected, 1: connected
+# TYPE ${project}_${name//-/_}_block_connected gauge
+${project}_${name//-/_}_block_connected{instance="${name}"} ${block_connected}
 # HELP ${project}_${name//-/_}_height_gap of the longap height to blockchain
 # TYPE ${project}_${name//-/_}_height_gap gauge
 ${project}_${name//-/_}_height_gap{instance="${name}"} ${gap}
@@ -79,28 +82,31 @@ send_miner_nebra_data() {
   if [ "${prometheus_pg_host}" ]; then
     log_info "Data pushed to sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_${name//-/_}_block_height of helium network
+# HELP ${project}_${name//-/_}_block_height of the helium network
 # TYPE ${project}_${name//-/_}_block_height gauge
 ${project}_${name//-/_}_block_height{instance="${name}"} ${block_height}
-# HELP ${project}_${name//-/_}_frequency of nebra antenna
+# HELP ${project}_${name//-/_}_frequency of the nebra antenna
 # TYPE ${project}_${name//-/_}_frequency gauge
 ${project}_${name//-/_}_frequency{instance="${name}"} ${frequency}
-# HELP ${project}_${name//-/_}_miner_height of nebra miner
+# HELP ${project}_${name//-/_}_miner_height of the nebra miner
 # TYPE ${project}_${name//-/_}_miner_height gauge
 ${project}_${name//-/_}_miner_height{instance="${name}"} ${miner_height}
-# HELP ${project}_${name//-/_}_sync_status of nebra miner
+# HELP ${project}_${name//-/_}_sync_status of the nebra miner synced to blockchain 0: synching, 1: syncd
 # TYPE ${project}_${name//-/_}_sync_status gauge
 ${project}_${name//-/_}_miner_sync_status{instance="${name}"} ${sync_status}
-# HELP ${project}_${name//-/_}_bluetooth_connected on nebra miner 0: no 1: yes
+# HELP ${project}_${name//-/_}_sync_percent of the nebra miner synced to blockchain
+# TYPE ${project}_${name//-/_}_sync_percent gauge
+${project}_${name//-/_}_miner_sync_percent{instance="${name}"} ${sync_percent}
+# HELP ${project}_${name//-/_}_bluetooth_connected on the nebra miner 0: no 1: yes
 # TYPE ${project}_${name//-/_}_bluetooth_connected gauge
 ${project}_${name//-/_}_bluetooth_connected{instance="${name}"} ${bluetooth_connected}
-# HELP ${project}_${name//-/_}_lora_status of nebra miner
+# HELP ${project}_${name//-/_}_lora_status of the nebra miner
 # TYPE ${project}_${name//-/_}_lora_status gauge
 ${project}_${name//-/_}_lora_status{instance="${name}"} ${lora_status}
-# HELP ${project}_${name//-/_}_miner_connected status of nebra miner to p2p network 0: no 1: yes
+# HELP ${project}_${name//-/_}_miner_connected status of the nebra miner to p2p network 0: no 1: yes
 # TYPE ${project}_${name//-/_}_miner_connected gauge
 ${project}_${name//-/_}_miner_connected{instance="${name}"} ${miner_connected}
-# HELP ${project}_${name//-/_}_relayed_status of nebra miner 0: no 1: yes
+# HELP ${project}_${name//-/_}_relayed_status of the nebra miner 0: no 1: yes
 # TYPE ${project}_${name//-/_}_relayed_status gauge
 ${project}_${name//-/_}_relayed_status{instance="${name}"} ${relayed}
 # HELP ${project}_${name//-/_}_height_gap of the nebra height to blockchain
@@ -149,9 +155,9 @@ ${project}_${name//-/_}_block_height{instance="${name}"} ${block_height}
 # HELP ${project}_${name//-/_}_miner_height of the sensecap miner
 # TYPE ${project}_${name//-/_}_miner_height gauge
 ${project}_${name//-/_}_miner_height{instance="${name}"} ${miner_height}
-# HELP ${project}_${name//-/_}_connected status of the sensecap miner P2P Outbound Status. -1: unknown, 0: unhealthy, 1: healthy
-# TYPE ${project}_${name//-/_}_connected gauge
-${project}_${name//-/_}_connected{instance="${name}"} ${connected}
+# HELP ${project}_${name//-/_}_p2p_connected status of the sensecap miner P2P Outbound Status. -1: unknown, 0: unhealthy, 1: healthy
+# TYPE ${project}_${name//-/_}_p2p_connected gauge
+${project}_${name//-/_}_p2p_connected{instance="${name}"} ${p2p_connected}
 # HELP ${project}_${name//-/_}_dialable status of the sensecap miner P2P Inbound Status. -1: unknown, 0: unhealthy, 1: healthy
 # TYPE ${project}_${name//-/_}_dialable gauge
 ${project}_${name//-/_}_dialable{instance="${name}"} ${dialable}
@@ -161,6 +167,9 @@ ${project}_${name//-/_}_nat_type{instance="${name}"} ${nattype}
 # HELP ${project}_${name//-/_}_height_gap of the sensecap height to blockchain
 # TYPE ${project}_${name//-/_}_height_gap gauge
 ${project}_${name//-/_}_height_gap{instance="${name}"} ${gap}
+# HELP ${project}_${name//-/_}_sync_status of the sensecap miner synced to blockchain 0: synching, 1: syncd
+# TYPE ${project}_${name//-/_}_sync_status gauge
+${project}_${name//-/_}_sync_status{instance="${name}"} ${sync_status}
 EOF
   fi
 }
