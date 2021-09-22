@@ -7,7 +7,7 @@ send_block_height() {
 ${project}_${name}_block_height{instance="${name}"} ${height}
 EOF
 
-    log_info "Data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}"
+    log_info "[Block height] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}"
   fi
 }
 
@@ -32,7 +32,7 @@ ${project}_${name//-/_}_block_height{instance="${name}"} ${block_height}
 ${project}_${name//-/_}_status_epoch{instance="${name}"} ${epoch}
 EOF
 
-    log_info "Status data push to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+    log_info "[Status] data push to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -46,7 +46,7 @@ ${project}_${name//-/_}_temperature{instance="${name}",core="0"} ${temp0}
 ${project}_${name//-/_}_temperature{instance="${name}",core="1"} ${temp1}
 EOF
 
-    log_info "Temperature data push to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+    log_info "[Temperature] data push to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -74,7 +74,7 @@ ${project}_${name//-/_}_block_connected{instance="${name}"} ${block_connected}
 ${project}_${name//-/_}_height_gap{instance="${name}"} ${gap}
 EOF
 
-    log_info "Data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+    log_info "[Miner] sata pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -114,7 +114,7 @@ ${project}_${name//-/_}_relayed_status{instance="${name}"} ${relayed}
 ${project}_${name//-/_}_height_gap{instance="${name}"} ${gap}
 EOF
 
-    log_info "Data push to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+    log_info "[Miner] data push to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -171,6 +171,8 @@ ${project}_${name//-/_}_height_gap{instance="${name}"} ${gap}
 # TYPE ${project}_${name//-/_}_sync_status gauge
 ${project}_${name//-/_}_sync_status{instance="${name}"} ${sync_status}
 EOF
+
+    log_info "[Miner] data push to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -195,7 +197,7 @@ ${project}_${name//-/_}_reward_7d{instance="${name}",address="${a}"} ${rewards_7
 ${project}_${name//-/_}_reward_30d{instance="${name}",address="${a}"} ${rewards_30d}
 EOF
 
-    log_info "${a} data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+    log_info "[${a}] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -208,7 +210,7 @@ send_reward_scale() {
 ${project}_${name//-/_}_reward_scale{instance="${name}",address="${a}"} ${scale}
 EOF
 
-    log_info "${a} data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+    log_info "[${a}] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -224,6 +226,6 @@ ${project}_${name//-/_}_witnessed{instance="${name}",address="${a}"} ${witnessed
 ${project}_${name//-/_}_witnesses{instance="${name}",address="${a}"} ${witnesses_count}
 EOF
 
-    log_info "${a} data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+    log_info "[${a}] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
   fi
 }
