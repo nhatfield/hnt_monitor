@@ -1,5 +1,7 @@
 vNext
 
+# 4.0.0
+
 - **Enchancement** - add default dashboard json
 - **Enchancement** - add setup.sh to automate install and upgrades
 - **Enchancement** - add calculated sync status for all miners
