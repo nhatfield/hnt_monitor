@@ -1,5 +1,6 @@
 vNext
 
+- **Enchancement** - add default dashboard json
 - **Enchancement** - add setup.sh to automate install and upgrades
 - **Enchancement** - add calculated height gap for all miners
 - **Enchancement** - add build test cases
