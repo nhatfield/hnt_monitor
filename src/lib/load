@@ -1,6 +1,6 @@
 send_block_height() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}
 # HELP ${project}_${name}_block_height helium block height
 # TYPE ${project}_${name}_block_height gauge
@@ -13,7 +13,7 @@ EOF
 
 send_miner_bobcat_status() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_sync_status of the bobcat synced to blockchain 0: synching, 1: syncd
 # TYPE ${project}_${name//-/_}_sync_status gauge
@@ -38,7 +38,7 @@ EOF
 
 send_miner_bobcat_temp() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_temperature of the bobcat miner cpu
 # TYPE ${project}_${name//-/_}_temperature gauge
@@ -52,7 +52,7 @@ EOF
 
 send_miner_longap_data() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_online_status of the longap miner running 0: offline, 1: online
 # TYPE ${project}_${name//-/_}_online_status gauge
@@ -80,7 +80,7 @@ EOF
 
 send_miner_nebra_data() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_block_height of the helium network
 # TYPE ${project}_${name//-/_}_block_height gauge
@@ -120,7 +120,7 @@ EOF
 
 send_miner_sensecap_data() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_cpu_temperature of the sensecap miner cpu
 # TYPE ${project}_${name//-/_}_cpu_temperature gauge
@@ -176,7 +176,7 @@ EOF
 
 send_reward_counts() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_reward_15m total rewards 15 minutes
 # TYPE ${project}_${name//-/_}_reward_15m gauge
@@ -201,7 +201,7 @@ EOF
 
 send_reward_scale() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_reward_scale based on hex and nearby miners
 # TYPE ${project}_${name//-/_}_reward_scale gauge
@@ -214,7 +214,7 @@ EOF
 
 send_witness_count() {
   if [ "${prometheus_pg_host}" ]; then
-    log_info "Data pushed to sending data to prometheus pushgateway"
+    log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name//-/_}_witnessed miners
 # TYPE ${project}_${name//-/_}_witnessed gauge
