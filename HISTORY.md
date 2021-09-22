@@ -1,5 +1,10 @@
 vNext
 
+- **Enchancement** - update the hnt_monitor.sh script user experience for sensecap
+- **Enchancement** - update the reademe, fixed typos
+- **Enchancement** - setup.sh script moved to hnt_monitor.sh
+- **BugFix** - setup.sh sensecap api key was not properly added
+
 # 4.0.2
 - **BugFix** - setup.sh was upgrade command was not working
 

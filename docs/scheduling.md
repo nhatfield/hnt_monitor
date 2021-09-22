@@ -1,5 +1,7 @@
 # Scheduling
 
+The default settings on collections are good for most use cases. If you find that you need to change the intervals, you have the option to do so.
+
 **Scheduling: without docker**
 
 You can update the frequency of the data collection in the conf file `hnt_monitor.conf`. The intervals are in (seconds).
@@ -15,7 +17,6 @@ rewards_interval=300
 witness_interval=86400
 ```
 
-The default settings on collections are good in most cases. IF you find thqt you need to change them intervals, you have the option to do so.
 
 **Scheduling: using docker**
 

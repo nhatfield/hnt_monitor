@@ -97,14 +97,44 @@ prereq() {
   if [ ! "$(which docker 2>/dev/null)" ] || [ ! "$(which docker-compose 2>/dev/null)" ]; then
     echo "Docker was not detected. Installing..."
     if [ "$(which yum 2>/dev/null)" ]; then
-      yum update -y
-      yum install -y epel-release
-      yum update -y
+      echo "The script wants to update your system [yum update -y]. This will update all of your systems software! Would you like to proceed? [yes|no]"
+      echo
+      read up_resp
+
+      case ${up_resp} in
+                      y|Y|yes|Yes|YES)
+                        yum update -y
+                        yum install -y epel-release
+                        yum update -y
+                        ;;
+                      n|N|no|No|NO)
+                        echo "skipping updates"
+                        ;;
+                      *)
+                        echo "Please choose a valid option: [yes|no]"
+                        ;;
+      esac
+
       yum install docker docker-compose -y
       service docker start || systemctl start docker
     elif [ "$(which apt-get 2>/dev/null)" ]; then
-      apt-get update -y
-      apt-get upgrade -y
+      echo "The script wants to update your system [apt-get update -y] and [apt-get upgrade -y]. This will update all of your systems software! Would you like to proceed? [yes|no]"
+      echo
+      read up_resp
+
+      case ${up_resp} in
+                      y|Y|yes|Yes|YES)
+                        apt-get update -y
+                        apt-get upgrade -y
+                        ;;
+                      n|N|no|No|NO)
+                        echo "skipping updates"
+                        ;;
+                      *)
+                        echo "Please choose a valid option: [yes|no]"
+                        ;;
+      esac
+
       apt-get install docker docker-compose -y
       service docker start || systemctl start docker
     else
@@ -158,7 +188,7 @@ setup() {
   read install
 
   while [ ! "${install}" ]; do
-    echo "Please choose a valid option or cancel the script [CTRL+C]"
+    echo "Please choose a valid option from the listed items above."
     read install
   done
   
@@ -217,6 +247,10 @@ mon() {
   else
     ${sedi} "s%DO_NOT_REMOVE:\(.*\)%DO_NOT_REMOVE:\1\n      ${monitor}: \"true\"%" "${YAML}"
   fi
+}
+
+validate() {
+  val=$(grep "${search}" ${YAML} 2>/dev/null | sed "s%.*: %%;s%\"%%g")
 }
 
 bobcat() {
@@ -282,14 +316,17 @@ sensecap() {
   endpoints=HNT_SENSECAP_SERIAL_NUMBER
   end_point
 
+  hotspot
+
+  clear
   echo
   echo "Enter your sensecap api key"
   echo
   read ips
   
+  endpoints=HNT_SENSECAP_API_KEY
   end_point
 
-  hotspot
   end
 }
 
@@ -308,12 +345,12 @@ hotspot() {
 }
 
 end() {
-  echo "Would you like to add another miner?"
+  echo "Would you like to add another miner? [yes|no]"
   echo
   read end_resp
   
   while [ ! "${end_resp}" ]; do
-    echo "Please choose a valid option or cancel the script [CTRL+C]"
+    echo "Please choose a valid option: [yes|no]"
     read end_resp
   done
 
@@ -345,7 +382,7 @@ config() {
 
 deploy() {
   clear
-  echo "Ready to deploy?"
+  echo "Ready to deploy? [yes|no]"
   echo
   read deploy
 

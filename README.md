@@ -74,10 +74,10 @@ if you plan to not use docker to manage your metric collection, you should at le
 
 **Prerequisite: using docker**
 
-You can install `docker` by running the `setup.sh` script with the `prereq` command. This will install `docker` and `docker-compose`.
+You can install `docker` by running the `hnt_monitor.sh` script with the `prereq` command. This will install `docker` and `docker-compose`.
 
 ```bash
-$> ./setup.sh prereq
+$> ./hnt_monitor.sh prereq
 ```
 
 With docker we can create the entire monitoring stack using `docker-compose`.
@@ -86,10 +86,10 @@ With docker we can create the entire monitoring stack using `docker-compose`.
 
 **Quick Start: setup & installation**
 
-The setup.sh script will install the necessary software and walk you through setting up the monitor stack. Follow the prompts, input your miners, and let the script install the platform
+The hnt_monitor.sh script will install the necessary software and walk you through setting up the monitor stack. Follow the prompts, input your miners, and let the script install the platform
 
 ```bash
-$> ./setup.sh
+$> ./hnt_monitor.sh
 ```
 
 ## Deep Dive
@@ -122,10 +122,10 @@ $> docker run -d -e HOTSPOT_MONITOR=true -e HOTSPOT_ADDRESSES="12345..." -e PROM
 
 **automated setup & deploy**
 
-The entire monitoring stack is available in docker containers. Run the `setup.sh` script to configure the docker-compose settings and launch the stack.
+The entire monitoring stack is available in docker containers. Run the `hnt_monitor.sh` script to configure the docker-compose settings and launch the stack.
 
 ```bash
-$> ./setup.sh
+$> ./hnt_monitor.sh
 ```
 
 **manual setup & deploy**
