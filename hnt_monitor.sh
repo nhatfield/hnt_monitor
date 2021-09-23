@@ -88,8 +88,9 @@ view() {
   grep "HNT_" "${YAML}" | sed 's%^      %%'
   echo
   echo
-  echo "Press any key to continue ..."
+  echo "Press [enter] key to continue ..."
   read resp
+
 } 
 
 prereq() {
@@ -223,17 +224,71 @@ address_endp() {
   echo "What are the hotspot addresses of the ${id} miner(s)? Please separate them by a [space]"
   echo "ex: 112GezswE 114vTyhUnKo"
   echo
-  read ips
+  validate
 }
 
 ips_endp() {
   echo "What are the PRIVATE IP addresses of your ${id} miner(s)? Please separate them by a [space]"
   echo "ex: 192.168.0.1 10.10.0.3 172.16.2.5"
   echo
-  read ips
+  validate
+}
+
+validate() {
+  val=$(grep "${endpoints}" ${YAML} 2>/dev/null | sed "s%.*: %%;s%\"%%g") || true
+  
+  if [ "${val}" ]; then
+    echo "Keep existing? [yes|no]"
+    echo 
+    echo "> \"${val}\""
+    echo
+
+    read val_resp
+
+    case ${val_resp} in
+                   y|Y|yes|Yes|YES)
+                     type=keeping
+                     ips=${val}
+                     ;;
+                   n|N|no|No|NO)
+                     type=changing
+                     echo "Enter your ips separated by a [space]"
+                     echo
+                     read ips
+
+                     if [ ! "${ips}" ]; then
+                       none
+                     fi
+
+                     ;;
+                   *)
+                     echo "Invalid response: ${val_resp}"
+                     echo "[yes|no]"
+                     echo "No rchanges committed. Returning to the miner setup menu."
+                     sleep 2
+                     setup
+                     exit 0
+                     ;;
+    esac
+  else
+    type=adding
+    read ips
+    
+    if [ ! "${ips}" ]; then
+      none
+    fi
+  fi
+}
+
+none() {
+  echo "No rchanges committed. Returning to the miner setup menu"
+  sleep 2
+  setup
+  exit 0
 }
 
 end_point() {
+  echo "${id}: ${type} - ${endpoints} = \"${ips}\""
   if [ "$(grep "${endpoints}" ${YAML} 2>/dev/null)" ]; then
     ${sedi} "s%${endpoints}:.*%${endpoints}: \"${ips}\"%" "${YAML}"
   else
@@ -241,7 +296,8 @@ end_point() {
   fi
 }
 
-mon() {
+start_point() {
+  echo "${id}: enabling - ${monitor} = \"true\""
   if [ "$(grep "${monitor}" ${YAML} 2>/dev/null)" ]; then
     ${sedi} "s%${monitor}:.*%${monitor}: \"true\"%" "${YAML}"
   else
@@ -249,93 +305,84 @@ mon() {
   fi
 }
 
-validate() {
-  val=$(grep "${search}" ${YAML} 2>/dev/null | sed "s%.*: %%;s%\"%%g")
-}
-
 bobcat() {
   clear
-  
   id=bobcat
-  ips_endp
-
   monitor=HNT_BOBCAT_MONITOR
-  mon
-
   endpoints=HNT_BOBCAT_IPS
-  end_point
 
+  ips_endp
+  start_point
+  end_point
+  sleep 2
   hotspot
-  end
+  end  
 }
 
 longap() {
   clear
-
   id=longap
-  address_endp
-
   monitor=HNT_LONGAP_MONITOR
-  mon
-
   endpoints=HNT_LONGAP_ADDRESSES
-  end_point
 
+  address_endp
+  start_point
+  end_point
+  sleep 2
   hotspot
   end
 }
 
 nebra() {
   clear
-
   id=nebra
-  ips_endp
-
   monitor=HNT_NEBRA_MONITOR
-  mon
-
   endpoints=HNT_NEBRA_IPS
-  end_point
 
+  ips_endp
+  start_point
+  end_point
+  sleep 2
   hotspot
   end
 }
 
 sensecap() {
   clear
-
   id=sensecap
+  monitor=HNT_SENSECAP_MONITOR
+  endpoints=HNT_SENSECAP_SERIAL_NUMBERS
+
   echo "What are the serial numbers of the ${id} miner(s)? Please separate them by a [space]"
   echo "ex: serial1 serial2"
   echo
-  read ips
+  validate
 
-  monitor=HNT_SENSECAP_MONITOR
-  mon
-
-  endpoints=HNT_SENSECAP_SERIAL_NUMBER
+  start_point
   end_point
-
+  sleep 2
   hotspot
+  sleep 2
 
   clear
-  echo
+  id=sensecap
+  endpoints=HNT_SENSECAP_API_KEY
   echo "Enter your sensecap api key"
   echo
-  read ips
+  validate
   
-  endpoints=HNT_SENSECAP_API_KEY
   end_point
-
   end
 }
 
 hotspot() {
   clear
-  address_endp
-
+  id=hotspot
   monitor=HNT_HOTSPOT_MONITOR
-  mon
+  endpoints=HNT_HOTSPOT_ADDRESSES
+
+  address_endp
+  start_point
 
   if [ "${HNT_HOTSPOT_ADDRESSES}" ]; then
     HNT_HOTSPOT_ADDRESSES="${HNT_HOTSPOT_ADDRESSES} ${ips}"
@@ -416,7 +463,7 @@ finish() {
   echo "Donate:                  HNT: 1359NhpbxJg1jRpDenJvrmD2P3ZN3hWGSGzUF6Uyn828zYdyYVt"
   echo
   echo
-  echo "Press any key to continue ..."
+  echo "Press [enter] key to continue ..."
   read resp
 }
 
@@ -434,11 +481,14 @@ donate() {
   clear
   cat .donate
   echo "Yes the QR code works. HNT wallet address =)"
-  echo "Make your terinal window large enough to see the whole QR. Center your scanner and slowly pull your scanner away from the code until it accepts."
+  echo "Make your terminal window large enough to see the whole QR. Center your scanner and slowly pull your scanner away from the code until it accepts."
   echo "Thank you =)"
 }
 
 case ${OPT} in
+            deploy)
+              deploy
+              ;;
             donate)
               donate
               ;;
@@ -452,10 +502,13 @@ case ${OPT} in
             update|upgrade)
               update
               ;;
-            prereq)
+            prereq|deps|dependencies)
               prereq
               ;;
-            view)
+            settings|setup)
+              setup
+              ;;
+            view|configs)
               view
               ;;
             version | -v | --version)
