@@ -1,5 +1,11 @@
 vNext
 
+- **Enchancement** - update hnt_monitor.sh to not allow blank values
+- **Enchancement** - update hnt_monitor.sh to catch existing values and prompt for action
+- **Enchancement** - update hnt_monitor.sh with better wording during setup
+- **Enchancement** - update hnt_monitor.sh with the `deploy` command
+- **BugFix** - sensecap serial numbers variable was incorrect in hnt_monitor.sh
+
 # 4.1.0
 
 - **Enchancement** - update the hnt_monitor.sh script user experience for sensecap
