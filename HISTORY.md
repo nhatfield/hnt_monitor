@@ -1,5 +1,7 @@
 vNext
 
+# 4.2.0
+
 - **Enchancement** - update hnt_monitor.sh to not allow blank values
 - **Enchancement** - update hnt_monitor.sh to catch existing values and prompt for action
 - **Enchancement** - update hnt_monitor.sh with better wording during setup
