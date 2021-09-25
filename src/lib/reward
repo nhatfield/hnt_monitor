@@ -1,5 +1,5 @@
 get_reward_earned() {
-  earned=$(jq -r --arg r "$r" '.data[] | select(.timestamp == $r) | .amount' "${data_dir}/${a}"/*.rewards 2>/dev/null) || log_err "could not retrieve reward earned"
+  earned=$(jq -r --arg r "$r" '.data[] | select(.timestamp == $r) | .amount' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward earned"
 }
 
 get_reward_timestamps() {
