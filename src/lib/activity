@@ -1,0 +1,10 @@
+get_activity_timestamps() {
+  activity=$(jq -r '.data[].time' "${data_dir}/${a}"/*.activity 2>/dev/null | sort -u) || log_err "could not retrieve activity timestamps"
+}
+
+get_activity_data() {
+  activity_sent_beacon=$(jq -r --argjson t "${t}" --arg a "${a}" '.data[] | select(.time == $t) | select(.type == "poc_receipts_v1") | select(.challengee != null) | select(.challengee == $a) | .type' "${data_dir}/${a}"/*.activity 2>/dev/null | wc -l | tr -dc .[:print:].) 
+  activity_sent_beacons=${activity_sent_beacons:-"$(jq -r --argjson t "${t}" --arg a "${a}" '.data[] | select(.time == $t) | select(.type == "poc_receipts_v1") | .path[] | select(.challengee != null) | select(.challengee == $a) | .challengee' "${data_dir}/${a}"/*.activity 2>/dev/null | wc -l | tr -dc .[:print:].)"}
+  activity_create_challenge=$(jq -r --argjson t "${t}" '.data[] | select(.time == $t) | select(.type == "poc_request_v1") | .type' "${data_dir}/${a}"/*.activity 2>/dev/null | wc -l | tr -dc .[:print:].) 
+  activity_challenged_beacon=$(jq -r --argjson t "${t}" --arg a "${a}" '.data[] | select(.time == $t) | select(.type == "poc_receipts_v1") | select(.challenger != null) | select(.challenger == $a) | .type' "${data_dir}/${a}"/*.activity 2>/dev/null | wc -l | tr -dc .[:print:].)
+}

@@ -18,8 +18,8 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 
 - block height
 - cpu temperatures
-- miner height
 - height gap
+- miner height
 - sync status
 
 **LongAP**
@@ -64,29 +64,44 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 
 ## Prerequisite
 
-**Prerequisite: without docker**
+### Linux +(MacOS): Without using docker ###
 
-- [prometheus push gateway](https://github.com/prometheus/pushgateway)
-- [prometheus](https://prometheus.io/docs/prometheus/latest/installation)
-- [grafana](https://grafana.com/docs/grafana/latest/installation/docker)
+If you plan to not use docker to manage your metric collection, you should at least have your monitoring platform setup by using `prometheus`, `prometheus push gateway`, and `grafana`. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
 
-if you plan to not use docker to manage your metric collection, you should at least have your monitoring platform setup by using `prometheus`, `prometheus push gateway`, and `grafana`. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
+- **Prometheus**
+  - [prometheus push gateway](https://github.com/prometheus/pushgateway)
+  - [prometheus](https://prometheus.io/docs/prometheus/latest/installation)
 
-**Prerequisite: using docker**
+- **Grafana**
+  - [grafana](https://grafana.com/docs/grafana/latest/installation/docker)
 
-You can install `docker` by running the `hnt_monitor.sh` script with the `prereq` command. This will install `docker` and `docker-compose`.
+### Linux +(MacOS) & Windows: Using docker and docker-compose ###
+
+#### Linux +(MacOS) ####
+
+You can install `docker` and `docker-compose` by running the `hnt_monitor.sh` script. This will install all of the dependencies necessary, walk you through a setup wizard, and deploy the service. With docker we can create the entire monitoring stack using `docker-compose`.
+
+```bash
+$> ./hnt_monitor.sh
+```
+
+If you want to only install the dependencies and not setup and deploy, you can pass in the argument `prereq` to the `hnt_monitor.sh` script.
 
 ```bash
 $> ./hnt_monitor.sh prereq
 ```
 
-With docker we can create the entire monitoring stack using `docker-compose`.
+#### Windows ####
 
-## Quick Start
+You will need to install `docker` and `docker-compose` manually. You can do that by installing docker desktop for windows.
 
-**Quick Start: setup & installation**
+- [docker](https://docs.docker.com/desktop/windows/install/)
 
-The hnt_monitor.sh script will install the necessary software and walk you through setting up the monitor stack. Follow the prompts, input your miners, and let the script install the platform
+## Quick Start: Linux +(MacOS) only
+
+### Linux +(MacOS): setup & installation ###
+
+The `hnt_monitor.sh` script will install the necessary software and walk you through setting up the monitor stack. Follow the prompts, input your miners, and let the script install the platform
 
 ```bash
 $> ./hnt_monitor.sh
@@ -94,7 +109,7 @@ $> ./hnt_monitor.sh
 
 ## Deep Dive
 
-**Deep Dive: without docker**
+### Linux +(MacOS): Without docker ###
 
 Navitage to the `src/conf/` directory and add your miner address to the `address.list` file. Then update the `hnt_monitor.conf` file with your prometheus push gateway host and port. Then run the hnt monitor script manually. You can visit the `host:port` of the machine running prometheus pushgaeway and see the new metrics
 
@@ -108,7 +123,7 @@ Run in the background if you want to make it a service
 $> ./src/bin/hnt_monitor &
 ```
 
-**Deep Dive: docker without docker-compose**
+### Linux +(MacOS) & Windows: docker without docker-compose**
 
 Run the hnt monitor script standalone
 
@@ -180,7 +195,7 @@ Check the prometheus push gateway to see metrics have been pushed from the `hnt_
 $> docker logs -f hnt_monitor
 ```
 
-# Help 
+# Help
 
 ```bash
 $> docker run -it --rm hnt_monitor help
@@ -222,6 +237,6 @@ $> docker run -it --rm hnt_monitor help
 
 ## Tips & Donations
 
-Always welcomed, never required =) 
+Always welcomed, never required =)
 
 HNT: 13Vazr2mTQSbu2wBGAkqpaLvJQEdSv5aMd3qpdXFJSw2pfNpqC4

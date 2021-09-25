@@ -1,3 +1,58 @@
+send_activity_counts() {
+  if [ "${prometheus_pg_host}" ]; then
+    log_info "Sending data to prometheus pushgateway"
+    cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}
+# HELP ${project}_${name}_activity_sent_beacon_15m of the miner
+# TYPE ${project}_${name}_activity_sent_beacon_15m gauge
+${project}_${name}_activity_sent_beacon_15m{instance="${name}"} ${activity_sent_beacon_15m}
+# HELP ${project}_${name}_activity_create_challenge_15m of the miner
+# TYPE ${project}_${name}_activity_create_challenge_15m gauge
+${project}_${name}_activity_create_challenge_15m{instance="${name}"} ${activity_create_challenge_15m}
+# HELP ${project}_${name}_activity_challenged_beacon_15m of the miner
+# TYPE ${project}_${name}_activity_challenged_beacon_15m gauge
+${project}_${name}_activity_challenged_beacon_15m{instance="${name}"} ${activity_challenged_beacon_15m}
+# HELP ${project}_${name}_activity_sent_beacon_1h of the miner
+# TYPE ${project}_${name}_activity_sent_beacon_1h gauge
+${project}_${name}_activity_sent_beacon_1h{instance="${name}"} ${activity_sent_beacon_1h}
+# HELP ${project}_${name}_activity_create_challenge_1h of the miner
+# TYPE ${project}_${name}_activity_create_challenge_1h gauge
+${project}_${name}_activity_create_challenge_1h{instance="${name}"} ${activity_create_challenge_1h}
+# HELP ${project}_${name}_activity_challenged_beacon_1h of the miner
+# TYPE ${project}_${name}_activity_challenged_beacon_1h gauge
+${project}_${name}_activity_challenged_beacon_1h{instance="${name}"} ${activity_challenged_beacon_1h}
+# HELP ${project}_${name}_activity_sent_beacon_1d of the miner
+# TYPE ${project}_${name}_activity_sent_beacon_1d gauge
+${project}_${name}_activity_sent_beacon_1d{instance="${name}"} ${activity_sent_beacon_1d}
+# HELP ${project}_${name}_activity_create_challenge_1d of the miner
+# TYPE ${project}_${name}_activity_create_challenge_1d gauge
+${project}_${name}_activity_create_challenge_1d{instance="${name}"} ${activity_create_challenge_1d}
+# HELP ${project}_${name}_activity_challenged_beacon_1d of the miner
+# TYPE ${project}_${name}_activity_challenged_beacon_1d gauge
+${project}_${name}_activity_challenged_beacon_1d{instance="${name}"} ${activity_challenged_beacon_1d}
+# HELP ${project}_${name}_activity_sent_beacon_7d of the miner
+# TYPE ${project}_${name}_activity_sent_beacon_7d gauge
+${project}_${name}_activity_sent_beacon_7d{instance="${name}"} ${activity_sent_beacon_7d}
+# HELP ${project}_${name}_activity_create_challenge_7d of the miner
+# TYPE ${project}_${name}_activity_create_challenge_7d gauge
+${project}_${name}_activity_create_challenge_7d{instance="${name}"} ${activity_create_challenge_7d}
+# HELP ${project}_${name}_activity_challenged_beacon_7d of the miner
+# TYPE ${project}_${name}_activity_challenged_beacon_7d gauge
+${project}_${name}_activity_challenged_beacon_7d{instance="${name}"} ${activity_challenged_beacon_7d}
+# HELP ${project}_${name}_activity_sent_beacon_30d of the miner
+# TYPE ${project}_${name}_activity_sent_beacon_30d gauge
+${project}_${name}_activity_sent_beacon_30d{instance="${name}"} ${activity_sent_beacon_30d}
+# HELP ${project}_${name}_activity_create_challenge_30d of the miner
+# TYPE ${project}_${name}_activity_create_challenge_30d gauge
+${project}_${name}_activity_create_challenge_30d{instance="${name}"} ${activity_create_challenge_30d}
+# HELP ${project}_${name}_activity_challenged_beacon_30d of the miner
+# TYPE ${project}_${name}_activity_challenged_beacon_30d gauge
+${project}_${name}_activity_challenged_beacon_30d{instance="${name}"} ${activity_challenged_beacon_30d}
+EOF
+
+    log_info "[Hotspot activity] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}"
+  fi
+}
+
 send_block_height() {
   if [ "${prometheus_pg_host}" ]; then
     log_info "Sending data to prometheus pushgateway"
@@ -143,7 +198,7 @@ ${project}_${name//-/_}_sd_used{instance="${name}"} ${sdused}
 # HELP ${project}_${name//-/_}_antenna_gain of the sensecap miner
 # TYPE ${project}_${name//-/_}_antenna_gain gauge
 ${project}_${name//-/_}_antenna_gain{instance="${name}"} ${gain}
-# HELP ${project}_${name//-/_}_relayed_status of the sensecap miner 1: yes, 2: no
+# HELP ${project}_${name//-/_}_relayed_status of the sensecap miner 1: relayed, 2: not relayed
 # TYPE ${project}_${name//-/_}_relayed_status gauge
 ${project}_${name//-/_}_relayed_status{instance="${name}"} ${relayed}
 # HELP ${project}_${name//-/_}_is_healthy status of the sensecap miner 1: yes, 2: no
@@ -161,8 +216,8 @@ ${project}_${name//-/_}_p2p_connected{instance="${name}"} ${p2p_connected}
 # HELP ${project}_${name//-/_}_dialable status of the sensecap miner P2P Inbound Status. -1: unknown, 0: unhealthy, 1: healthy
 # TYPE ${project}_${name//-/_}_dialable gauge
 ${project}_${name//-/_}_dialable{instance="${name}"} ${dialable}
-# HELP ${project}_${name//-/_}__nat_type of the WAN/LAN connection -1: unknown, 0: none, 1: static, 2: symmetric, 3: restricted
-# TYPE ${project}_${name//-/_}__nat_type gauge
+# HELP ${project}_${name//-/_}_nat_type of the WAN/LAN connection -1: unknown, 0: none, 1: static, 2: symmetric, 3: restricted
+# TYPE ${project}_${name//-/_}_nat_type gauge
 ${project}_${name//-/_}_nat_type{instance="${name}"} ${nattype}
 # HELP ${project}_${name//-/_}_height_gap of the sensecap height to blockchain
 # TYPE ${project}_${name//-/_}_height_gap gauge
@@ -180,21 +235,46 @@ send_reward_counts() {
   if [ "${prometheus_pg_host}" ]; then
     log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_${name//-/_}_reward_15m total rewards 15 minutes
+# HELP ${project}_${name//-/_}_reward_15m total rewards count 15 minutes
 # TYPE ${project}_${name//-/_}_reward_15m gauge
 ${project}_${name//-/_}_reward_15m{instance="${name}",address="${a}"} ${rewards_15m}
-# HELP ${project}_${name//-/_}_reward_1h total rewards by hour
+# HELP ${project}_${name//-/_}_reward_1h total rewards count by hour
 # TYPE ${project}_${name//-/_}_reward_1h gauge
 ${project}_${name//-/_}_reward_1h{instance="${name}",address="${a}"} ${rewards_1h}
-# HELP ${project}_${name//-/_}_reward_1d total rewards in a day
+# HELP ${project}_${name//-/_}_reward_1d total rewards count in a day
 # TYPE ${project}_${name//-/_}_reward_1d gauge
 ${project}_${name//-/_}_reward_1d{instance="${name}",address="${a}"} ${rewards_1d}
-# HELP ${project}_${name//-/_}_reward_7d total rewards in 7 days
+# HELP ${project}_${name//-/_}_reward_7d total rewards count in 7 days
 # TYPE ${project}_${name//-/_}_reward_7d gauge
 ${project}_${name//-/_}_reward_7d{instance="${name}",address="${a}"} ${rewards_7d}
-# HELP ${project}_${name//-/_}_reward_30d total rewards in 30 days
+# HELP ${project}_${name//-/_}_reward_30d total rewards count in 30 days
 # TYPE ${project}_${name//-/_}_reward_30d gauge
 ${project}_${name//-/_}_reward_30d{instance="${name}",address="${a}"} ${rewards_30d}
+EOF
+
+    log_info "[${a}] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"
+  fi
+}
+
+send_reward_earned() {
+  if [ "${prometheus_pg_host}" ]; then
+    log_info "Sending data to prometheus pushgateway"
+    cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
+# HELP ${project}_${name//-/_}_reward_earned_15m total rewards earned 15 minutes
+# TYPE ${project}_${name//-/_}_reward_earned_15m gauge
+${project}_${name//-/_}_reward_earned_15m{instance="${name}",address="${a}"} ${rewards_earned_15m}
+# HELP ${project}_${name//-/_}_reward_earned_1h total rewards earned by hour
+# TYPE ${project}_${name//-/_}_reward_earned_1h gauge
+${project}_${name//-/_}_reward_earned_1h{instance="${name}",address="${a}"} ${rewards_earned_1h}
+# HELP ${project}_${name//-/_}_reward_earned_1d total rewards earned in a day
+# TYPE ${project}_${name//-/_}_reward_earned_1d gauge
+${project}_${name//-/_}_reward_earned_1d{instance="${name}",address="${a}"} ${rewards_earned_1d}
+# HELP ${project}_${name//-/_}_reward_earned_7d total rewards earned in 7 days
+# TYPE ${project}_${name//-/_}_reward_earned_7d gauge
+${project}_${name//-/_}_reward_earned_7d{instance="${name}",address="${a}"} ${rewards_earned_7d}
+# HELP ${project}_${name//-/_}_reward_earned_30d total rewards earned in 30 days
+# TYPE ${project}_${name//-/_}_reward_earned_30d gauge
+${project}_${name//-/_}_reward_earned_30d{instance="${name}",address="${a}"} ${rewards_earned_30d}
 EOF
 
     log_info "[${a}] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}"

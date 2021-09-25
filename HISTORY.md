@@ -1,5 +1,10 @@
 vNext
 
+- **Enchancement** - sync status threshold updated to 20 from 50
+- **Enchancement** - updated gauge help message for relayed status
+- **Enchancement** - collect rewards earned 15m, 1h, 1d, 7d, 30d metrics
+- **Enchancement** - collect activity metrics
+
 # 4.2.0
 
 - **Enchancement** - update hnt_monitor.sh to not allow blank values

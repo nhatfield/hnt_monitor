@@ -17,6 +17,8 @@ HNT_HOTSPOT_MONITOR=${HNT_HOTSPOT_MONITOR:-"false"}
 HNT_HOTSPOT_URL=${HNT_HOTSPOT_URL:-"https://api.helium.io/v1/hotspots"}
 HNT_LOGFILE=${HNT_LOGFILE:-"stdout"}
 HNT_LOGPATH=${HNT_LOGPATH:-"/dev/"}
+HNT_LONGAP_MONITOR=${HNT_LONGAP_MONITOR:-"false"}
+HNT_LONGAP_ADDRESSES=${HNT_LONGAP_ADDRESSES:-""}
 HNT_NEBRA_IPS=${HNT_NEBRA_IPS:-""}
 HNT_NEBRA_MONITOR=${HNT_NEBRA_MONITOR:-"false"}
 HNT_PROJECT=${HNT_PROJECT:-"hnt_miner"}
@@ -66,23 +68,27 @@ Update the configs by passing in the environment variables.
 Description:
   VARIABLE		DESCRIPTION
 
-  BLOCKS_URL			# The helium blocks api url.
-  BOBCAT_IPS			# If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc'
-  BOBCAT_MONITOR		# Enable or disable bobcat monitoring. Boolean: [ true | false ]
-  DEBUG				# Turn on debug logging. Boolean: [ true | false ]
-  HELIUM_MONITOR		# Enable non hotspot specific helium monitoring. Boolean: [ true | false ]
-  HOTSPOT_ADDRESSES		# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
-  HOTSPOT_MONITOR		# Enable hotspot monitoring from helium api. Boolean: [ true | false ]
-  HOTSPOT_URL			# The helium hotspot api url.
-  LOGFILE			# Send logs to this file
-  LOGPATH			# Send logs to this path
-  PROJECT			# The name of the metric prefix when sending to prometheus.
-  PROMETHEUS_PG_HOST		# The prometheus push gateway hostname.
-  PROMETHEUS_PG_PORT		# The prometheus push gateway port.
-  SENSECAP_API_KEY		# The sensecap api key for your account
-  SENSECAP_MONITOR		# Enable or disable sensecap monitoring. Boolean: [ true | false ]
-  SENSECAP_SERIAL_NUMBERS	# The sensecap serial numbers of the devices to monitor. Ex: 'serial1 serial2 serial3 etc'
-  TRACE				# Turn on trace logging. Boolean: [ true | false ]
+  HNT_BLOCKS_URL		# The helium blocks api url.
+  HNT_BOBCAT_IPS		# If bobcat monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc'
+  HNT_BOBCAT_MONITOR		# Enable or disable bobcat monitoring. Boolean: [ true | false ]
+  HNT_DEBUG			# Turn on debug logging. Boolean: [ true | false ]
+  HNT_HELIUM_MONITOR		# Enable non hotspot specific helium monitoring. Boolean: [ true | false ]
+  HNT_HOTSPOT_ADDRESSES		# Hotspot miner addresses to get metrics from. Ex: 'address1 address2 address3 etc'
+  HNT_HOTSPOT_MONITOR		# Enable hotspot monitoring from helium api. Boolean: [ true | false ]
+  HNT_HOTSPOT_URL		# The helium hotspot api url.
+  HNT_LOGFILE			# Send logs to this file
+  HNT_LOGPATH			# Send logs to this path
+  HNT_LONGAP_ADDRESSES		# The addresses of the longap miners to monitor. Ex: 'address1 address2 address3 etc'
+  HNT_LONGAP_MONITOR		# Enable or disable longap monitoring. Boolean: [ true | false ]
+  HNT_NEBRA_IPS			# The ips of the nebra miners to monitor. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc'
+  HNT_NEBRA_MONITOR		# Enable or disable nebra monitoring. Boolean: [ true | false ]
+  HNT_PROJECT			# The name of the metric prefix when sending to prometheus.
+  HNT_PROMETHEUS_PG_HOST	# The prometheus push gateway hostname.
+  HNT_PROMETHEUS_PG_PORT	# The prometheus push gateway port.
+  HNT_SENSECAP_API_KEY		# The sensecap api key for your account
+  HNT_SENSECAP_MONITOR		# Enable or disable sensecap monitoring. Boolean: [ true | false ]
+  HNT_SENSECAP_SERIAL_NUMBERS	# The serial numbers of the sensecap miners to monitor. Ex: 'serial1 serial2 serial3 etc'
+  HNT_TRACE			# Turn on trace logging. Boolean: [ true | false ]
 
 
 Examples:
