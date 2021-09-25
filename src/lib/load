@@ -1,52 +1,52 @@
 send_activity_counts() {
   if [ "${prometheus_pg_host}" ]; then
     log_info "Sending data to prometheus pushgateway"
-    cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}
-# HELP ${project}_${name}_activity_sent_beacon_15m of the miner
-# TYPE ${project}_${name}_activity_sent_beacon_15m gauge
-${project}_${name}_activity_sent_beacon_15m{instance="${name}"} ${activity_sent_beacon_15m}
-# HELP ${project}_${name}_activity_create_challenge_15m of the miner
-# TYPE ${project}_${name}_activity_create_challenge_15m gauge
-${project}_${name}_activity_create_challenge_15m{instance="${name}"} ${activity_create_challenge_15m}
-# HELP ${project}_${name}_activity_challenged_beacon_15m of the miner
-# TYPE ${project}_${name}_activity_challenged_beacon_15m gauge
-${project}_${name}_activity_challenged_beacon_15m{instance="${name}"} ${activity_challenged_beacon_15m}
-# HELP ${project}_${name}_activity_sent_beacon_1h of the miner
-# TYPE ${project}_${name}_activity_sent_beacon_1h gauge
-${project}_${name}_activity_sent_beacon_1h{instance="${name}"} ${activity_sent_beacon_1h}
-# HELP ${project}_${name}_activity_create_challenge_1h of the miner
-# TYPE ${project}_${name}_activity_create_challenge_1h gauge
-${project}_${name}_activity_create_challenge_1h{instance="${name}"} ${activity_create_challenge_1h}
-# HELP ${project}_${name}_activity_challenged_beacon_1h of the miner
-# TYPE ${project}_${name}_activity_challenged_beacon_1h gauge
-${project}_${name}_activity_challenged_beacon_1h{instance="${name}"} ${activity_challenged_beacon_1h}
-# HELP ${project}_${name}_activity_sent_beacon_1d of the miner
-# TYPE ${project}_${name}_activity_sent_beacon_1d gauge
-${project}_${name}_activity_sent_beacon_1d{instance="${name}"} ${activity_sent_beacon_1d}
-# HELP ${project}_${name}_activity_create_challenge_1d of the miner
-# TYPE ${project}_${name}_activity_create_challenge_1d gauge
-${project}_${name}_activity_create_challenge_1d{instance="${name}"} ${activity_create_challenge_1d}
-# HELP ${project}_${name}_activity_challenged_beacon_1d of the miner
-# TYPE ${project}_${name}_activity_challenged_beacon_1d gauge
-${project}_${name}_activity_challenged_beacon_1d{instance="${name}"} ${activity_challenged_beacon_1d}
-# HELP ${project}_${name}_activity_sent_beacon_7d of the miner
-# TYPE ${project}_${name}_activity_sent_beacon_7d gauge
-${project}_${name}_activity_sent_beacon_7d{instance="${name}"} ${activity_sent_beacon_7d}
-# HELP ${project}_${name}_activity_create_challenge_7d of the miner
-# TYPE ${project}_${name}_activity_create_challenge_7d gauge
-${project}_${name}_activity_create_challenge_7d{instance="${name}"} ${activity_create_challenge_7d}
-# HELP ${project}_${name}_activity_challenged_beacon_7d of the miner
-# TYPE ${project}_${name}_activity_challenged_beacon_7d gauge
-${project}_${name}_activity_challenged_beacon_7d{instance="${name}"} ${activity_challenged_beacon_7d}
-# HELP ${project}_${name}_activity_sent_beacon_30d of the miner
-# TYPE ${project}_${name}_activity_sent_beacon_30d gauge
-${project}_${name}_activity_sent_beacon_30d{instance="${name}"} ${activity_sent_beacon_30d}
-# HELP ${project}_${name}_activity_create_challenge_30d of the miner
-# TYPE ${project}_${name}_activity_create_challenge_30d gauge
-${project}_${name}_activity_create_challenge_30d{instance="${name}"} ${activity_create_challenge_30d}
-# HELP ${project}_${name}_activity_challenged_beacon_30d of the miner
-# TYPE ${project}_${name}_activity_challenged_beacon_30d gauge
-${project}_${name}_activity_challenged_beacon_30d{instance="${name}"} ${activity_challenged_beacon_30d}
+    cat <<EOF | curl -s --data-binary @- http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name//-/_}
+# HELP ${project}_${name//-/_}_activity_sent_beacon_15m of the miner
+# TYPE ${project}_${name//-/_}_activity_sent_beacon_15m gauge
+${project}_${name//-/_}_activity_sent_beacon_15m{instance="${name}"} ${activity_sent_beacon_15m}
+# HELP ${project}_${name//-/_}_activity_create_challenge_15m of the miner
+# TYPE ${project}_${name//-/_}_activity_create_challenge_15m gauge
+${project}_${name//-/_}_activity_create_challenge_15m{instance="${name}"} ${activity_create_challenge_15m}
+# HELP ${project}_${name//-/_}_activity_challenged_beacon_15m of the miner
+# TYPE ${project}_${name//-/_}_activity_challenged_beacon_15m gauge
+${project}_${name//-/_}_activity_challenged_beacon_15m{instance="${name}"} ${activity_challenged_beacon_15m}
+# HELP ${project}_${name//-/_}_activity_sent_beacon_1h of the miner
+# TYPE ${project}_${name//-/_}_activity_sent_beacon_1h gauge
+${project}_${name//-/_}_activity_sent_beacon_1h{instance="${name}"} ${activity_sent_beacon_1h}
+# HELP ${project}_${name//-/_}_activity_create_challenge_1h of the miner
+# TYPE ${project}_${name//-/_}_activity_create_challenge_1h gauge
+${project}_${name//-/_}_activity_create_challenge_1h{instance="${name}"} ${activity_create_challenge_1h}
+# HELP ${project}_${name//-/_}_activity_challenged_beacon_1h of the miner
+# TYPE ${project}_${name//-/_}_activity_challenged_beacon_1h gauge
+${project}_${name//-/_}_activity_challenged_beacon_1h{instance="${name}"} ${activity_challenged_beacon_1h}
+# HELP ${project}_${name//-/_}_activity_sent_beacon_1d of the miner
+# TYPE ${project}_${name//-/_}_activity_sent_beacon_1d gauge
+${project}_${name//-/_}_activity_sent_beacon_1d{instance="${name}"} ${activity_sent_beacon_1d}
+# HELP ${project}_${name//-/_}_activity_create_challenge_1d of the miner
+# TYPE ${project}_${name//-/_}_activity_create_challenge_1d gauge
+${project}_${name//-/_}_activity_create_challenge_1d{instance="${name}"} ${activity_create_challenge_1d}
+# HELP ${project}_${name//-/_}_activity_challenged_beacon_1d of the miner
+# TYPE ${project}_${name//-/_}_activity_challenged_beacon_1d gauge
+${project}_${name//-/_}_activity_challenged_beacon_1d{instance="${name}"} ${activity_challenged_beacon_1d}
+# HELP ${project}_${name//-/_}_activity_sent_beacon_7d of the miner
+# TYPE ${project}_${name//-/_}_activity_sent_beacon_7d gauge
+${project}_${name//-/_}_activity_sent_beacon_7d{instance="${name}"} ${activity_sent_beacon_7d}
+# HELP ${project}_${name//-/_}_activity_create_challenge_7d of the miner
+# TYPE ${project}_${name//-/_}_activity_create_challenge_7d gauge
+${project}_${name//-/_}_activity_create_challenge_7d{instance="${name}"} ${activity_create_challenge_7d}
+# HELP ${project}_${name//-/_}_activity_challenged_beacon_7d of the miner
+# TYPE ${project}_${name//-/_}_activity_challenged_beacon_7d gauge
+${project}_${name//-/_}_activity_challenged_beacon_7d{instance="${name}"} ${activity_challenged_beacon_7d}
+# HELP ${project}_${name//-/_}_activity_sent_beacon_30d of the miner
+# TYPE ${project}_${name//-/_}_activity_sent_beacon_30d gauge
+${project}_${name//-/_}_activity_sent_beacon_30d{instance="${name}"} ${activity_sent_beacon_30d}
+# HELP ${project}_${name//-/_}_activity_create_challenge_30d of the miner
+# TYPE ${project}_${name//-/_}_activity_create_challenge_30d gauge
+${project}_${name//-/_}_activity_create_challenge_30d{instance="${name}"} ${activity_create_challenge_30d}
+# HELP ${project}_${name//-/_}_activity_challenged_beacon_30d of the miner
+# TYPE ${project}_${name//-/_}_activity_challenged_beacon_30d gauge
+${project}_${name//-/_}_activity_challenged_beacon_30d{instance="${name}"} ${activity_challenged_beacon_30d}
 EOF
 
     log_info "[Hotspot activity] data pushed to http://${prometheus_pg_host}:${prometheus_pg_port}/metrics/job/${project}_${name}"
