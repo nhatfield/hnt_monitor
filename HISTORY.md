@@ -1,5 +1,6 @@
 vNext
 
+- **Enchancement** - add default sensecap dashboard json
 - **Enchancement** - sync status threshold updated to 20 from 50
 - **Enchancement** - updated gauge help message for relayed status
 - **Enchancement** - collect rewards earned 15m, 1h, 1d, 7d, 30d metrics
