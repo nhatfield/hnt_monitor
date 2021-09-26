@@ -1,6 +1,6 @@
 # HNT Miner Monitor
 
-![Grafana style for your miner](docs/images/grafana-title.png)
+![Grafana style for your miner](docs/images/bobcat_blue-by_Wrath.png)
 
 ![HNT: 13Vazr2mTQSbu2wBGAkqpaLvJQEdSv5aMd3qpdXFJSw2pfNpqC4](docs/images/wallet.png)
 
@@ -110,7 +110,7 @@ You will need to install `docker` and `docker-compose` manually. You can do that
 - [docker](https://docs.docker.com/desktop/windows/install/)
 <br />
 
-## Quick Start: Linux +(MacOS) only
+## Quick Start: Linux +(MacOS) only ##
 
 ### Linux +(MacOS): setup & installation ###
 
@@ -121,7 +121,7 @@ $> ./hnt_monitor.sh
 ```
 <br />
 
-## Deep Dive
+## Deep Dive ##
 
 ### Linux +(MacOS): Without docker ###
 
@@ -164,7 +164,7 @@ $> docker run -d -e HNT_HOTSPOT_MONITOR=true -e HNT_HOTSPOT_ADDRESSES="12345..."
 
 ### Linux +(MacOS) & Windows: docker with docker-compose ###
 
-**Linux +(MacOS): Automated Setup & Deploy**
+#### Linux +(MacOS): Automated Setup & Deploy ####
 
 Run the `hnt_monitor.sh` script to configure the docker-compose settings and launch the stack.
 
@@ -173,7 +173,7 @@ $> ./hnt_monitor.sh
 ```
 <br />
 
-**Linux +(MacOS) & Windows: Manual Setup & Deploy**
+#### Linux +(MacOS) & Windows: Manual Setup & Deploy ####
 
 Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monitor` service environment variables.
 
@@ -212,7 +212,7 @@ Once `docker-compose` completes, you can verify the endpoints in your browser. O
 | prometheus pushgateway | http://localhost:9091 |
 <br />
 
-# Verify Installtation
+## Verify Installtation
 
 Check the prometheus push gateway to see metrics have been pushed from the `hnt_monitor`. This service is listening 9091, navigate to `http://localhost:9091` in your browser. You should see a screen like below, with all of the available metrics from the miner collector.
 
@@ -225,21 +225,21 @@ Initial etl processing takes up to 2 minutes to push data. Please allow time for
 
 ![prometheuspg](docs/images/prometheus-pg.png)
 
-**Docker Logs**
+### Docker Logs ###
 
 ```bash
 $> docker logs -f hnt_monitor
 ```
 <br />
 
-# Help
+## Help
 
 ```bash
 $> docker run -it --rm hnt_monitor help
 ```
 <br />
 
-# Variables
+## Variables
 
 | Name | Default | Description | Required |
 |:----:|---------|-------------|----------|
