@@ -200,7 +200,7 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
 Check the variables table below for more options that the `hnt_monitor` supports. Once you're satisfied, you can run the `docker-compose`, `up` command, below to launch the stack.
 
 ```
-$> docker-compose -f hnt_monitor.yml up -d
+$> docker-compose -f hnt_monitor.yml up -d --build
 ```
 
 Once `docker-compose` completes, you can verify the endpoints in your browser. Open your favorite web browser and check the following endpoints
@@ -210,6 +210,28 @@ Once `docker-compose` completes, you can verify the endpoints in your browser. O
 | grafana | http://localhost:3000 |
 | prometheus | http://localhost:9090 |
 | prometheus pushgateway | http://localhost:9091 |
+<br />
+
+## Upgrading
+
+### Linux +(MacOS): Automated Upgrade ###
+
+Using the `hnt_monitor.sh` you can provide the `update` command to pull down the latest release and deploy. This will automatically reset any local changes you have made so be sure to copy your work to another directory if you have done your own development. You **do not** need to worry about the `hnt_monitor.yml` changess that exist. The `hnt_monitor.sh` script will use its own .yml file
+
+```bash
+$> ./hnt_monitor.sh update
+```
+<br />
+
+### Linux +(MacOS) & Windows: Manual updates ###
+
+If you have to update manually there are a couple of things you need to do so you dont lose your settings. Make sure to do the following to update your version safely.
+
+- Copy the existing `hnt_monitor.yml` to another directory
+- Git pull the repo down and checkout the release version or download and unzip the release
+- Copy your `hnt_monitor.yml` to the new release
+- Then run `docker-compose -f hnt_monitor.yml up -d --build`
+
 <br />
 
 ## Verify Installtation

@@ -14,8 +14,11 @@ cd ${DIR}
 
 OPT=${1:-"intro"}
 HNT_HOTSPOT_ADDRESSES=${HNT_HOTSPOT_ADDRESSES:-""}
-YAML=${YAML:-"hnt_monitor.yml"}
-RELEASE_BRANCH=${RELEASE_BRANCH:-"$(grep '#' HISTORY.md | sed 's%# %%' | sort -V | tail -1)"}
+YAML=${YAML:-".hnt_monitor.yml"}
+
+if [ ! -f "${YAML}" ]; then
+  cp hnt_monitor.yml "${YAML}"
+fi
 
 os=$(uname)
 
@@ -468,8 +471,9 @@ finish() {
 }
 
 update() {
-  git pull || true
-  git checkout "${RELEASE_BRANCH}"
+  git reset --hard
+  git pull
+  git checkout $(git tag | tail -1 | tr -dc .[:print:].)
   deploy
 }
 
