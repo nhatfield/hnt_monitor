@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+get_addresses
+minutes_ago=$(date -u --date="20 minutes ago" +%s)
+hour_ago=$(date -u --date="1 hour ago" +%s)
+one_day_ago=$(date -u --date="1 days ago" +%s)
+seven_days_ago=$(date -u --date="7 days ago" +%s)
+thirty_days_ago=$(date -u --date="30 days ago" +%s)
+id=etl.reward.earned
+
+reward_earn() {
+  log_info "processing data for ${a}"
+
+  rewards_earned_15m=0
+  rewards_earned_1h=0
+  rewards_earned_1d=0
+  rewards_earned_7d=0
+  rewards_earned_30d=0
+  earned=0
+
+  get_reward_timestamps
+
+  for r in ${rewards}; do
+    time=$(date -d ${r} +%s)
+    get_reward_earned
+
+    if [ "${minutes_ago}" -le "${time}" ]; then
+      rewards_earned_15m=$((rewards_earned_15m + earned)) || true
+    fi
+
+    if [ "${hour_ago}" -le "${time}" ]; then
+      rewards_earned_1h=$((rewards_earned_1h + earned)) || true
+    fi
+
+    if [ "${one_day_ago}" -le "${time}" ]; then
+      rewards_earned_1d=$((rewards_earned_1d + earned)) || true
+    fi
+
+    if [ "${seven_days_ago}" -le "${time}" ]; then
+      rewards_earned_7d=$((rewards_earned_7d + earned)) || true
+    fi
+
+    if [ "${thirty_days_ago}" -le "${time}" ]; then
+      rewards_earned_30d=$((rewards_earned_30d + earned)) || true
+    fi
+  done
+
+  rewards_earned_15m=$(awk -vp=${rewards_earned_15m} -vq=.00000001 'BEGIN{printf "%.4f" ,p * q}')
+  rewards_earned_1h=$(awk -vp=${rewards_earned_1h} -vq=.00000001 'BEGIN{printf "%.4f" ,p * q}')
+  rewards_earned_1d=$(awk -vp=${rewards_earned_1d} -vq=.00000001 'BEGIN{printf "%.4f" ,p * q}')
+  rewards_earned_7d=$(awk -vp=${rewards_earned_7d} -vq=.00000001 'BEGIN{printf "%.4f" ,p * q}')
+  rewards_earned_30d=$(awk -vp=${rewards_earned_30d} -vq=.00000001 'BEGIN{printf "%.4f" ,p * q}')
+
+  send_reward_earned
+
+  log_debug "rewards timestamps\n\n${rewards}\n"
+  log_debug "hotspot reward earnings:\n\n  rewards_earned_15m: ${rewards_earned_15m}\n  rewards_earned_1h: ${rewards_earned_1h}\n  rewards_earned_1d: ${rewards_earned_1d}\n  rewards_earned_7d: ${rewards_earned_7d}\n  rewards_earned_30d: ${rewards_earned_30d}\n"
+}
+
+if [ "${hotspot_monitor}" == "true" ]; then
+  for a in ${addresses}; do
+    get_hotspot_name
+    reward_earn
+  done
+else
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})"
+  true
+fi

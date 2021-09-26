@@ -29,7 +29,7 @@ get_miner_bobcat_status() {
   gap=$((block_height - miner_height)) || log_err "Could not collect [height gap] on ${a}"
   stat=$(jq -r '.status' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [status] on ${a}"
 
-  if [ "${gap}" -ge 50 ]; then
+  if [ "${gap}" -ge 20 ]; then
     sync_status=0
   else
     if [ "${stat}" == "synced" ]; then
@@ -71,7 +71,7 @@ get_miner_longap_data() {
     online_status=0
   fi
 
-  if [ "${gap}" -ge 50 ]; then
+  if [ "${gap}" -ge 20 ]; then
     sync_status=0
   else
     sync_status=1
@@ -94,7 +94,7 @@ get_miner_nebra_data() {
   frequency=$(jq -r '.FR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null)  || log_err "Could not collect [frequency] on ${a}"
   miner_height=$(jq -r '.MH' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
   gap=$((block_height - miner_height))
-  if [ "${gap}" -ge 50 ]; then
+  if [ "${gap}" -ge 20 ]; then
     sync_status=0
   else
     sync_status=1
@@ -163,7 +163,7 @@ get_miner_sensecap_data() {
   dialable=$(jq '.data.dialable' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [dialable status] on ${a}"
   nattype=$(jq '.data.natType' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null)   || log_err "Could not collect [nat type] on ${a}"
   gap=$((block_height - miner_height))
-  if [ "${gap}" -ge 50 ]; then
+  if [ "${gap}" -ge 20 ]; then
     sync_status=0
   else
     sync_status=1

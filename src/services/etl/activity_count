@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+get_addresses
+minutes_ago=$(date -u --date="20 minutes ago" +%s)
+hour_ago=$(date -u --date="1 hour ago" +%s)
+one_day_ago=$(date -u --date="1 days ago" +%s)
+seven_days_ago=$(date -u --date="7 days ago" +%s)
+thirty_days_ago=$(date -u --date="30 days ago" +%s)
+id=etl.activity.count
+
+reward_count() {
+  log_info "processing data for ${a}"
+
+  activity_types="get_activity_sent_beacons get_activity_create_challenge get_activity_challenged_beacons"
+
+  activity_sent_beacon_15m=0
+  activity_create_challenge_15m=0
+  activity_challenged_beacon_15m=0
+  activity_sent_beacon_1h=0
+  activity_create_challenge_1h=0
+  activity_challenged_beacon_1h=0
+  activity_sent_beacon_1d=0
+  activity_create_challenge_1d=0
+  activity_challenged_beacon_1d=0
+  activity_sent_beacon_7d=0
+  activity_create_challenge_7d=0
+  activity_challenged_beacon_7d=0
+  activity_sent_beacon_30d=0
+  activity_create_challenge_30d=0
+  activity_challenged_beacon_30d=0
+
+  for activity in ${activity_types}; do
+    ${activity}
+    get_activity_timestamps
+
+    for t in ${activity_timestamps}; do
+      time=${t}
+
+      if [ "${minutes_ago}" -le "${time}" ]; then
+        if [ "${activity}" == "get_activity_sent_beacons" ]; then
+          ((activity_sent_beacon_15m++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_create_challenge" ]; then
+          ((activity_create_challenge_15m++)) || true
+        fi
+  
+        if [ "${activity}" == "get_activity_challenged_beacons" ]; then
+          ((activity_challenged_beacon_15m++)) || true
+        fi
+      fi
+
+      if [ "${hour_ago}" -le "${time}" ]; then
+        if [ "${activity}" == "get_activity_sent_beacons" ]; then
+          ((activity_sent_beacon_1h++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_create_challenge" ]; then
+          ((activity_create_challenge_1h++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_challenged_beacons" ]; then
+          ((activity_challenged_beacon_1h++)) || true
+        fi
+      fi
+
+      if [ "${one_day_ago}" -le "${time}" ]; then
+        if [ "${activity}" == "get_activity_sent_beacons" ]; then
+          ((activity_sent_beacon_1d++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_create_challenge" ]; then
+          ((activity_create_challenge_1d++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_challenged_beacons" ]; then
+          ((activity_challenged_beacon_1d++)) || true
+        fi
+      fi
+
+      if [ "${seven_days_ago}" -le "${time}" ]; then
+        if [ "${activity}" == "get_activity_sent_beacons" ]; then
+          ((activity_sent_beacon_7d++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_create_challenge" ]; then
+          ((activity_create_challenge_7d++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_challenged_beacons" ]; then
+          ((activity_challenged_beacon_7d++)) || true
+        fi
+      fi
+
+      if [ "${thirty_days_ago}" -le "${time}" ]; then
+        if [ "${activity}" == "get_activity_sent_beacons" ]; then
+          ((activity_sent_beacon_30d++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_create_challenge" ]; then
+          ((activity_create_challenge_30d++)) || true
+        fi
+
+        if [ "${activity}" == "get_activity_challenged_beacons" ]; then
+          ((activity_challenged_beacon_30d++)) || true
+        fi
+      fi
+    done
+  done
+
+  send_activity_counts
+
+  log_debug "activity timestamps\n\n${activity_timestamps}\n"
+  log_debug "hotspot activity count:\n\n  activity_sent_beacon_15m: ${activity_sent_beacon_15m}\n  activity_create_challenge_15m: ${activity_create_challenge_15m}\n  activity_challenged_beacon_15m: ${activity_challenged_beacon_15m}\n  activity_sent_beacon_1h: ${activity_sent_beacon_1h}\n  activity_create_challenge_1h: ${activity_create_challenge_1h}\n  activity_challenged_beacon_1h: ${activity_challenged_beacon_1h}\n  activity_sent_beacon_1d: ${activity_sent_beacon_1d}\n  activity_create_challenge_1d: ${activity_create_challenge_1d}\n  activity_challenged_beacon_1d: ${activity_challenged_beacon_1d}\n  activity_sent_beacon_7d: ${activity_sent_beacon_7d}\n  activity_create_challenge_7d: ${activity_create_challenge_7d}\n  activity_challenged_beacon_7d: ${activity_challenged_beacon_7d}\n  activity_sent_beacon_30d: ${activity_sent_beacon_30d}\n  activity_create_challenge_30d: ${activity_create_challenge_30d}\n  activity_challenged_beacon_30d: ${activity_challenged_beacon_30d}\n"
+}
+
+if [ "${hotspot_monitor}" == "true" ]; then
+  for a in ${addresses}; do
+    get_hotspot_name
+    reward_count
+  done
+else
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})"
+  true
+fi
