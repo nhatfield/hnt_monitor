@@ -1,6 +1,6 @@
 # HNT Miner Monitor
 
-![Grafana style for your miner](docs/images/bobcat_default-by_Wrath.png)
+![Grafana style for your miner](docs/images/bobcat_blue-by_Wrath.png)
 
 ![HNT: 13Vazr2mTQSbu2wBGAkqpaLvJQEdSv5aMd3qpdXFJSw2pfNpqC4](docs/images/wallet.png)
 
