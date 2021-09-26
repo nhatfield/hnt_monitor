@@ -11,6 +11,4 @@ COPY build/docker/entrypoint /
 
 RUN chmod 755 /entrypoint
 
-WORKDIR /opt/hnt_monitor
-
 ENTRYPOINT ["./entrypoint"]
