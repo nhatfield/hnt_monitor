@@ -200,7 +200,7 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
 Check the variables table below for more options that the `hnt_monitor` supports. Once you're satisfied, you can run the `docker-compose`, `up` command, below to launch the stack.
 
 ```
-$> docker-compose -f hnt_monitor.yml up -d
+$> docker-compose -f hnt_monitor.yml up -d --build
 ```
 
 Once `docker-compose` completes, you can verify the endpoints in your browser. Open your favorite web browser and check the following endpoints
