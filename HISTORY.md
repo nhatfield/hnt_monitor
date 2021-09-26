@@ -3,6 +3,7 @@ vNext
 - **Enchancement** - add bobcat blue dashboard json to extras
 - **Enchancement** - add default sensecap dashboard json
 - **Enchancement** - sync status threshold updated to 20 from 50
+- **Enchancement** - update `hnt_monitor.sh` update command to pull stable release versions
 - **Enchancement** - update README
 - **Enchancement** - update gauge help message for relayed status
 - **Enchancement** - report rewards earned 15m, 1h, 1d, 7d, 30d metrics
