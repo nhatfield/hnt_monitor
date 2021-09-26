@@ -2,6 +2,8 @@
 
 ![Grafana style for your miner](docs/images/grafana-title.png)
 
+![HNT: 13Vazr2mTQSbu2wBGAkqpaLvJQEdSv5aMd3qpdXFJSw2pfNpqC4](docs/images/wallet.png)
+
 ## Overview
 
 This repo is used to produce metrics from miner api's and the Helium blockchain. We can use the metrics to diagnose, alert, and prevent poor mining performance. Currently we extract the following metrics:
