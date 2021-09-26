@@ -1,5 +1,7 @@
 vNext
 
+# 4.3.0
+
 - **Enchancement** - add bobcat blue dashboard json to extras
 - **Enchancement** - add default sensecap dashboard json
 - **Enchancement** - sync status threshold updated to 20 from 50
