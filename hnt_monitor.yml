@@ -17,6 +17,9 @@ services:
       context: .
     environment:
       DO_NOT_REMOVE: "setup"
+      HNT_HOTSPOT_MONITOR: "true"
+      HNT_HOTSPOT_ADDRESSES: "112bokCNr1RABeBbx4vp9DVL7FBp8i3Qj8dMiMB3oK6W1RL7defg 112uDzMao3b5PQaDNkSzcgoDrZ2kgHDtTqYn1yJeFbLTfRzpfohK"
+      HNT_TRACE: "true"
       HNT_PROMETHEUS_PG_HOST: "prometheus_pushgateway"
     networks:
       hnt_monitor:
