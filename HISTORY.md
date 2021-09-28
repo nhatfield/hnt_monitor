@@ -1,5 +1,9 @@
 vNext
 
+# 5.0.1
+
+- **BugFix** - activity and reward collections were failing to update failure thresholds
+
 # 5.0.0
 
 - **Enchancement** - update metric names to no longer be unique

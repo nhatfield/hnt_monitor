@@ -49,7 +49,7 @@ ${new_payload}"
       rm_lock "${data_dir}/${a}/${lock_file}"
       exit
     fi
-    ((n++))
+    ((n++)) || true
   done
 
   send_payload append "${data_dir}/${a}/${data_format}.${endpoint}"
