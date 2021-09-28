@@ -35,6 +35,7 @@ get() {
     get_payload
   done
 
+  n=0
   get_cursor
   
   while [ "${cursor}" ]; do
@@ -42,6 +43,13 @@ get() {
     get_cursor "${new_payload}"
     payload="${payload}
 ${new_payload}"
+
+    if [ "${n}" -ge 15 ]; then
+      log_err "api is having problems or there are too many cursors to traverse"
+      rm_lock "${data_dir}/${a}/${lock_file}"
+      exit
+    fi
+    ((n++))
   done
 
   send_payload append "${data_dir}/${a}/${data_format}.${endpoint}"
