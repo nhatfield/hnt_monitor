@@ -1,5 +1,7 @@
 vNext
 
+- **Enchancement** - update metric names to no longer be unique
+
 # 4.3.0
 
 - **Enchancement** - add bobcat blue dashboard json to extras
