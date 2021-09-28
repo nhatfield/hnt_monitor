@@ -1,5 +1,7 @@
 vNext
 
+# 5.0.0
+
 - **Enchancement** - update metric names to no longer be unique
 - **Enchancement** - add timeout threshold to cursor traversing
 
