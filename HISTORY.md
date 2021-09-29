@@ -1,5 +1,8 @@
 vNext
 
+- **Enchancement** - support multiple prometheus endpoints to send data
+- **Enchancement** - update dashboads with the shared miner metric names
+
 # 5.0.1
 
 - **BugFix** - activity and reward collections were failing to update failure thresholds
