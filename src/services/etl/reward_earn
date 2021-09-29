@@ -57,7 +57,10 @@ reward_earn() {
   rewards_earned_7d=$(awk -vp=${rewards_earned_7d} -vq=.00000001 'BEGIN{printf "%.4f" ,p * q}')
   rewards_earned_30d=$(awk -vp=${rewards_earned_30d} -vq=.00000001 'BEGIN{printf "%.4f" ,p * q}')
 
-  send_reward_earned
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_reward_earned
+  done
 
   log_debug "rewards timestamps\n\n${rewards}\n"
   log_debug "hotspot reward earnings:\n\n  rewards_earned_15m: ${rewards_earned_15m}\n  rewards_earned_1h: ${rewards_earned_1h}\n  rewards_earned_1d: ${rewards_earned_1d}\n  rewards_earned_7d: ${rewards_earned_7d}\n  rewards_earned_30d: ${rewards_earned_30d}\n"

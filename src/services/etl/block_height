@@ -12,7 +12,11 @@ block_height() {
   log_info "processing data"
 
   get_height
-  send_block_height
+
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_block_height
+  done
 
   log_debug "hotspot block data:\n\n  block_height: ${height}\n"
 }

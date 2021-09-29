@@ -13,7 +13,10 @@ witness() {
   log_info "processing data for ${a}"
 
   get_witness_count
-  send_witness_count
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_witness_count
+  done
 
   log_debug "hostspot witness data:\n\n  witnesses_count: ${witnesses_count}\n  witnessed_count: ${witnessed_count}\n"
 }

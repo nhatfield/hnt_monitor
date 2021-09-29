@@ -12,7 +12,10 @@ longap_data() {
   log_info "processing data"
   
   get_miner_longap_data
-  send_miner_longap_data
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_miner_longap_data
+  done
 
   log_debug "longap data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  sync_status: ${sync_status}\n  block_connected: ${block_connected}\n  height_gap: ${gap}\n"
 }
