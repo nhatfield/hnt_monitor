@@ -58,12 +58,12 @@ reward_count() {
   log_debug "hotspot reward count:\n\n  rewards_15m: ${rewards_15m}\n  rewards_1h: ${rewards_1h}\n  rewards_1d: ${rewards_1d}\n  rewards_7d: ${rewards_7d}\n  rewards_30d: ${rewards_30d}\n"
 }
 
-if [ "${hotspot_monitor}" == "true" ]; then
+if [ "${hotspot_monitor}" == "true" ] && [ "${reward_count_etl}" == "true" ]; then
   for a in ${addresses}; do
     get_hotspot_name
     reward_count
   done
 else
-  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})"
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; reward_count_etl=${reward_count_etl})"
   true
 fi

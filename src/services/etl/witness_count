@@ -22,12 +22,12 @@ witness() {
 }
 
 
-if [ "${hotspot_monitor}" == "true" ]; then
+if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; then
   for a in ${addresses}; do
     get_hotspot_name
     witness &
   done
 else
-  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})" 
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; witness_count_etl=${witness_count_etl})" 
   true
 fi

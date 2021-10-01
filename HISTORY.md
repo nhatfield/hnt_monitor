@@ -2,6 +2,8 @@ vNext
 
 - **Enchancement** - support multiple prometheus endpoints to send data
 - **Enchancement** - update dashboads with the shared miner metric names
+- **Enchancement** - consolidate jq queries where possible
+- **Enchancement** - add user controls for etl jobs
 
 # 5.0.1
 
