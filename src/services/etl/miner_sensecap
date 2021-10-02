@@ -17,7 +17,8 @@ sensecap_data() {
     send_miner_sensecap_data
   done
 
-  log_debug "sensecap data:\n\n  cpu_temperature: ${cputemp}\n  cpu_used: ${cpuused}\n  memory_total: ${memtotal}\n  memory_used: ${memused}\n  sd_total: ${sdtotal}\n  sd_used: ${sdused}\n  antenna_gain: ${gain}\n  relayed_status: ${relayed}\n  is_healthy: ${healthy}\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  p2p_connected: ${p2p_connected}\n  dialable_status: ${dialable}\n  nat_type: ${nattype}\n  height_gap: ${gap}\n"
+  log_debug "sensecap data:\n\n  cpu_temperature: ${cputemp}\n  cpu_used: ${cpuused}\n  memory_total: ${memtotal}\n  memory_used: ${memused}\n  sd_total: ${sdtotal}\n  sd_used: ${sdused}\n  antenna_gain: ${gain}\n  relayed_status: ${relay}\n  is_healthy: ${healthy}\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  p2p_connected: ${p2p_connected}\n  dialable_status: ${dialable}\n  nat_type: ${nattype}\n  height_gap: ${gap}\n  online_status: ${online}\n"
+
 }
 
 

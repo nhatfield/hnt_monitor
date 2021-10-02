@@ -31,7 +31,7 @@ bobcat_status() {
     send_miner_bobcat_status
   done
 
-  log_debug "bobcat status data:\n\n  sync_status: ${sync_status}\n  height_gap: ${gap}\n  miner_height: ${miner_height}\n  block_height: ${block_height}\n  epoch: ${epoch}\n"
+  log_debug "bobcat status data:\n\n  sync_status: ${sync_status}\n  height_gap: ${gap}\n  miner_height: ${miner_height}\n  block_height: ${block_height}\n  epoch: ${epoch}\n  relayed_status: ${relay}\n  online_status: ${online}\n"
 }
 
 
