@@ -1,5 +1,7 @@
 vNext
 
+# 5.1.0
+
 - **Enchancement** - add online status for all miners
 - **Enchancement** - add relayed status for all miners
 - **Enchancement** - add user controls for etl jobs
