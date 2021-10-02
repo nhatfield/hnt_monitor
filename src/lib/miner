@@ -1,5 +1,13 @@
 get_actual_height() {
-  helium_height=$(jq -r '.data.height' "${data_dir}/height" 2>/dev/null) || log_err "could not retrieve block height"
+  helium_height=$(jq -r '.data.height' "${data_dir}"/height 2>/dev/null) || log_err "could not retrieve block height"
+}
+
+get_relayed_status() {
+  relayed_status=$(jq -r '.data.status | select(.listen_addrs[] != null) | .listen_addrs[]' "${data_dir}"/${a}/info 2>/dev/null | grep 44158 | wc -l) || true
+}
+
+get_online_status() {
+  online_status=$(jq -r '.data.status.online' "${data_dir}"/${a}/info 2>/dev/null | grep online | wc -l) || true
 }
 
 get_miner_bobcat_name() {
@@ -11,23 +19,29 @@ get_miner_bobcat_name() {
 }
 
 get_miner_bobcat_temp() {
-  temp0=$(jq -r '.temp0' "${data_dir}"/miner.bobcat/${a}.temp 2> /dev/null) || log_err "Could not collect [temp0] on ${a}"
-  temp1=$(jq -r '.temp1' "${data_dir}"/miner.bobcat/${a}.temp 2> /dev/null) || log_err "Could not collect [temp1] on ${a}"
+  val=($(jq -r -c '.temp0, .temp1' "${data_dir}"/miner.bobcat/${a}.temp 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
+  temp0=${val[0]}
+  temp1=${val[1]}
 }
 
 get_miner_bobcat_status() {
   get_actual_height
-  miner_height=$(jq -r '.miner_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  get_relayed_status
+  get_online_status
+
+  val=($(jq -r '.miner_height, .blockchain_height, .epoch, .status' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null)) || log_err "Could not collect [status] on ${a}"
+
+  miner_height=${val[0]}
   
   if [ "${helium_height}" ]; then
     block_height=${helium_height}
   else
-    block_height=$(jq -r '.blockchain_height' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
+    block_height=${val[1]}
   fi
 
-  epoch=$(jq -r '.epoch' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [epoch timestamp] on ${a}"
+  epoch=${val[2]}
   gap=$((block_height - miner_height)) || log_err "Could not collect [height gap] on ${a}"
-  stat=$(jq -r '.status' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null) || log_err "Could not collect [status] on ${a}"
+  stat=${val[3]}
 
   if [ "${gap}" -ge 20 ]; then
     sync_status=0
@@ -39,6 +53,8 @@ get_miner_bobcat_status() {
     fi
   fi
 
+  relay=${relayed_status}
+  online=${online_status}
 }
 
 get_miner_longap_name() {
@@ -47,15 +63,20 @@ get_miner_longap_name() {
 
 get_miner_longap_data() {
   get_actual_height
+  get_relayed_status
+  get_online_status
+
+  val=($(jq -r -c '.[].helium.blockchain.height, .[].miner.blockHeight, .[].miner.connected' "${data_dir}"/miner.longap/${a}.status 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+
   if [ "${helium_height}" ]; then
     block_height=${helium_height}
   else
-    block_height=$(jq -r '.[].helium.blockchain.height' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
+    block_height=${val[0]}
   fi
 
-  miner_height=$(jq -r '.[].miner.blockHeight' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  miner_height=${val[1]}
 
-  block_conn=$(jq -r '.[].miner.connected' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [connection status] on ${a}"
+  block_conn=${val[2]}
   if [ "${block_conn}" == "true" ]; then
     block_connected=1
   else
@@ -64,18 +85,14 @@ get_miner_longap_data() {
 
   gap=$((block_height - miner_height))
 
-  online_stat=$(jq -r '.[].status' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_err "Could not collect [status] on ${a}"
-  if [ "${online_stat}" == "online" ]; then
-    online_status=1
-  else
-    online_status=0
-  fi
-
   if [ "${gap}" -ge 20 ]; then
     sync_status=0
   else
     sync_status=1
   fi
+
+  relay=${relayed_status}
+  online=${online_status}
 }
 
 get_miner_nebra_name() {
@@ -84,15 +101,19 @@ get_miner_nebra_name() {
 
 get_miner_nebra_data() {
   get_actual_height
+  get_relayed_status
+  get_online_status
+
+  val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC' "${data_dir}"/miner.nebra/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
 
   if [ "${helium_height}" ]; then
     block_height=${helium_height}
   else
-    block_height=$(jq -r '.BCH' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [block height] on ${a}"
+    block_height=${val[0]}
   fi
 
-  frequency=$(jq -r '.FR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null)  || log_err "Could not collect [frequency] on ${a}"
-  miner_height=$(jq -r '.MH' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
+  frequency=${val[1]}
+  miner_height=${val[2]}
   gap=$((block_height - miner_height))
   if [ "${gap}" -ge 20 ]; then
     sync_status=0
@@ -100,40 +121,36 @@ get_miner_nebra_data() {
     sync_status=1
   fi
 
-  sync_perc=$(jq -r '.BSP' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [status] on ${a}"
+  sync_perc=${val[3]}
   if [[ "${sync_perc}" == *"load"* ]]; then
     sync_percent=0
   else
     sync_percent=${sync_perc}
   fi
 
-  bt_conn=$(jq -r '.BT' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [bluetooth status] on ${a}"
+  bt_conn=${val[4]}
   if [ "${bt_conn}" == "true" ]; then
     bluetooth_connected=1
   else
     bluetooth_connected=0 
   fi
 
-  lo_stat=$(jq -r '.LOR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [lora status] on ${a}"
+  lo_stat=${val[5]}
   if [ "${lo_stat}" == "true" ]; then
     lora_status=1
   else
     lora_status=0
   fi
 
-  mn_conn=$(jq -r '.MC' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [miner connection status] on ${a}"
+  mn_conn=${val[6]}
   if [ "${mn_conn}" == "yes" ]; then
     miner_connected=1
   else
     miner_connected=0
   fi
 
-  re=$(jq -r '.MR' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_err "Could not collect [relayed status] on ${a}"
-  if [ "${re}" == "true" ]; then
-    relayed=1
-  else
-    relayed=0
-  fi
+  relay=${relayed_status}
+  online=${online_status}
 }
 
 get_miner_sensecap_name() {
@@ -142,30 +159,37 @@ get_miner_sensecap_name() {
 
 get_miner_sensecap_data() {
   get_actual_height
-  cputemp=$(jq '.data.cpuTemperature' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [cpu temp] on ${a}"
-  cpuused=$(jq '.data.cpuUsed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [cpu used] on ${a}"
-  memtotal=$(jq '.data.memoryTotal' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [memory total] on ${a}"
-  memused=$(jq '.data.memoryUsed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [memory used] on ${a}"
-  sdtotal=$(jq '.data.sdTotal' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [sd total] on ${a}"
-  sdused=$(jq '.data.sdUsed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [sd used] on ${a}"
-  gain=$(jq '.data.gain' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [atenna gain] on ${a}"
-  relayed=$(jq '.data.relayed' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [relayed status] on ${a}"
-  healthy=$(jq '.data.isHealth' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [health status] on ${a}"
+  get_relayed_status
+  get_online_status
+
+  val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' "${data_dir}"/miner.sensecap/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+
+  cputemp=${val[0]}
+  cpuused=${val[1]}
+  memtotal=${val[2]}
+  memused=${val[3]}
+  sdtotal=${val[4]}
+  sdused=${val[5]}
+  gain=${val[6]}
+  healthy=${val[7]}
 
   if [ "${helium_height}" ]; then
     block_height=${helium_height}
   else
-    block_height=$(jq '.data.totalHeight' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [total height] on ${a}"
+    block_height=${val[8]}
   fi
 
-  miner_height=$(jq '.data.height' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [miner height] on ${a}"
-  p2p_connected=$(jq '.data.connected' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [connected status] on ${a}"
-  dialable=$(jq '.data.dialable' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null) || log_err "Could not collect [dialable status] on ${a}"
-  nattype=$(jq '.data.natType' ${data_dir}/miner.sensecap/${a}.data 2> /dev/null)   || log_err "Could not collect [nat type] on ${a}"
+  miner_height=${val[9]}
+  p2p_connected=${val[10]}
+  dialable=${val[11]}
+  nattype=${val[12]}
   gap=$((block_height - miner_height))
   if [ "${gap}" -ge 20 ]; then
     sync_status=0
   else
     sync_status=1
   fi
+
+  relay=${relayed_status}
+  online=${online_status}
 }

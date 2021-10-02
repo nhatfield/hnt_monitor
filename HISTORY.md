@@ -1,5 +1,12 @@
 vNext
 
+- **Enchancement** - add online status for all miners
+- **Enchancement** - add relayed status for all miners
+- **Enchancement** - add user controls for etl jobs
+- **Enchancement** - support multiple prometheus endpoints to send data
+- **Enchancement** - update dashboads with the shared miner metric names
+- **Enchancement** - consolidate jq queries where possible
+
 # 5.0.1
 
 - **BugFix** - activity and reward collections were failing to update failure thresholds

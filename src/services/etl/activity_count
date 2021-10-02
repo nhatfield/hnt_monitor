@@ -114,18 +114,21 @@ reward_count() {
     done
   done
 
-  send_activity_counts
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_activity_counts
+  done
 
   log_debug "activity timestamps\n\n${activity_timestamps}\n"
   log_debug "hotspot activity count:\n\n  activity_sent_beacon_15m: ${activity_sent_beacon_15m}\n  activity_create_challenge_15m: ${activity_create_challenge_15m}\n  activity_challenged_beacon_15m: ${activity_challenged_beacon_15m}\n  activity_sent_beacon_1h: ${activity_sent_beacon_1h}\n  activity_create_challenge_1h: ${activity_create_challenge_1h}\n  activity_challenged_beacon_1h: ${activity_challenged_beacon_1h}\n  activity_sent_beacon_1d: ${activity_sent_beacon_1d}\n  activity_create_challenge_1d: ${activity_create_challenge_1d}\n  activity_challenged_beacon_1d: ${activity_challenged_beacon_1d}\n  activity_sent_beacon_7d: ${activity_sent_beacon_7d}\n  activity_create_challenge_7d: ${activity_create_challenge_7d}\n  activity_challenged_beacon_7d: ${activity_challenged_beacon_7d}\n  activity_sent_beacon_30d: ${activity_sent_beacon_30d}\n  activity_create_challenge_30d: ${activity_create_challenge_30d}\n  activity_challenged_beacon_30d: ${activity_challenged_beacon_30d}\n"
 }
 
-if [ "${hotspot_monitor}" == "true" ]; then
+if [ "${hotspot_monitor}" == "true" ] && [ "${activity_count_etl}" == "true" ]; then
   for a in ${addresses}; do
     get_hotspot_name
     reward_count
   done
 else
-  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor})"
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; activity_count_etl=${activity_count_etl})"
   true
 fi

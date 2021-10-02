@@ -3,8 +3,7 @@ get_activity_timestamps() {
 }
 
 get_activity_sent_beacons() {
-  activity_payload="$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.challengee != null) | select(.challengee == $a)' "${data_dir}/${a}"/*.activity 2>/dev/null)
-$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.path[].challengee != null) | select(.path[].challengee == $a)' "${data_dir}/${a}"/*.activity 2>/dev/null)" || log_err "could not retrieve sent beacons"
+  activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select((.,.path[]).challengee != null) | select((.,.path[]).challengee == $a)' "${data_dir}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve sent beacons"
 }
 
 get_activity_challenged_beacons() {

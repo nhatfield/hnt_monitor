@@ -12,15 +12,19 @@ block_height() {
   log_info "processing data"
 
   get_height
-  send_block_height
+
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_block_height
+  done
 
   log_debug "hotspot block data:\n\n  block_height: ${height}\n"
 }
 
-if [ "${helium_monitor}" == "true" ]; then
+if [ "${helium_monitor}" == "true" ] && [ "${block_height_etl}" == "true" ]; then
   name=helium
   block_height
 else
-  log_debug "Blocks monitor collection is disabled. Hint: (helium_monitor=${helium_monitor})"
+  log_debug "Blocks monitor collection is disabled. Hint: (helium_monitor=${helium_monitor}; block_height_etl=${block_height_etl})"
   true
 fi

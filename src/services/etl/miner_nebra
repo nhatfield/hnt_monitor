@@ -12,9 +12,12 @@ nebra_data() {
   log_info "processing data"
   
   get_miner_nebra_data
-  send_miner_nebra_data
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_miner_nebra_data
+  done
 
-  log_debug "nebra data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  sync_status: ${sync_status}\n  frequency: ${frequency}\n  bluetooth_connected: ${bluetooth_connected}\n  lora_connected: ${lora_status}\n  miner_connected: ${miner_connected}\n  relayed: ${relayed}\n  height_gap: ${gap}\n sync_percent: ${sync_percent}\n"
+  log_debug "nebra data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  sync_status: ${sync_status}\n  frequency: ${frequency}\n  bluetooth_connected: ${bluetooth_connected}\n  lora_connected: ${lora_status}\n  miner_connected: ${miner_connected}\n  relayed_status: ${relay}\n  height_gap: ${gap}\n  sync_percent: ${sync_percent}\n  online_status: ${online}\n"
 }
 
 if [ "${nebra_monitor}" == "true" ]; then
