@@ -1,5 +1,8 @@
 vNext
 
+- **Enchancement** - add version to first line of log output
+- **BugFix** - relayed and online status was not properly displayed
+
 # 5.1.0
 
 - **Enchancement** - add online status for all miners

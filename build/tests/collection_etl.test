@@ -106,7 +106,7 @@ cleanup_err() {
 
 cleanup() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - cleaning up workspace"
-  #docker rm -f ${container} > /dev/null || true
+  docker rm -f ${container} > /dev/null || true
 }
 
 test

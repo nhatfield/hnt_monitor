@@ -8,6 +8,7 @@ RUN yum update -y \
  && rm -rf /tmp/* \
  && yum clean all -y
 
+COPY HISTORY.md /
 COPY src/ /opt/hnt_monitor/
 COPY build/docker/entrypoint /
 

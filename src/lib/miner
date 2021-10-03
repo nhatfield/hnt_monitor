@@ -2,14 +2,6 @@ get_actual_height() {
   helium_height=$(jq -r '.data.height' "${data_dir}"/height 2>/dev/null) || log_err "could not retrieve block height"
 }
 
-get_relayed_status() {
-  relayed_status=$(jq -r '.data.status | select(.listen_addrs[] != null) | .listen_addrs[]' "${data_dir}"/${a}/info 2>/dev/null | grep 44158 | wc -l) || true
-}
-
-get_online_status() {
-  online_status=$(jq -r '.data.status.online' "${data_dir}"/${a}/info 2>/dev/null | grep online | wc -l) || true
-}
-
 get_miner_bobcat_name() {
   name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "No name found for ${a}"
   
@@ -26,8 +18,6 @@ get_miner_bobcat_temp() {
 
 get_miner_bobcat_status() {
   get_actual_height
-  get_relayed_status
-  get_online_status
 
   val=($(jq -r '.miner_height, .blockchain_height, .epoch, .status' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null)) || log_err "Could not collect [status] on ${a}"
 
@@ -52,9 +42,6 @@ get_miner_bobcat_status() {
       sync_status=0
     fi
   fi
-
-  relay=${relayed_status}
-  online=${online_status}
 }
 
 get_miner_longap_name() {
@@ -63,8 +50,6 @@ get_miner_longap_name() {
 
 get_miner_longap_data() {
   get_actual_height
-  get_relayed_status
-  get_online_status
 
   val=($(jq -r -c '.[].helium.blockchain.height, .[].miner.blockHeight, .[].miner.connected' "${data_dir}"/miner.longap/${a}.status 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
 
@@ -90,9 +75,6 @@ get_miner_longap_data() {
   else
     sync_status=1
   fi
-
-  relay=${relayed_status}
-  online=${online_status}
 }
 
 get_miner_nebra_name() {
@@ -101,8 +83,6 @@ get_miner_nebra_name() {
 
 get_miner_nebra_data() {
   get_actual_height
-  get_relayed_status
-  get_online_status
 
   val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC' "${data_dir}"/miner.nebra/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
 
@@ -148,9 +128,6 @@ get_miner_nebra_data() {
   else
     miner_connected=0
   fi
-
-  relay=${relayed_status}
-  online=${online_status}
 }
 
 get_miner_sensecap_name() {
@@ -159,8 +136,6 @@ get_miner_sensecap_name() {
 
 get_miner_sensecap_data() {
   get_actual_height
-  get_relayed_status
-  get_online_status
 
   val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' "${data_dir}"/miner.sensecap/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
 
@@ -189,7 +164,4 @@ get_miner_sensecap_data() {
   else
     sync_status=1
   fi
-
-  relay=${relayed_status}
-  online=${online_status}
 }

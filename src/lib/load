@@ -85,12 +85,6 @@ ${project}_block_height{instance="${name}"} ${block_height}
 # HELP ${project}_status_epoch of the bobcat miner
 # TYPE ${project}_status_epoch gauge
 ${project}_status_epoch{instance="${name}"} ${epoch}
-# HELP ${project}_relayed_status of the bobcat miner 0: relayed, 1: not relayed
-# TYPE ${project}_relayed_status gauge
-${project}_relayed_status{instance="${name}"} ${relay}
-# HELP ${project}_online_status of the bobcat miner 0: offline, 1: online
-# TYPE ${project}_online_status gauge
-${project}_online_status{instance="${name}"} ${online}
 EOF
 
     log_info "[Status] data push to ${pghost}/metrics/job/${project}_${name//-/_}"
@@ -115,9 +109,6 @@ send_miner_longap_data() {
   if [ "${pghost}" ]; then
     log_info "Sending data to prometheus pushgateway"
     cat <<EOF | curl -s --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_online_status of the longap miner running 0: offline, 1: online
-# TYPE ${project}_online_status gauge
-${project}_online_status{instance="${name}"} ${online}
 # HELP ${project}_sync_status of the longap miner synced to blockchain 0: synching, 1: syncd
 # TYPE ${project}_sync_status gauge
 ${project}_sync_status{instance="${name}"} ${sync_status}
@@ -133,9 +124,6 @@ ${project}_block_connected{instance="${name}"} ${block_connected}
 # HELP ${project}_height_gap of the longap height to blockchain
 # TYPE ${project}_height_gap gauge
 ${project}_height_gap{instance="${name}"} ${gap}
-# HELP ${project}_relayed_status of the longap miner 0: relayed, 1: not relayed
-# TYPE ${project}_relayed_status gauge
-${project}_relayed_status{instance="${name}"} ${relay}
 EOF
 
     log_info "[Miner] sata pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
@@ -173,12 +161,6 @@ ${project}_miner_connected{instance="${name}"} ${miner_connected}
 # HELP ${project}_height_gap of the nebra height to blockchain
 # TYPE ${project}_height_gap gauge
 ${project}_height_gap{instance="${name}"} ${gap}
-# HELP ${project}_relayed_status of the nebra miner 0: relayed, 1: not relayed
-# TYPE ${project}_relayed_status gauge
-${project}_relayed_status{instance="${name}"} ${relay}
-# HELP ${project}_online_status of the nebra miner 0: offline, 1: online
-# TYPE ${project}_online_status gauge
-${project}_online_status{instance="${name}"} ${online}
 EOF
 
     log_info "[Miner] data push to ${pghost}/metrics/job/${project}_${name//-/_}"
@@ -210,9 +192,6 @@ ${project}_sd_used{instance="${name}"} ${sdused}
 # HELP ${project}_antenna_gain of the sensecap miner
 # TYPE ${project}_antenna_gain gauge
 ${project}_antenna_gain{instance="${name}"} ${gain}
-# HELP ${project}_relayed_status of the sensecap miner 0: relayed, 1: not relayed
-# TYPE ${project}_relayed_status gauge
-${project}_relayed_status{instance="${name}"} ${relay}
 # HELP ${project}_is_healthy status of the sensecap miner 1: yes, 2: no
 # TYPE ${project}_is_healthy gauge
 ${project}_is_healthy{instance="${name}"} ${healthy}
@@ -237,12 +216,33 @@ ${project}_height_gap{instance="${name}"} ${gap}
 # HELP ${project}_sync_status of the sensecap miner synced to blockchain 0: synching, 1: syncd
 # TYPE ${project}_sync_status gauge
 ${project}_sync_status{instance="${name}"} ${sync_status}
-# HELP ${project}_online_status of the bobcat miner 0: offline, 1: online
-# TYPE ${project}_online_status gauge
-${project}_online_status{instance="${name}"} ${online}
 EOF
 
     log_info "[Miner] data push to ${pghost}/metrics/job/${project}_${name//-/_}"
+  fi
+}
+
+send_relayed_status() {
+  if [ "${pghost}" ]; then
+    log_info "Sending data to prometheus pushgateway"
+    cat <<EOF | curl -s --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
+# HELP ${project}_relayed_status of the miner 0: relayed, 1: not relayed
+# TYPE ${project}_relayed_status gauge
+${project}_relayed_status{instance="${name}"} ${relay}
+EOF
+    log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
+  fi
+}
+
+send_online_status() {
+  if [ "${pghost}" ]; then
+    log_info "Sending data to prometheus pushgateway"
+    cat <<EOF | curl -s --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
+# HELP ${project}_online_status of the miner 0: offline, 1: online
+# TYPE ${project}_online_status gauge
+${project}_online_status{instance="${name}"} ${online}
+EOF
+    log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
