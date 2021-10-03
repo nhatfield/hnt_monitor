@@ -228,7 +228,7 @@ send_relayed_status() {
     cat <<EOF | curl -s --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_relayed_status of the miner 0: relayed, 1: not relayed
 # TYPE ${project}_relayed_status gauge
-${project}_relayed_status{instance="${name}"} ${relay}
+${project}_relayed_status{instance="${name}"} ${relayed_status}
 EOF
     log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
   fi
@@ -240,7 +240,7 @@ send_online_status() {
     cat <<EOF | curl -s --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_online_status of the miner 0: offline, 1: online
 # TYPE ${project}_online_status gauge
-${project}_online_status{instance="${name}"} ${online}
+${project}_online_status{instance="${name}"} ${online_status}
 EOF
     log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
   fi

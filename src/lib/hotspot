@@ -3,7 +3,7 @@ get_hotspot_name() {
 }
 
 get_relayed_status() {
-  relayed_status=$(jq -r '.data.status | select(.listen_addrs[] != null) | .listen_addrs[]' "${data_dir}"/${a}/info 2>/dev/null | grep 44158 | wc -l) || true
+  relayed_status=$(jq -r '.data.status.listen_addrs[]' "${data_dir}"/${a}/info 2>/dev/null | grep 44158 | wc -l) || true
 }
 
 get_online_status() {
