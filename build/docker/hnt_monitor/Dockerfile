@@ -10,7 +10,7 @@ RUN yum update -y \
 
 COPY HISTORY.md /
 COPY src/ /opt/hnt_monitor/
-COPY build/docker/entrypoint /
+COPY build/docker/hnt_monitor/entrypoint /
 
 RUN chmod 755 /entrypoint
 

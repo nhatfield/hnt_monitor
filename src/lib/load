@@ -11,6 +11,9 @@ ${project}_activity_create_challenge_15m{instance="${name}"} ${activity_create_c
 # HELP ${project}_activity_challenged_beacon_15m of the miner
 # TYPE ${project}_activity_challenged_beacon_15m gauge
 ${project}_activity_challenged_beacon_15m{instance="${name}"} ${activity_challenged_beacon_15m}
+# HELP ${project}_activity_data_transfer_15m of the miner
+# TYPE ${project}_activity_data_transfer_15m gauge
+${project}_activity_data_transfer_15m{instance="${name}"} ${activity_data_transfer_15m}
 # HELP ${project}_activity_sent_beacon_1h of the miner
 # TYPE ${project}_activity_sent_beacon_1h gauge
 ${project}_activity_sent_beacon_1h{instance="${name}"} ${activity_sent_beacon_1h}
@@ -20,6 +23,9 @@ ${project}_activity_create_challenge_1h{instance="${name}"} ${activity_create_ch
 # HELP ${project}_activity_challenged_beacon_1h of the miner
 # TYPE ${project}_activity_challenged_beacon_1h gauge
 ${project}_activity_challenged_beacon_1h{instance="${name}"} ${activity_challenged_beacon_1h}
+# HELP ${project}_activity_data_transfer_1h of the miner
+# TYPE ${project}_activity_data_transfer_1h gauge
+${project}_activity_data_transfer_1h{instance="${name}"} ${activity_data_transfer_1h}
 # HELP ${project}_activity_sent_beacon_1d of the miner
 # TYPE ${project}_activity_sent_beacon_1d gauge
 ${project}_activity_sent_beacon_1d{instance="${name}"} ${activity_sent_beacon_1d}
@@ -29,6 +35,9 @@ ${project}_activity_create_challenge_1d{instance="${name}"} ${activity_create_ch
 # HELP ${project}_activity_challenged_beacon_1d of the miner
 # TYPE ${project}_activity_challenged_beacon_1d gauge
 ${project}_activity_challenged_beacon_1d{instance="${name}"} ${activity_challenged_beacon_1d}
+# HELP ${project}_activity_data_transfer_1d of the miner
+# TYPE ${project}_activity_data_transfer_1d gauge
+${project}_activity_data_transfer_1d{instance="${name}"} ${activity_data_transfer_1d}
 # HELP ${project}_activity_sent_beacon_7d of the miner
 # TYPE ${project}_activity_sent_beacon_7d gauge
 ${project}_activity_sent_beacon_7d{instance="${name}"} ${activity_sent_beacon_7d}
@@ -38,6 +47,9 @@ ${project}_activity_create_challenge_7d{instance="${name}"} ${activity_create_ch
 # HELP ${project}_activity_challenged_beacon_7d of the miner
 # TYPE ${project}_activity_challenged_beacon_7d gauge
 ${project}_activity_challenged_beacon_7d{instance="${name}"} ${activity_challenged_beacon_7d}
+# HELP ${project}_activity_data_transfer_7d of the miner
+# TYPE ${project}_activity_data_transfer_7d gauge
+${project}_activity_data_transfer_7d{instance="${name}"} ${activity_data_transfer_7d}
 # HELP ${project}_activity_sent_beacon_30d of the miner
 # TYPE ${project}_activity_sent_beacon_30d gauge
 ${project}_activity_sent_beacon_30d{instance="${name}"} ${activity_sent_beacon_30d}
@@ -47,6 +59,9 @@ ${project}_activity_create_challenge_30d{instance="${name}"} ${activity_create_c
 # HELP ${project}_activity_challenged_beacon_30d of the miner
 # TYPE ${project}_activity_challenged_beacon_30d gauge
 ${project}_activity_challenged_beacon_30d{instance="${name}"} ${activity_challenged_beacon_30d}
+# HELP ${project}_activity_data_transfer_30d of the miner
+# TYPE ${project}_activity_data_transfer_30d gauge
+${project}_activity_data_transfer_30d{instance="${name}"} ${activity_data_transfer_30d}
 EOF
 
     log_info "[Hotspot activity] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"

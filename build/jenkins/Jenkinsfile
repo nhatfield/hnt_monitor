@@ -28,7 +28,7 @@ pipeline {
                     sh """
                       set +x
                       BRANCH="\$(echo ${env.GIT_BRANCH} | sed 's%.*origin/%%g;s%/%-%g')"
-                      docker build -t ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} -f build/docker/Dockerfile . 
+                      docker build -t ${DEV_REPOSITORY}/${PROJECT}:\${BRANCH}.${VERSION}.${BUILDID} -f build/docker/hnt_monitor/Dockerfile . 
                     """
                 }
             }
