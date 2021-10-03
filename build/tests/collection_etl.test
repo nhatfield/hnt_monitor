@@ -17,6 +17,7 @@ cd ${DIR}
 container=${1:-""}
 image=${2:-""}
 hotspot="hotspot"
+version=${version:-"$(grep '#' ../../HISTORY.md | sed 's%# %%' | sort -V | tail -1)"}
 
 if [ ! "${container}" ]; then
   echo "Missing container name"
@@ -84,6 +85,13 @@ test() {
       fi
     fi
   done
+
+  conf_var=version.status
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - checking for correct version in the logs"
+  if [ ! "$(grep "${version}" <<< "${logs}" | wc -l)" -eq 1 ]; then
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - couldn't detect the version in the logs"
+    cleanup_err
+  fi
 
   conf_var=error.status
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - checking for errors in the logs"

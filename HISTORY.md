@@ -1,6 +1,6 @@
 vNext
 
-- **Enchancement** - add version to first line of log output
+- **Enchancement** - add version to initialize line of log output
 - **BugFix** - relayed and online status was not properly displayed
 
 # 5.1.0
