@@ -1,5 +1,7 @@
 vNext
 
+# 5.2.0
+
 - **Enchancement** - update bobcat default dashboard json
 - **Enchancement** - update bobcat blue dashboard json
 - **Enchancement** - update README with latest changes
