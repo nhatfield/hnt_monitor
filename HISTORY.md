@@ -1,5 +1,8 @@
 vNext
 
+- **Enchancement** - update bobcat default dashboard json
+- **Enchancement** - update bobcat blue dashboard json
+- **Enchancement** - update README with latest changes
 - **Enchancement** - add version to initialize line of log output
 - **BugFix** - relayed and online status was not properly displayed
 

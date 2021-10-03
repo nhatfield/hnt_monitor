@@ -158,7 +158,7 @@ Run the hnt monitor script standalone
 ```bash
 $> docker build -t hnt_monitor -f build/docker/Dockerfile .
 $> docker run --rm -it hnt_monitor help     # help menu
-$> docker run -d -e HNT_HOTSPOT_MONITOR=true -e HNT_HOTSPOT_ADDRESSES="12345..." -e HNT_PROMETHEUS_PG_HOST=my.prometheus-pushgateway.host hnt_monitor  # Enable hotspot monitoring from helium api
+$> docker run -d -e HNT_HOTSPOT_MONITOR=true -e HNT_HOTSPOT_ADDRESSES="12345..." -e HNT_PROMETHEUS_PG_HOST=http://my.prometheus-pushgateway.host:9091 hnt_monitor  # Enable hotspot monitoring from helium api
 ```
 <br />
 
@@ -188,7 +188,7 @@ Edit the `hnt_monitor.yml` file and add your miner information to the `hnt_monit
       DO_NOT_REMOVE: "setup"
       HNT_HOTSPOT_MONITOR: "true"
       HNT_HOTSPOT_ADDRESSES: "<myminersaddress> "   # Update your miner address on this line before launching the stack
-      HNT_PROMETHEUS_PG_HOST: "prometheus_pushgateway"
+      HNT_PROMETHEUS_PG_HOST: "http://prometheus_pushgateway:9091"
       HNT_DEBUG: "true"
     networks:
       hnt_monitor:
@@ -280,8 +280,7 @@ $> docker run -it --rm hnt_monitor help
 | `HNT_NEBRA_IPS` | | If nebra monitoring enabled, list of ips. Ex: '192.x.x.2 192.x.x.3 192.x.x.etc' | `no` |
 | `HNT_NEBRA_MONITOR` | `false` | Enable or disable nebra monitoring. Boolean: `(true or false)` | `no` |
 | `HNT_PROJECT` | `hnt_monitor` | The name of the metric prefix when sending to prometheus. | `no` |
-| `HNT_PROMETHEUS_PG_HOST` | `localhost` | The prometheus push gateway hostname. | `yes` |
-| `HNT_PROMETHEUS_PG_PORT` | `9091` | The prometheus push gateway port. | `no` |
+| `HNT_PROMETHEUS_PG_HOST` | `http://localhost:9091` | The prometheus push gateway hostname. | `yes` |
 | `HNT_SENSECAP_API_KEY` | | Api key for sensecap | `no` |
 | `HNT_SENSECAP_MONITOR` | `false` | Enable or disable sensecap monitoring. Boolean: `(true or false)` | `no` |
 | `HNT_SENSECAP_SERIAL_NUMBERS` | | If sensecap monitoring enabled, list of Serial numbers of the sensecap miners | `no` |
