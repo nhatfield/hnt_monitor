@@ -30,7 +30,7 @@ make_dir ${logpath}
 make_dir ${data_dir}
 
 
-log_info "initializing hnt monitor"
+log_info "initializing hnt monitor version [$(grep '#' /HISTORY.md 2>/dev/null | sed 's%# %%' | sort -V | tail -1)]"
 log_info "removing stale locks"
 rm_locks
 

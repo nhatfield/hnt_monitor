@@ -1,5 +1,12 @@
 vNext
 
+- **Enchancement** - update bobcat default dashboard json
+- **Enchancement** - update bobcat blue dashboard json
+- **Enchancement** - update README with latest changes
+- **Enchancement** - add version to initialize line of log output
+- **Enchancement** - add data transfer metrics to activity count
+- **BugFix** - relayed and online status was not properly displayed
+
 # 5.1.0
 
 - **Enchancement** - add online status for all miners

@@ -13,7 +13,7 @@ services:
     image: hnt_monitor:latest
     restart: always
     build:
-      dockerfile: ./build/docker/Dockerfile
+      dockerfile: ./build/docker/hnt_monitor/Dockerfile
       context: .
     environment:
       DO_NOT_REMOVE: "setup"

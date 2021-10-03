@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+get_addresses
+id=etl.online.status
+
+online_status() {
+  log_info "processing data for ${a}"
+
+  get_online_status
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_online_status
+  done
+
+  log_debug "hostspot online data:\n\n  online_status: ${online_status}\n"
+}
+
+
+if [ "${hotspot_monitor}" == "true" ] && [ "${online_status_etl}" == "true" ]; then
+  for a in ${addresses}; do
+    get_hotspot_name
+    online_status &
+  done
+else
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; online_status_etl=${online_status_etl})" 
+  true
+fi

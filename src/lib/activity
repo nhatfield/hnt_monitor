@@ -13,3 +13,7 @@ get_activity_challenged_beacons() {
 get_activity_create_challenge() {
   activity_payload=$(jq -r '.data[] | select(.type == "poc_request_v1")' "${data_dir}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve create challenge"
 }
+
+get_activity_data_transfer() {
+  activity_payload=$(jq -r '.data[] | select(.type == "state_channel_close_v1")' "${data_dir}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve data transfer"
+}
