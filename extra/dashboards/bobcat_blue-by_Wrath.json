@@ -916,7 +916,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Created Challenges 30d",
+      "title": "Created Challenges 7d",
       "type": "stat"
     },
     {
@@ -983,7 +983,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_activity_sent_beacon_7d",
+          "expr": "hnt_miner_activity_create_challenge_7d",
           "format": "time_series",
           "instant": false,
           "interval": "",
