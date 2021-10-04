@@ -45,7 +45,7 @@ get_miner_bobcat_status() {
 }
 
 get_miner_longap_name() {
-  name=$(jq -r '.[].name' "${data_dir}"/miner.longap/${a}.status 2> /dev/null) || log_warn "Could not collect [name] on ${a}"
+  name=$(jq -r '.[].name' "${data_dir}"/miner.longap/${a}.status 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "Could not collect [name] on ${a}"
 }
 
 get_miner_longap_data() {

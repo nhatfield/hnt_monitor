@@ -1,5 +1,10 @@
 vNext
 
+# 5.3.0
+
+- **Enchancement** - updating test for version output
+- **BugFix** - metrics were broken in multiple vendor miner setup
+
 # 5.2.0
 
 - **Enchancement** - update bobcat default dashboard json

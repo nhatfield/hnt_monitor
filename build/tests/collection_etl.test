@@ -18,6 +18,9 @@ container=${1:-""}
 image=${2:-""}
 hotspot="hotspot"
 version=${version:-"$(grep '#' ../../HISTORY.md | sed 's%# %%' | sort -V | tail -1)"}
+echo "Version: ${version}"
+PG_HOST=${PG_HOST:-'""'}
+DOCKER_NETWORK=${DOCKER_NETWORK:-"bridge"}
 
 if [ ! "${container}" ]; then
   echo "Missing container name"
@@ -41,12 +44,13 @@ test() {
   cleanup 2>/dev/null || true
 
   docker run -d ${run_vars} -e HNT_DEBUG=true \
+    --network=${DOCKER_NETWORK} \
     -e HNT_BOBCAT_IPS="123 456" \
     -e HNT_NEBRA_IPS="123 456" \
     -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} \
     -e HNT_HOTSPOT_ADDRESSES=${hotspot} \
     -e HNT_LONGAP_ADDRESSES=${hotspot} \
-    -e HNT_PROMETHEUS_PG_HOST=\"\" \
+    -e HNT_PROMETHEUS_PG_HOST=${PG_HOST} \
     -e bobcat_test_url=${test_url}/bobcat \
     -e helium_test_url=${test_url}/helium \
     -e hotspot_test_url=${test_url} \
@@ -88,7 +92,7 @@ test() {
 
   conf_var=version.status
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - checking for correct version in the logs"
-  if [ ! "$(grep "${version}" <<< "${logs}" | wc -l)" -eq 1 ]; then
+  if [ ! "$(grep "${version//./\.}" <<< "${logs}" | wc -l)" -eq 1 ]; then
     echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - couldn't detect the version in the logs"
     cleanup_err
   fi
