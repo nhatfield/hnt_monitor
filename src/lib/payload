@@ -1,3 +1,12 @@
+get_changed_activty() {
+  jq 'select(.data != null)' <<< "${payload}" 2>/dev/null
+}
+
+get_cursor() {
+  p=${1:-"${payload}"}
+  cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${p}" 2>/dev/null) || log_info "cursor data empty"
+}
+
 get_payload() {
   payload=$(curl -sL "${url}" || jq '.' 2>/dev/null) || log_err "api timeout"
 }
@@ -49,9 +58,4 @@ nebra_success_payload() {
 
 sensecap_success_payload() {
   jq 'select(.data.name != null)' <<< "${payload}" 2>/dev/null
-}
-
-get_cursor() {
-  p=${1:-"${payload}"}
-  cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${p}" 2>/dev/null) || log_info "cursor data empty"
 }
