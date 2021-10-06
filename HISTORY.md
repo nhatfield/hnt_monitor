@@ -1,5 +1,8 @@
 vNext
 
+- **Enchancement** - update bobcat blue dashboard json
+- **Enchancement** - add nginx for api authentication option
+
 # 5.3.0
 
 - **Enchancement** - updating test for version output

@@ -22,7 +22,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1633236357575,
+  "iteration": 1633465216888,
   "links": [],
   "panels": [
     {
@@ -160,12 +160,12 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_cpu_temperature",
+          "expr": "hnt_miner_cpu_temperature{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{exported_instance}}: core{{core}}",
+          "legendFormat": "{{exported_instance}}",
           "refId": "A"
         }
       ],
@@ -246,7 +246,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_sync_status",
+          "expr": "hnt_miner_sync_status{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -318,7 +318,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_online_status",
+          "expr": "hnt_miner_online_status{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -390,7 +390,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_relayed_status",
+          "expr": "hnt_miner_relayed_status{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -523,7 +523,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_height_gap",
+          "expr": "hnt_miner_height_gap{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -589,7 +589,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_miner_height",
+          "expr": "hnt_miner_miner_height{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -677,7 +677,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_witnessed",
+          "expr": "hnt_miner_witnessed{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -753,7 +753,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_witnesses",
+          "expr": "hnt_miner_witnesses{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -830,7 +830,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_activity_challenged_beacon_7d",
+          "expr": "hnt_miner_activity_challenged_beacon_7d{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -905,7 +905,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_activity_create_challenge_7d",
+          "expr": "hnt_miner_activity_create_challenge_7d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -983,7 +983,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_activity_sent_beacon_7d",
+          "expr": "hnt_miner_activity_sent_beacon_7d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -995,6 +995,84 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Sent Beacon 7d",
+      "type": "stat"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": null,
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-purple",
+                "value": null
+              },
+              {
+                "color": "light-purple",
+                "value": 1
+              },
+              {
+                "color": "text",
+                "value": 5
+              },
+              {
+                "color": "light-blue",
+                "value": 10
+              },
+              {
+                "color": "dark-blue",
+                "value": 20
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 2,
+        "x": 10,
+        "y": 7
+      },
+      "id": 46,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "8.1.3",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "hnt_miner_activity_data_transfer_7d{exported_instance!=\"\"}",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{exported_instance}}",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Data Transfer 7d",
       "type": "stat"
     },
     {
@@ -1050,7 +1128,7 @@
       "gridPos": {
         "h": 6,
         "w": 2,
-        "x": 10,
+        "x": 12,
         "y": 7
       },
       "id": 4,
@@ -1074,7 +1152,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_scale",
+          "expr": "hnt_miner_reward_scale{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1128,8 +1206,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 4,
-        "x": 12,
+        "w": 3,
+        "x": 14,
         "y": 7
       },
       "id": 34,
@@ -1153,7 +1231,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_1d",
+          "expr": "hnt_miner_reward_earned_1d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1208,8 +1286,8 @@
       },
       "gridPos": {
         "h": 6,
-        "w": 4,
-        "x": 16,
+        "w": 3,
+        "x": 17,
         "y": 7
       },
       "id": 32,
@@ -1233,7 +1311,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_7d",
+          "expr": "hnt_miner_reward_earned_7d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1313,7 +1391,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_30d",
+          "expr": "hnt_miner_reward_earned_30d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1402,7 +1480,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_15m",
+          "expr": "hnt_miner_reward_15m{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1487,7 +1565,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_15m",
+          "expr": "hnt_miner_reward_earned_15m{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -1550,7 +1628,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_15m",
+          "expr": "hnt_miner_reward_15m{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1618,7 +1696,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_15m",
+          "expr": "hnt_miner_reward_earned_15m{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1707,7 +1785,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_1h",
+          "expr": "hnt_miner_reward_1h{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1792,7 +1870,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_1h",
+          "expr": "hnt_miner_reward_earned_1h{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -1855,7 +1933,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_1h",
+          "expr": "hnt_miner_reward_1h{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1923,7 +2001,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_1h",
+          "expr": "hnt_miner_reward_earned_1h{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2012,7 +2090,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_1d",
+          "expr": "hnt_miner_reward_1d{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -2097,7 +2175,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_1d",
+          "expr": "hnt_miner_reward_earned_1d{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -2160,7 +2238,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_1d",
+          "expr": "hnt_miner_reward_1d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2240,7 +2318,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_1d",
+          "expr": "hnt_miner_reward_earned_1d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2329,7 +2407,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_7d",
+          "expr": "hnt_miner_reward_7d{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -2414,7 +2492,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_7d",
+          "expr": "hnt_miner_reward_earned_7d{exported_instance!=\"\"}",
           "interval": "",
           "legendFormat": "{{exported_instance}}",
           "refId": "A"
@@ -2477,7 +2555,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_7d",
+          "expr": "hnt_miner_reward_7d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2557,7 +2635,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_7d",
+          "expr": "hnt_miner_reward_earned_7d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2646,7 +2724,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_30d",
+          "expr": "hnt_miner_reward_30d{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -2734,7 +2812,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_30d",
+          "expr": "hnt_miner_reward_earned_30d{exported_instance!=\"\"}",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -2801,7 +2879,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_30d",
+          "expr": "hnt_miner_reward_30d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2881,7 +2959,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "hnt_miner_reward_earned_30d",
+          "expr": "hnt_miner_reward_earned_30d{exported_instance!=\"\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2896,7 +2974,7 @@
       "type": "gauge"
     }
   ],
-  "refresh": "1m",
+  "refresh": "",
   "schemaVersion": 30,
   "style": "dark",
   "tags": [],
@@ -2947,5 +3025,5 @@
   "timezone": "",
   "title": "HNT Miner",
   "uid": "KuibiQ7nk",
-  "version": 45
+  "version": 62
 }
