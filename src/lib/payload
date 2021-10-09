@@ -1,34 +1,82 @@
-get_changed_activty() {
-  jq 'select(.data != null)' <<< "${payload}" 2>/dev/null
-}
-
 get_cursor() {
   p=${1:-"${payload}"}
   cursor=$(jq -r 'select(.cursor != null) | .cursor' <<< "${p}" 2>/dev/null) || log_info "cursor data empty"
 }
 
 get_payload() {
-  payload=$(curl -sL "${url}" || jq '.' 2>/dev/null) || log_err "api timeout"
+  get_curl_options
+  payload=$(curl ${curl_options} "${url}" || jq '.' 2>/dev/null) || log_err "api timeout"
 }
 
 next_payload() {
-  new_payload=$(curl -sL "${url}&cursor=${cursor}" | jq '.' 2>/dev/null) || log_err "api timeout"
+  get_curl_options
+  new_payload=$(curl ${curl_options} "${url}&cursor=${cursor}" | jq '.' 2>/dev/null) || log_err "api timeout"
 }
 
 send_payload() {
-  option=${1:-""}
-  directory=${2:-""}
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    option=${1:-""}
+    directory=${2:-""}
 
-  if [ "${directory}" ]; then
-    if [ "${option}" == "write" ]; then
-      echo "${payload}" > "${directory}"
-    elif [ "${option}" == "append" ]; then
-      echo "${payload}" >> "${directory}"
+    if [ "${directory}" ]; then
+      if [ "${option}" == "write" ]; then
+        echo "${payload}" > "${directory}"
+      elif [ "${option}" == "append" ]; then
+        echo "${payload}" >> "${directory}"
+      else
+        log_err "invalid option - ${option}"
+      fi
     else
-      log_err "invalid option - ${option}"
+      log_err "no directory to send payload was specified"
     fi
-  else
-    log_err "no directory to send payload was specified"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    option=${1:-""}
+    a=${a:-"${endpoint}"}
+    tempfile="${id}.${a}.$(date +%s)"
+  
+    document="${miner}.${a}.${id}"
+    
+    if [ "${init}" == "true" ]; then
+      option=write
+    fi
+
+    if [ "${id}" ]; then
+      if [ "${option}" == "write" ]; then
+        echo "${payload}" > /tmp/"${tempfile}"
+
+        if [ "${miner}" == "helium" ]; then
+          index="hnt-${client_api_key,,}"
+        else
+          index="hnt-${client_api_key,,}.${global_day}"
+        fi
+
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+
+      elif [ "${option}" == "append" ]; then
+        index="hnt-${client_api_key,,}.${global_day}"
+        upd_data=$(jq -r '.data[]' <<< "${payload}")
+        upd_payload > /tmp/"${tempfile}"
+
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}/_update" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+        
+        if [ ! "$(jq -r '.result' <<< "${es_post}")" == "updated"  ]; then
+          echo "${payload}" > /tmp/"${tempfile}"
+          es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+        else
+          log_info "updated elasticsearch document [${document}]"
+        fi
+      else
+        log_err "invalid option - ${option}"
+      fi
+    else
+      log_err "no document name to send payload was specified"
+    fi
+   
+    log_debug "elasticsearch response - ${es_post}"
+    rm -f /tmp/"${tempfile}"
   fi
 }
 
@@ -58,4 +106,23 @@ nebra_success_payload() {
 
 sensecap_success_payload() {
   jq 'select(.data.name != null)' <<< "${payload}" 2>/dev/null
+}
+
+upd_payload() {
+cat <<EOF
+{
+  "script": {
+    "source": "ctx._source.data.add(params.data)",
+    "lang": "painless",
+    "params": {
+      "data":
+${upd_data}
+    }
+  }
+}
+EOF
+}
+
+validate_payload() {
+  jq '.data[]' <<< "${payload}" 2>/dev/null
 }

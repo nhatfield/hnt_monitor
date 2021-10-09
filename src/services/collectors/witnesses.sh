@@ -7,6 +7,7 @@ if [ ${trace} == "true" ]; then
 fi
 
 get_addresses
+miner=hotspot
 endpoint=witnesses
 lock_file=.${endpoint}.lock
 id=collector.${endpoint}

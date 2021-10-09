@@ -6,6 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+miner=hotspot
 when=${when:-"15 minutes ago"}
 get_addresses
 current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
@@ -41,8 +42,7 @@ get() {
   while [ "${cursor}" ]; do
     next_payload
     get_cursor "${new_payload}"
-    payload="${payload}
-${new_payload}"
+    payload=$(jq -s '{data: (.[0].data + .[1].data)}' <<< "${payload} ${new_payload}")
 
     if [ "${n}" -ge 15 ]; then
       log_err "api is having problems or there are too many cursors to traverse"
@@ -52,7 +52,10 @@ ${new_payload}"
     ((n++)) || true
   done
 
-  send_payload append "${data_dir}/${a}/${data_format}.${endpoint}"
+  if [ "$(validate_payload)" ]; then
+    send_payload append "${data_dir}/${a}/${data_format}.${endpoint}"
+  fi
+
   log_info "${a} hotspot ${endpoint} data ready to process"
   log_debug "${endpoint} data \n${payload}\n\n"
 

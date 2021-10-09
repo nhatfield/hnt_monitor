@@ -36,6 +36,7 @@ rm_locks
 
 run() {
   while true; do
+    global_day=$(date +%Y-%m-%d)
     # Set libs
     for l in ../lib/*; do
       . "${l}"

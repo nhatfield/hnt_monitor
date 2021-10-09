@@ -6,6 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+miner=helium
 endpoint=height
 lock_file=".${endpoint}.lock"
 id=collector.${endpoint}

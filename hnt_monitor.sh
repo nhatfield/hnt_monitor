@@ -459,7 +459,7 @@ finish() {
   echo "You're all set! Take a look at the docs to setup the application interface"
   echo
   echo "Grafana:                 http://localhost:3000"
-  echo "Prometheus Server:       http://localhost:3000"
+  echo "Prometheus Server:       http://localhost:9090"
   echo "Prometheus Push Gateway: http://localhost:9091"
   echo
   echo "Docs:                    https://github.com/nhatfield/hnt_monitor#whats-next"

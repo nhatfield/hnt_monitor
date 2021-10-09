@@ -3,6 +3,7 @@
 set -euo pipefail
 
 get_addresses
+miner=hotspot
 endpoint=witnessed
 lock_file=.${endpoint}.lock
 id=collector.${endpoint}

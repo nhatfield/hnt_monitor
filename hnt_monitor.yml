@@ -55,3 +55,42 @@ services:
     networks:
       hnt_monitor:
         ipv4_address: 10.30.0.02
+
+#  elasticsearch:
+#    restart: always
+#    container_name: elasticsearch
+#    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.19
+#    command: "elasticsearch -Enetwork.host=0.0.0.0 -Enode.name='logging' -Etransport.host=0.0.0.0 -Ediscovery.zen.minimum_master_nodes=1 -Egateway.recover_after_time=5s -Expack.security.enabled='false'"
+#    ports:
+#      - 9200:9200
+#    networks:
+#      hnt_monitor:
+#        ipv4_address: 10.30.0.06
+#
+#  kibana:
+#    restart: always
+#    container_name: kibana
+#    image: docker.elastic.co/kibana/kibana:6.8.19
+#    environment:
+#      ELASTICSEARCH_URL: "http://elasticsearch:9200"
+#      XPACK_MONITORING_ENABLED: "true"
+#      XPACK_SECURITY_ENABLED: "false"
+#    ports:
+#      - 5602:5601
+#    depends_on:
+#      - elasticsearch
+#    networks:
+#      hnt_monitor:
+#        ipv4_address: 10.30.0.07
+#        
+#  nginx-api:
+#    container_name: nginx-api
+#    image: nginx-api
+#    build:
+#      context: ./build/docker/nginx-api/
+#    restart: always
+#    ports:
+#      - "443:443"
+#    networks:
+#      hnt_monitor:
+#        ipv4_address: 10.30.0.08

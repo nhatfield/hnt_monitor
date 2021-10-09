@@ -7,3 +7,10 @@ get_configs() {
 get_addresses() {
   addresses=$(< ${HNT_HOME}/conf/address.list)
 }
+
+get_curl_options() {
+  curl_options="-s -L"
+  if [ "${insecure_api}" == "true" ]; then
+    curl_options="${curl_options} -k"
+  fi
+}
