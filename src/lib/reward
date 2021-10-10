@@ -1,11 +1,17 @@
 get_reward_earned() {
-  earned=$(jq -r --arg r "$r" '.data[] | select(.timestamp == $r) | .amount' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward earned"
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    earned=$(jq -r --arg r "$r" '.data[] | select(.timestamp == $r) | .amount' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward earned"
+  fi
 }
 
 get_reward_timestamps() {
-  rewards=$(jq -r '.data[].timestamp' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward timestamps"
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    rewards=$(jq -r '.data[].timestamp' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward timestamps"
+  fi
 }
 
 get_reward_scale() {
-  scale=$(jq -r '.data.reward_scale' "${data_dir}/${a}/info" 2>/dev/null) || log_err "could not retrieve reward scale"
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    scale=$(jq -r '.data.reward_scale' "${data_dir}/${a}/info" 2>/dev/null) || log_err "could not retrieve reward scale"
+  fi
 }

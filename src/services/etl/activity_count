@@ -14,7 +14,7 @@ seven_days_ago=$(date -u --date="7 days ago" +%s)
 thirty_days_ago=$(date -u --date="30 days ago" +%s)
 id=etl.activity.count
 
-reward_count() {
+activity_count() {
   log_info "processing data for ${a}"
 
   activity_types="get_activity_sent_beacons get_activity_create_challenge get_activity_challenged_beacons get_activity_data_transfer"
@@ -154,8 +154,10 @@ reward_count() {
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${activity_count_etl}" == "true" ]; then
   for a in ${addresses}; do
+    get_hotspot_info_elasticsearch
     get_hotspot_name
-    reward_count
+    get_activity_elasticsearch
+    activity_count
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; activity_count_etl=${activity_count_etl})"
