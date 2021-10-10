@@ -154,7 +154,6 @@ activity_count() {
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${activity_count_etl}" == "true" ]; then
   for a in ${addresses}; do
-    get_hotspot_info_elasticsearch
     get_hotspot_name
     get_activity_elasticsearch
     activity_count

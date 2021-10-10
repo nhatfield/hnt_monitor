@@ -1,3 +1,10 @@
+get_miner_elasticsearch() {
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    es_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_search?q=_id:miner.${a}" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [activity] elasticsearch results"
+  fi
+}
+
 get_actual_height() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     helium_height=$(jq -r '.data.height' "${data_dir}"/height 2>/dev/null) || log_err "could not retrieve block height"

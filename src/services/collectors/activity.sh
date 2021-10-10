@@ -44,7 +44,7 @@ get() {
     get_cursor "${new_payload}"
     payload=$(jq -s '{data: (.[0].data + .[1].data)}' <<< "${payload} ${new_payload}")
 
-    if [ "${n}" -ge 15 ]; then
+    if [ "${n}" -ge ${cursor_threshold} ]; then
       log_err "api is having problems or there are too many cursors to traverse"
       rm_lock "${data_dir}/${a}/${lock_file}"
       exit

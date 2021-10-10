@@ -47,7 +47,7 @@ send_payload() {
       if [ "${option}" == "write" ]; then
         echo "${payload}" > /tmp/"${tempfile}"
 
-        if [ "${miner}" == "helium" ]; then
+        if [ "${miner}" == "helium" ] || [ "${id}" == "collector.info" ]; then
           index="hnt-${client_api_key,,}"
         else
           index="hnt-${client_api_key,,}.${global_day}"
