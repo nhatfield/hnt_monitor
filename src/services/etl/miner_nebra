@@ -7,6 +7,7 @@ if [ ${trace} == "true" ]; then
 fi
 
 id=etl.nebra
+miner=nebra
 
 nebra_data() {
   log_info "processing data"

@@ -43,15 +43,27 @@ send_payload() {
       option=write
     fi
 
+    if [ "${id}" == "collector.bobcat.miner" ]; then
+      payload=$(jq 'del(.temp0, .temp1, .onboarding)' <<< "${payload}")
+    fi
+
     if [ "${id}" ]; then
       if [ "${option}" == "write" ]; then
         echo "${payload}" > /tmp/"${tempfile}"
+  
+        case ${miner} in
+                      bobcat|helium|longap|nebra|sensecap)
+                        index="hnt-${client_api_key,,}"
+                        ;;
+        esac
 
-        if [ "${miner}" == "helium" ] || [ "${id}" == "collector.info" ]; then
-          index="hnt-${client_api_key,,}"
-        else
-          index="hnt-${client_api_key,,}.${global_day}"
-        fi
+        case ${id} in
+                   collector.info)
+                     index="hnt-${client_api_key,,}"
+                     ;;
+        esac
+
+        index=${index:-"hnt-${client_api_key,,}.${global_day}"}
 
         es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
 
