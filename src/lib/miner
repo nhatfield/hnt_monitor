@@ -12,13 +12,13 @@ get_actual_height() {
 
 get_miner_bobcat_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "No name found for ${a}"
+    name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "Could not collect [name] on ${a}"
   fi
   
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     search=collector.bobcat.miner
     get_miner_elasticsearch
-    name=$(jq -r '.animal' <<< "${es_payload}" 2> /dev/null)  || log_warn "No name found for ${a}"
+    name=$(jq -r '.animal' <<< "${es_payload}" 2> /dev/null)  || log_warn "Could not collect [name] on ${a}"
   fi
 
   if [ ! "${name}" ]; then
@@ -81,45 +81,68 @@ get_miner_bobcat_status() {
 
 get_miner_longap_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    name=$(jq -r '.[].name' "${data_dir}"/miner.longap/${a}.status 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "Could not collect [name] on ${a}"
+    name=$(jq -r '.name' "${data_dir}"/miner.longap/${a}.status 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "Could not collect [name] on ${a}"
   fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.longap.status
+    get_miner_elasticsearch
+    name=$(jq -r '.name' <<< "${es_payload}" 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g')  || log_warn "Could not collect [name] on ${a}"
+  fi
+
+  name=${name:-"unknown"}
 }
 
 get_miner_longap_data() {
   get_actual_height
 
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    val=($(jq -r -c '.[].helium.blockchain.height, .[].miner.blockHeight, .[].miner.connected' "${data_dir}"/miner.longap/${a}.status 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
-  
-    if [ "${helium_height}" ]; then
-      block_height=${helium_height}
-    else
-      block_height=${val[0]}
-    fi
-  
-    miner_height=${val[1]}
-  
-    block_conn=${val[2]}
-    if [ "${block_conn}" == "true" ]; then
-      block_connected=1
-    else
-      block_connected=0
-    fi
-  
-    gap=$((block_height - miner_height))
-  
-    if [ "${gap}" -ge 20 ]; then
-      sync_status=0
-    else
-      sync_status=1
-    fi
+    val=($(jq -r -c '.helium.blockchain.height, .miner.blockHeight, .miner.connected' "${data_dir}"/miner.longap/${a}.status 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.longap.status
+    get_miner_elasticsearch
+    val=($(jq -r -c '.helium.blockchain.height, .miner.blockHeight, .miner.connected' <<< "${es_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+
+  if [ "${helium_height}" ]; then
+    block_height=${helium_height}
+  else
+    block_height=${val[0]}
+  fi
+  
+  miner_height=${val[1]}
+  
+  block_conn=${val[2]}
+  if [ "${block_conn}" == "true" ]; then
+    block_connected=1
+  else
+    block_connected=0
+  fi
+  
+  gap=$((block_height - miner_height))
+  
+  if [ "${gap}" -ge 20 ]; then
+    sync_status=0
+  else
+    sync_status=1
+  fi
+ 
 }
 
 get_miner_nebra_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     name=$(jq -r '.AN' "${data_dir}"/miner.nebra/${a}.data 2> /dev/null) || log_warn "Could not collect [name] on ${a}"
   fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.nebra.data
+    get_miner_elasticsearch
+    name=$(jq -r '.AN' <<< "${es_payload}" 2> /dev/null) || log_warn "Could not collect [name] on ${a}"
+  fi
+
+  name=${name:-"unknown"}
 }
 
 get_miner_nebra_data() {
@@ -127,55 +150,68 @@ get_miner_nebra_data() {
 
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC' "${data_dir}"/miner.nebra/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
-  
-    if [ "${helium_height}" ]; then
-      block_height=${helium_height}
-    else
-      block_height=${val[0]}
-    fi
-  
-    frequency=${val[1]}
-    miner_height=${val[2]}
-    gap=$((block_height - miner_height))
-    if [ "${gap}" -ge 20 ]; then
-      sync_status=0
-    else
-      sync_status=1
-    fi
-  
-    sync_perc=${val[3]}
-    if [[ "${sync_perc}" == *"load"* ]]; then
-      sync_percent=0
-    else
-      sync_percent=${sync_perc}
-    fi
-  
-    bt_conn=${val[4]}
-    if [ "${bt_conn}" == "true" ]; then
-      bluetooth_connected=1
-    else
-      bluetooth_connected=0 
-    fi
-  
-    lo_stat=${val[5]}
-    if [ "${lo_stat}" == "true" ]; then
-      lora_status=1
-    else
-      lora_status=0
-    fi
-  
-    mn_conn=${val[6]}
-    if [ "${mn_conn}" == "yes" ]; then
-      miner_connected=1
-    else
-      miner_connected=0
-    fi
   fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.nebra.data
+    get_miner_elasticsearch
+    val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC' <<< "${es_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+
+  if [ "${helium_height}" ]; then
+    block_height=${helium_height}
+  else
+    block_height=${val[0]}
+  fi
+
+  frequency=${val[1]}
+  miner_height=${val[2]}
+  gap=$((block_height - miner_height))
+  if [ "${gap}" -ge 20 ]; then
+    sync_status=0
+  else
+    sync_status=1
+  fi
+
+  sync_perc=${val[3]}
+  if [[ "${sync_perc}" == *"load"* ]]; then
+    sync_percent=0
+  else
+    sync_percent=${sync_perc}
+  fi
+
+  bt_conn=${val[4]}
+  if [ "${bt_conn}" == "true" ]; then
+    bluetooth_connected=1
+  else
+    bluetooth_connected=0 
+  fi
+
+  lo_stat=${val[5]}
+  if [ "${lo_stat}" == "true" ]; then
+    lora_status=1
+  else
+    lora_status=0
+  fi
+
+  mn_conn=${val[6]}
+  if [ "${mn_conn}" == "yes" ]; then
+    miner_connected=1
+  else
+    miner_connected=0
+  fi
+  
 }
 
 get_miner_sensecap_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     name=$(jq -r '.data.name' "${data_dir}"/miner.sensecap/${a}.data 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_err "Could not collect [name] on ${a}"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.sensecap.data
+    get_miner_elasticsearch
+    name=$(jq -r '.data.name' <<< "${es_payload}" 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_err "Could not collect [name] on ${a}"
   fi
 }
 
@@ -184,31 +220,37 @@ get_miner_sensecap_data() {
 
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' "${data_dir}"/miner.sensecap/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.sensecap.data
+    get_miner_elasticsearch
+    val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' <<< "${es_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
   
-    cputemp=${val[0]}
-    cpuused=${val[1]}
-    memtotal=${val[2]}
-    memused=${val[3]}
-    sdtotal=${val[4]}
-    sdused=${val[5]}
-    gain=${val[6]}
-    healthy=${val[7]}
-  
-    if [ "${helium_height}" ]; then
-      block_height=${helium_height}
-    else
-      block_height=${val[8]}
-    fi
-  
-    miner_height=${val[9]}
-    p2p_connected=${val[10]}
-    dialable=${val[11]}
-    nattype=${val[12]}
-    gap=$((block_height - miner_height))
-    if [ "${gap}" -ge 20 ]; then
-      sync_status=0
-    else
-      sync_status=1
-    fi
+  cputemp=${val[0]}
+  cpuused=${val[1]}
+  memtotal=${val[2]}
+  memused=${val[3]}
+  sdtotal=${val[4]}
+  sdused=${val[5]}
+  gain=${val[6]}
+  healthy=${val[7]}
+
+  if [ "${helium_height}" ]; then
+    block_height=${helium_height}
+  else
+    block_height=${val[8]}
+  fi
+
+  miner_height=${val[9]}
+  p2p_connected=${val[10]}
+  dialable=${val[11]}
+  nattype=${val[12]}
+  gap=$((block_height - miner_height))
+  if [ "${gap}" -ge 20 ]; then
+    sync_status=0
+  else
+    sync_status=1
   fi
 }

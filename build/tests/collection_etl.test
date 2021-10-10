@@ -20,7 +20,9 @@ hotspot="hotspot"
 version=${version:-"$(grep '#' ../../HISTORY.md | sed 's%# %%' | sort -V | tail -1)"}
 echo "Version: ${version}"
 PG_HOST=${PG_HOST:-'""'}
+ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-'""'}
 DOCKER_NETWORK=${DOCKER_NETWORK:-"bridge"}
+STORAGE_PROFILE=${STORAGE_PROFILE:-"local"}
 
 if [ ! "${container}" ]; then
   echo "Missing container name"
@@ -57,6 +59,8 @@ test() {
     -e nebra_test_url=${test_url}/nebra/data \
     -e longap_test_url=${test_url}/longap/status \
     -e sensecap_test_url=${test_url}/sensecap/data \
+    -e HNT_COLLECTOR_STORAGE_PROFILE=${STORAGE_PROFILE} \
+    -e HNT_ELASTICSEARCH_URL=${ELASTICSEARCH_URL} \
     --name ${container} ${image} 1>/dev/null || cleanup_err
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - waiting for data to process ..."

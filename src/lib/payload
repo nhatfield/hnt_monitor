@@ -14,6 +14,12 @@ next_payload() {
 }
 
 send_payload() {
+  if [ "${id}" == "collector.bobcat.miner" ]; then
+    payload=$(jq 'del(.temp0, .temp1, .onboarding)' <<< "${payload}") || log_err "Could not convert bobcat payload"
+  elif [ "${id}" == "collector.longap.status" ]; then
+    payload=$(jq '.[]' <<< "${payload}" 2>/dev/null) || log_err "Could not convert longap payload"
+  fi
+
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     option=${1:-""}
     directory=${2:-""}
@@ -41,10 +47,6 @@ send_payload() {
     
     if [ "${init}" == "true" ]; then
       option=write
-    fi
-
-    if [ "${id}" == "collector.bobcat.miner" ]; then
-      payload=$(jq 'del(.temp0, .temp1, .onboarding)' <<< "${payload}")
     fi
 
     if [ "${id}" ]; then

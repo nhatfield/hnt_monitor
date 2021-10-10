@@ -25,7 +25,7 @@ get_relayed_status() {
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_info_elasticsearch
-    relayed_status=$(jq -r '.data.status.listen_addrs[]' <<< "${es_payload}" 2>/dev/null | grep 44158 | wc -l) || log_err "could not get the miner name"
+    relayed_status=$(jq -r '.data.status.listen_addrs[]' <<< "${es_payload}" 2>/dev/null | grep 44158 | wc -l) || true
   fi
 }
 
@@ -36,6 +36,6 @@ get_online_status() {
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_info_elasticsearch
-    online_status=$(jq -r '.data.status.online' <<< "${es_payload}" 2>/dev/null | grep online | wc -l) || log_err "could not get the miner name"
+    online_status=$(jq -r '.data.status.online' <<< "${es_payload}" 2>/dev/null | grep online | wc -l) || true
   fi
 }

@@ -6,7 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-miner=longqp
+miner=longap
 endpoint=status
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
