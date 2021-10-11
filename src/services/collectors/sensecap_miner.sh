@@ -43,6 +43,9 @@ get() {
 
 
 for a in ${sensecap_serial_numbers}; do
+  a=${a//*:/}
+  client_id=${a//:*/}
+
   make_dir "${data_dir}/miner.${miner}"
 
   lock "${data_dir}/miner.${miner}/.${a}${lock_file}"

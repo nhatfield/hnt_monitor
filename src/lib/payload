@@ -41,6 +41,7 @@ send_payload() {
     get_curl_options
     option=${1:-""}
     a=${a:-"${endpoint}"}
+    client_id=${client_id:-"${client_api_key,,}"}
     tempfile="${id}.${a}.$(date +%s)"
   
     document="${miner}.${a}.${id}"
@@ -55,22 +56,22 @@ send_payload() {
   
         case ${miner} in
                       bobcat|helium|longap|nebra|sensecap)
-                        index="hnt-${client_api_key,,}"
+                        index="hnt-${client_id}"
                         ;;
         esac
 
         case ${id} in
                    collector.info)
-                     index="hnt-${client_api_key,,}"
+                     index="hnt-${client_id}"
                      ;;
         esac
 
-        index=${index:-"hnt-${client_api_key,,}.${global_day}"}
+        index=${index:-"hnt-${client_id}.${global_day}"}
 
         es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
 
       elif [ "${option}" == "append" ]; then
-        index="hnt-${client_api_key,,}.${global_day}"
+        index="hnt-${client_id}.${global_day}"
         upd_data=$(jq -r '.data[]' <<< "${payload}")
         upd_payload > /tmp/"${tempfile}"
 

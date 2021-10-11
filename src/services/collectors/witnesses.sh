@@ -48,6 +48,9 @@ if [ ! "${addresses}" ]; then
 fi
 
 for a in ${addresses}; do
+  a=${a//*:/}
+  client_id=${a//:*/}
+
   make_dir "${data_dir}/${a}"
 
   lock "${data_dir}/${a}/${lock_file}"
