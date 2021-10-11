@@ -3,6 +3,8 @@ vNext
 - **Enchancement** - update bobcat blue dashboard json
 - **Enchancement** - add nginx for api authentication option
 - **Enchancement** - add support for api authentication on metric payload 
+- **Enchancement** - add support for elasticsearch data storage
+- **Enchancement** - add support for multiple relayed port verification
 
 # 5.3.0
 

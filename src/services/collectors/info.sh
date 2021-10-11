@@ -42,6 +42,9 @@ get() {
   rm_lock "${data_dir}/${a}/${lock_file}"
 }
 
+if [ ! "${addresses}" ]; then
+  log_debug "no hotspot addresses have been found"
+fi
 
 for a in ${addresses}; do
   make_dir "${data_dir}/${a}"

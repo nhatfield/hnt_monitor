@@ -20,12 +20,12 @@ get_hotspot_name() {
 
 get_relayed_status() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    relayed_status=$(jq -r '.data.status.listen_addrs[]' "${data_dir}"/${a}/info 2>/dev/null | grep 44158 | wc -l) || true
+    relayed_status=$(jq -r '.data.status.listen_addrs[]' "${data_dir}"/${a}/info 2>/dev/null | grep "${relayed_status_ports// /\|}" | wc -l) || true
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_info_elasticsearch
-    relayed_status=$(jq -r '.data.status.listen_addrs[]' <<< "${es_payload}" 2>/dev/null | grep 44158 | wc -l) || true
+    relayed_status=$(jq -r '.data.status.listen_addrs[]' <<< "${es_payload}" 2>/dev/null | grep "${relayed_status_ports// /\|}" | wc -l) || true
   fi
 }
 
