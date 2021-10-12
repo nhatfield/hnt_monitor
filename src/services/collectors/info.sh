@@ -46,14 +46,17 @@ if [ ! "${addresses}" ]; then
   log_debug "no hotspot addresses have been found"
 fi
 
-for a in ${addresses}; do
-  a=${a//*:/}
-  client_id=${a//:*/}
+for address in ${addresses}; do
+  addr=${address//*:/}
+  addr=${addr//###/ }
+  client_id=${address//:*/}
 
-  make_dir "${data_dir}/${a}"
+  for a in ${addr}; do
+    make_dir "${data_dir}/${a}"
 
-  lock "${data_dir}/${a}/${lock_file}"
-  get &
+    lock "${data_dir}/${a}/${lock_file}"
+    get &
 
-  sleep 1
+    sleep 1
+  done
 done

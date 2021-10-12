@@ -8,6 +8,7 @@ fi
 
 id=etl.bobcat
 miner=bobcat
+get_miners
 
 bobcat_temp() {
   id="${id}.temps"

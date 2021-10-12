@@ -42,14 +42,17 @@ get() {
 }
 
 
-for a in ${sensecap_serial_numbers}; do
-  a=${a//*:/}
-  client_id=${a//:*/}
+for address in ${sensecap_serial_numbers}; do
+  addr=${address//*:/}
+  addr=${addr//###/ }
+  client_id=${address//:*/}
 
-  make_dir "${data_dir}/miner.${miner}"
+  for a in ${addr}; do
+    make_dir "${data_dir}/miner.${miner}"
 
-  lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
-  get &
+    lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
+    get &
 
-  sleep 1
+    sleep 1
+  done
 done

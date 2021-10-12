@@ -43,6 +43,7 @@ send_payload() {
     a=${a:-"${endpoint}"}
     client_id=${client_id:-"${client_api_key,,}"}
     tempfile="${id}.${a}.$(date +%s)"
+    log_debug "client id [${client_id}]"
   
     document="${miner}.${a}.${id}"
     
