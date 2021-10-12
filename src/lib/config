@@ -42,37 +42,13 @@ get_curl_options() {
 
 send_addresses_elasticsearch() {
   if [ "${elasticsearch_url}" ]; then
-    address_json=
-
-    if [ "$(< ${HNT_HOME}/conf/address.list)" ]; then
-      hotspot=$(cat ${HNT_HOME}/conf/address.list | tr '\n' ' ' | sed "s% $%%;s%^%{ \"addresses\": \"%;s%$%\" }%")
-      address_json=$(jq -s '(.[0] + .[1])' <<< "${address_json} ${hotspot}")
-    fi
-   
-    if [ "${bobcat_ips}" ]; then
-      bobcat=$(echo "${bobcat_ips}" | sed "s% $%%;s%^%{ \"bobcat_ips\": \"%;s%$%\" }%")
-      address_json=$(jq -s '(.[0] + .[1])' <<< "${address_json} ${bobcat}")
-    fi
-  
-    if [ "${longap_addresses}" ]; then
-      longap=$(echo "${longap_addresses}" | sed "s% $%%;s%^%{ \"longap_addresses\": \"%;s%$%\" }%")
-      address_json=$(jq -s '(.[0] + .[1])' <<< "${address_json} ${longap}")
-    fi
-
-    if [ "${nebra_ips}" ]; then
-      nebra=$(echo "${nebra_ips}" | sed "s% $%%;s%^%{ \"nebra_ips\": \"%;s%$%\" }%")
-      address_json=$(jq -s '(.[0] + .[1])' <<< "${address_json} ${nebra}")
-    fi
-
-    if [ "${sensecap_serial_numbers}" ]; then
-      sensecap=$(echo "${sensecap_serial_numbers}" | sed "s% $%%;s%^%{ \"sensecap_serial_numbers\": \"%;s%$%\" }%")
-      address_json=$(jq -s '(.[0] + .[1])' <<< "${address_json} ${sensecap}")
-    fi
-
+    hotspot=$(cat ${HNT_HOME}/conf/address.list | tr '\n' ' ' | sed "s% $%%;s%^%{ \"addresses\": \"%;s%$%\" }%")
+    bobcat=$(echo "${bobcat_ips}" | sed "s% $%%;s%^%{ \"bobcat_ips\": \"%;s%$%\" }%")
+    longap=$(echo "${longap_addresses}" | sed "s% $%%;s%^%{ \"longap_addresses\": \"%;s%$%\" }%")
+    nebra=$(echo "${nebra_ips}" | sed "s% $%%;s%^%{ \"nebra_ips\": \"%;s%$%\" }%")
+    sensecap=$(echo "${sensecap_serial_numbers}" | sed "s% $%%;s%^%{ \"sensecap_serial_numbers\": \"%;s%$%\" }%")
     client="{ \"client_id\": \"${client_api_key,,}\" }"
-    address_json=$(jq -s '(.[0] + .[1])' <<< "${address_json} ${client}")
-
-    echo "${address_json}" > /tmp/addresses
+    jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client}") > /tmp/addresses || log_err "could not create address list"
       
     get_curl_options
     es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_doc/addresses" -d @/tmp/addresses) || log_err "could not send [addresses] to elasticsearch"
