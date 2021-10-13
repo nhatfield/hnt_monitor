@@ -6,6 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+get_miner_bobcat_ips
 miner=bobcat
 endpoint=status
 lock_file=".${endpoint}.lock"

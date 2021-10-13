@@ -6,6 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+get_miner_longap_addresses
 miner=longap
 endpoint=status
 lock_file=".${endpoint}.lock"

@@ -1,21 +1,21 @@
 log_info() {
   msg=${1:-""}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+  echo "{ \"timestamp\": \"$(date +%Y-%m-%dT%H:%M:%S)\", \"level\": \"INFO\", \"thread\": \"${id}\", \"message\": \"${msg}\" }" >> "${logpath}/${logfile}" || true
 }
 
 log_warn() {
   msg=${1:-""}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+  echo "{ \"timestamp\": \"$(date +%Y-%m-%dT%H:%M:%S)\", \"level\": \"WARN\", \"thread\": \"${id}\", \"message\": \"${msg}\" }" >> "${logpath}/${logfile}" || true
 }
 
 log_err() {
   msg=${1:-""}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+  echo "{ \"timestamp\": \"$(date +%Y-%m-%dT%H:%M:%S)\", \"level\": \"ERROR\", \"thread\": \"${id}\", \"message\": \"${msg}\" }" >> "${logpath}/${logfile}" || true
 }
 
 log_debug() {
   msg=${1:-""}
   if [ "${debug}" == "true" ]; then
-    echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+    echo -e "{ \"timestamp\": \"$(date +%Y-%m-%dT%H:%M:%S)\", \"level\": \"DEBUG\", \"thread\": \"${id}\", \"message\": \"${msg}\" }" >> "${logpath}/${logfile}" || true
   fi
 }

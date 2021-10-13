@@ -8,6 +8,7 @@ fi
 
 id=etl.nebra
 miner=nebra
+get_miner_nebra_ips
 
 nebra_data() {
   log_info "processing data"
@@ -18,14 +19,20 @@ nebra_data() {
     send_miner_nebra_data
   done
 
-  log_debug "nebra data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  sync_status: ${sync_status}\n  frequency: ${frequency}\n  bluetooth_connected: ${bluetooth_connected}\n  lora_connected: ${lora_status}\n  miner_connected: ${miner_connected}\n  height_gap: ${gap}\n  sync_percent: ${sync_percent}\n"
+  log_debug "nebra data:  block_height: ${block_height}  miner_height: ${miner_height}  sync_status: ${sync_status}  frequency: ${frequency}  bluetooth_connected: ${bluetooth_connected}  lora_connected: ${lora_status}  miner_connected: ${miner_connected}  height_gap: ${gap}  sync_percent: ${sync_percent}"
 }
 
 if [ "${nebra_monitor}" == "true" ]; then
 
-  for a in ${nebra_ips}; do
-    get_miner_nebra_name
-    nebra_data &
+  for address in ${nebra_ips}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_miner_nebra_name
+      nebra_data &
+    done
   done
 else
   log_debug "Nebra monitor collection is disabled. Hint: (nebra_monitor=${nebra_monitor})"

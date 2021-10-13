@@ -6,6 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+get_miner_nebra_ips
 miner=nebra
 endpoint=data
 lock_file=".${endpoint}.lock"

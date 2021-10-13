@@ -6,6 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+get_miner_sensecap_serial_numbers
 miner=sensecap
 endpoint=data
 lock_file=".${endpoint}.lock"

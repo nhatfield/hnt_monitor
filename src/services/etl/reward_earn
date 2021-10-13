@@ -6,13 +6,13 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_addresses
 minutes_ago=$(date -u --date="20 minutes ago" +%s)
 hour_ago=$(date -u --date="1 hour ago" +%s)
 one_day_ago=$(date -u --date="1 days ago" +%s)
 seven_days_ago=$(date -u --date="7 days ago" +%s)
 thirty_days_ago=$(date -u --date="30 days ago" +%s)
 id=etl.reward.earned
+get_addresses
 
 reward_earn() {
   log_info "processing data for ${a}"
@@ -62,14 +62,20 @@ reward_earn() {
     send_reward_earned
   done
 
-  log_debug "rewards timestamps\n\n${rewards}\n"
-  log_debug "hotspot reward earnings:\n\n  rewards_earned_15m: ${rewards_earned_15m}\n  rewards_earned_1h: ${rewards_earned_1h}\n  rewards_earned_1d: ${rewards_earned_1d}\n  rewards_earned_7d: ${rewards_earned_7d}\n  rewards_earned_30d: ${rewards_earned_30d}\n"
+  log_debug "rewards timestamps${rewards}"
+  log_debug "hotspot reward earnings:  rewards_earned_15m: ${rewards_earned_15m}  rewards_earned_1h: ${rewards_earned_1h}  rewards_earned_1d: ${rewards_earned_1d}  rewards_earned_7d: ${rewards_earned_7d}  rewards_earned_30d: ${rewards_earned_30d}"
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${reward_earn_etl}" == "true" ]; then
-  for a in ${addresses}; do
-    get_hotspot_name
-    reward_earn
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_hotspot_name
+      reward_earn
+    done
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; reward_earn_etl=${reward_earn_etl})"
