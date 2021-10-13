@@ -15,7 +15,7 @@ get_miner_nebra_ips
 get() {
   url=${nebra_test_url:-"http://${a}/?json=true"}
   url="${url}"
-  log_info "getting ${miner} ${endpoint} for ${a}"
+  log_info "getting ${miner} ${endpoint} for [${client_id} (${a})]"
   log_debug "${miner} url: ${url}"
 
   n=0
@@ -35,8 +35,8 @@ get() {
   done
 
   send_payload write "${data_dir}/miner.${miner}/${a}.${endpoint}"
-  log_info "${miner} miner ${a} ${endpoint} ready to process"
-  log_debug "${endpoint} \n${payload}\n\n"
+  log_info "${miner} miner [${client_id} (${a})] ${endpoint} ready to process"
+  log_debug "[${client_id} (${a})] ${endpoint} \n${payload}\n\n"
 
   sleep "${nebra_data_interval}"
   rm_lock "${data_dir}/miner.${miner}/.${a}${lock_file}"

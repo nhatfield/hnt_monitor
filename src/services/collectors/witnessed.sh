@@ -15,7 +15,7 @@ get_addresses
 get() {
   url=${hotspot_test_url:-"${hotspot_url}"}
   url="${url}/${a}/${endpoint}"
-  log_info "getting hotspot ${endpoint} data for ${a}"
+  log_info "getting hotspot ${endpoint} data for [${client_id} (${a})]"
   log_debug "hotspot url: ${url}"
 
   n=0
@@ -35,8 +35,8 @@ get() {
   done
 
   send_payload write "${data_dir}/${a}/${data_format}.${endpoint}"
-  log_info "${a} hotspot ${endpoint} data ready to process"
-  log_debug "${endpoint} data \n${payload}\n\n"
+  log_info "[${client_id} (${a})] hotspot ${endpoint} data ready to process"
+  log_debug "[${client_id} (${a})] ${endpoint} data \n${payload}\n\n"
 
   sleep "${witness_interval}"
   rm_lock "${data_dir}/${a}/${lock_file}"

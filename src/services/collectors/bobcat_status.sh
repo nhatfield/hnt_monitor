@@ -15,7 +15,7 @@ get_miner_bobcat_ips
 get() {
   url=${bobcat_test_url:-"http://${a}"}
   url="${url}/${endpoint}.json"
-  log_info "getting ${miner} ${endpoint} data for ${a}"
+  log_info "getting ${miner} ${endpoint} data for [${client_id} (${a})]"
   log_debug "${miner} url: ${url}"
 
   n=0
@@ -35,8 +35,8 @@ get() {
   done
 
   send_payload write "${data_dir}/miner.${miner}/${a}.${endpoint}"
-  log_info "${miner} miner ${a} ${endpoint} data ready to process"
-  log_debug "${endpoint} data \n${payload}\n\n"
+  log_info "${miner} miner [${client_id} (${a})] ${endpoint} data ready to process"
+  log_debug "[${client_id} (${a})] ${endpoint} data \n${payload}\n\n"
 
   sleep "${bobcat_status_interval}"
   rm_lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
