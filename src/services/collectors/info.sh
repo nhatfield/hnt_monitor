@@ -46,17 +46,19 @@ if [ ! "${addresses}" ]; then
   log_debug "no hotspot addresses have been found"
 fi
 
-for address in ${addresses}; do
-  addr=${address//*:/}
-  addr=${addr//###/ }
-  client_id=${address//:*/}
-
-  for a in ${addr}; do
-    make_dir "${data_dir}/${a}"
-
-    lock "${data_dir}/${a}/${lock_file}"
-    get &
-
-    sleep 1
+if [[ ! "elasticsearch_url" == *"hntmonitor.com"* ]]; then
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+  
+    for a in ${addr}; do
+      make_dir "${data_dir}/${a}"
+  
+      lock "${data_dir}/${a}/${lock_file}"
+      get &
+  
+      sleep 1
+    done
   done
-done
+fi

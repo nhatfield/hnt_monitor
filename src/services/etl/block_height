@@ -22,10 +22,8 @@ block_height() {
 }
 
 if [ "${helium_monitor}" == "true" ] && [ "${block_height_etl}" == "true" ]; then
-  if [[ ! "elasticsearch_url" == *"hntmonitor.com"* ]]; then
-    name=helium
-    block_height
-  fi
+  name=helium
+  block_height
 else
   log_debug "Blocks monitor collection is disabled. Hint: (helium_monitor=${helium_monitor}; block_height_etl=${block_height_etl})"
   true

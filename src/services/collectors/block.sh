@@ -41,6 +41,7 @@ get() {
   rm_lock "${data_dir}/${lock_file}"
 }
 
-
-lock "${data_dir}/${lock_file}"
-get
+if [[ ! "elasticsearch_url" == *"hntmonitor.com"* ]]; then
+  lock "${data_dir}/${lock_file}"
+  get
+fi
