@@ -1,7 +1,7 @@
 get_miner_sensecap_serial_numbers() {
   if [ "${sensecap_serial_numbers}" ]; then
     sensecap_serial_numbers="${client_api_key,,}:${sensecap_serial_numbers// /###}"
-    log_debug "get.miner.sensecap.serial.numbers response - [${sensecap_serial_numbers//###/ }]"
+    log_debug "get.miner.sensecap.serial.numbers response [${sensecap_serial_numbers//###/ }]"
   fi
 }
 
@@ -17,7 +17,7 @@ get_miner_sensecap_name() {
   fi
 
   name=${name:-"unknown"}
-  log_debug "get.miner.sensecap.name response - [${name}]"
+  log_debug "get.miner.sensecap.name response [${name}]"
 }
 
 get_miner_sensecap_data() {

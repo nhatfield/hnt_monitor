@@ -8,11 +8,11 @@ fi
 
 miner=hotspot
 when=${when:-"15 minutes ago"}
-get_addresses
 current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
 endpoint=activity
 lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
+get_addresses
 
 get() {
   url=${hotspot_test_url:-"${hotspot_url}"}

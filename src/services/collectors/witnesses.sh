@@ -6,11 +6,11 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_addresses
 miner=hotspot
 endpoint=witnesses
 lock_file=.${endpoint}.lock
 id=collector.${endpoint}
+get_addresses
 
 get() {
   url=${hotspot_test_url:-"${hotspot_url}"}
@@ -29,7 +29,6 @@ get() {
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data. Retrying in 5 seconds..."
-    log_debug "bad payload\n\n${payload}\n"
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload

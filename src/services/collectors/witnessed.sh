@@ -2,11 +2,15 @@
 
 set -euo pipefail
 
-get_addresses
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
 miner=hotspot
 endpoint=witnessed
 lock_file=.${endpoint}.lock
 id=collector.${endpoint}
+get_addresses
 
 get() {
   url=${hotspot_test_url:-"${hotspot_url}"}

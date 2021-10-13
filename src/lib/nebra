@@ -1,7 +1,7 @@
 get_miner_nebra_ips() {
   if [ "${nebra_ips}" ]; then
     nebra_ips="${client_api_key,,}:${nebra_ips// /###}"
-    log_debug "get.miner.nebra.ips response - [${nebra_ips//###/ }]"
+    log_debug "get.miner.nebra.ips response [${nebra_ips//###/ }]"
   fi
 }
 
@@ -17,7 +17,7 @@ get_miner_nebra_name() {
   fi
 
   name=${name:-"unknown"}
-  log_debug "get.miner.nebra.name response - [${name}]"
+  log_debug "get.miner.nebra.name response [${name}]"
 }
 
 get_miner_nebra_data() {

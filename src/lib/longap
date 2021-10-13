@@ -1,7 +1,7 @@
 get_miner_longap_addresses() {
   if [ "${longap_addresses}" ]; then
     longap_addresses="${client_api_key,,}:${longap_addresses// /###}"
-    log_debug "get.miner.longap.addresses response - [${longap_addresses//###/ }]"
+    log_debug "get.miner.longap.addresses response [${longap_addresses//###/ }]"
   fi
 }
 
@@ -17,7 +17,7 @@ get_miner_longap_name() {
   fi
 
   name=${name:-"unknown"}
-  log_debug "get.miner.longap.name response - [${name}]"
+  log_debug "get.miner.longap.name response [${name}]"
 }
 
 get_miner_longap_data() {

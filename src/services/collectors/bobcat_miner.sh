@@ -6,11 +6,11 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_miner_bobcat_ips
 miner=bobcat
 endpoint=miner
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
+get_miner_bobcat_ips
 
 get() {
   url=${bobcat_test_url:-"http://${a}"}

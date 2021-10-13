@@ -1,7 +1,7 @@
 get_miner_bobcat_ips() {
   if [ "${bobcat_ips}" ]; then
     bobcat_ips="${client_api_key,,}:${bobcat_ips// /###}"
-    log_debug "get.miner.bobcat.ips response - [${bobcat_ips//###/ }]"
+    log_debug "get.miner.bobcat.ips response [${bobcat_ips//###/ }]"
   fi
 }
 
@@ -21,7 +21,7 @@ get_miner_bobcat_name() {
   fi
 
   name=${name:-"unknown"}
-  log_debug "get.miner.bobcat.name response - [${name}]"
+  log_debug "get.miner.bobcat.name response [${name}]"
 }
 
 get_miner_bobcat_temp() {

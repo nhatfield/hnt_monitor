@@ -7,12 +7,12 @@ if [ ${trace} == "true" ]; then
 fi
 
 when=${when:-"15 minutes ago"}
-get_addresses
 miner=hotspot
 current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
 endpoint=rewards
 lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
+get_addresses
 
 get() {
   url=${hotspot_test_url:-"${hotspot_url}"}

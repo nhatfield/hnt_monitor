@@ -85,13 +85,13 @@ send_payload() {
           log_info "updated elasticsearch document [${document}]"
         fi
       else
-        log_err "invalid option - ${option}"
+        log_err "invalid option ${option}"
       fi
     else
       log_err "no document name to send payload was specified"
     fi
    
-    log_debug "elasticsearch response - ${es_post}"
+    log_debug "elasticsearch response ${es_post}"
     rm -f /tmp/"${tempfile}"
   fi
 }

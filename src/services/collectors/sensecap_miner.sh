@@ -6,11 +6,11 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_miner_sensecap_serial_numbers
 miner=sensecap
 endpoint=data
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
+get_miner_sensecap_serial_numbers
 
 get() {
   url=${sensecap_test_url:-"${sensecap_url}/view_device?sn=${a}&api_key=${sensecap_api_key}"}

@@ -8,7 +8,7 @@ lock() {
       exit 1
     fi
   else
-    log_err "cannot create lock. no lock file provided - ${lockfile}"
+    log_err "cannot create lock. no lock file provided ${lockfile}"
   fi
 }
 
@@ -23,6 +23,6 @@ rm_lock() {
     rm -f "${lockfile}"
     log_debug "removed service lock"
   else
-    log_err "cannot remove lock. no lock file provided - ${lockfile}"
+    log_err "cannot remove lock. no lock file provided ${lockfile}"
   fi
 }
