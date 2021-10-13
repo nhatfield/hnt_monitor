@@ -10,7 +10,6 @@ miner=hotspot
 endpoint=witnesses
 lock_file=.${endpoint}.lock
 id=collector.${endpoint}
-get_addresses
 
 get() {
   url=${hotspot_test_url:-"${hotspot_url}"}
@@ -42,11 +41,13 @@ get() {
   rm_lock "${data_dir}/${a}/${lock_file}"
 }
 
-if [ ! "${addresses}" ]; then
-  log_debug "no hotspot addresses have been found"
-fi
-
 if [[ ! "elasticsearch_url" == *"hntmonitor.com"* ]]; then
+  get_addresses
+
+  if [ ! "${addresses}" ]; then
+    log_debug "no hotspot addresses have been found"
+  fi
+
   for address in ${addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }
