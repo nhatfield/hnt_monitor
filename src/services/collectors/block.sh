@@ -35,7 +35,6 @@ get() {
 
   send_payload write "${data_dir}/${endpoint}"
   log_info "Block ${endpoint} data ready to process"
-  log_debug "${endpoint} data \n${payload}\n\n"
 
   sleep "${blocks_interval}"
   rm_lock "${data_dir}/${lock_file}"

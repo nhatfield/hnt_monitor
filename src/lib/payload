@@ -42,8 +42,8 @@ send_payload() {
     option=${1:-""}
     a=${a:-"${endpoint}"}
     client_id=${client_id:-"${client_api_key,,}"}
-    tempfile="${id}.${a}.$(date +%s)"
-    log_debug "client id [${client_id}]"
+    tempfile="${client_id}.${id}.${a}.$(date +%s)"
+    log_debug "sending payload to client id [${client_id}]"
   
     document="${miner}.${a}.${id}"
     

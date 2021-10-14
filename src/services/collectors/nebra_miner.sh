@@ -24,7 +24,7 @@ get() {
   while [ ! "$(nebra_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
-      rm_lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
+      rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
       exit
     fi
 
@@ -34,12 +34,11 @@ get() {
     get_payload
   done
 
-  send_payload write "${data_dir}/miner.${miner}/${a}.${endpoint}"
-  log_info "${miner} miner [${client_id} (${a})] ${endpoint} ready to process"
-  log_debug "[${client_id} (${a})] ${endpoint} \n${payload}\n\n"
+  send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}"
+  log_info "${miner} miner [${a}] ${endpoint} ready to process"
 
   sleep "${nebra_data_interval}"
-  rm_lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
+  rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
 }
 
 
@@ -49,9 +48,9 @@ for address in ${nebra_ips}; do
   client_id=${address//:*/}
 
   for a in ${addr}; do
-    make_dir "${data_dir}/miner.${miner}"
+    make_dir "${data_dir}/${client_id}/miner.${miner}"
 
-    lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
+    lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
     get &
 
     sleep 1

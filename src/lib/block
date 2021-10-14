@@ -5,6 +5,6 @@ get_height() {
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    height=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_search?q=_id:helium.height.collector.height" | jq '.hits.hits[]._source.data.height' 2>/dev/null) || log_err "could not retrieve [block height] elasticsearch results"
+    height=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-local/_search?q=_id:helium.height.collector.height" | jq '.hits.hits[]._source.data.height' 2>/dev/null) || log_err "could not retrieve [block height] elasticsearch results"
   fi
 }

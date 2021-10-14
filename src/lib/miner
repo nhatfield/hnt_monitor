@@ -2,7 +2,7 @@ get_miner_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
     es_miner_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_search?q=_id:${miner}.${a}.${search}" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [miner data] elasticsearch results"
-    log_debug "get.miner.elasticsearch response ${es_miner_payload}"
+    log_debug "get.miner.elasticsearch response $(jq -c <<< "${es_miner_payload}")"
   fi
 }
 

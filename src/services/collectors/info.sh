@@ -23,7 +23,7 @@ get() {
   while [ ! "$(blockchain_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
-      rm_lock "${data_dir}/${a}/${lock_file}"
+      rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
       exit
     fi
 
@@ -33,12 +33,11 @@ get() {
     get_payload
   done
 
-  send_payload write "${data_dir}/${a}/${endpoint}"
-  log_info "[${client_id} (${a})] hotspot ${endpoint} data ready to process"
-  log_debug "[${client_id} (${a})] ${endpoint} data \n${payload}\n\n"
+  send_payload write "${data_dir}/${client_id}/${a}/${endpoint}"
+  log_info "[${a}] hotspot ${endpoint} data ready to process"
 
   sleep "${info_interval}"
-  rm_lock "${data_dir}/${a}/${lock_file}"
+  rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]]; then
@@ -54,9 +53,9 @@ if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]]; then
     client_id=${address//:*/}
   
     for a in ${addr}; do
-      make_dir "${data_dir}/${a}"
+      make_dir "${data_dir}/${client_id}/${a}"
   
-      lock "${data_dir}/${a}/${lock_file}"
+      lock "${data_dir}/${client_id}/${a}/${lock_file}"
       get &
   
       sleep 1
