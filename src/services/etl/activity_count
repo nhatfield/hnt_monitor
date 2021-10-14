@@ -6,15 +6,15 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_addresses
 minutes_ago=$(date -u --date="20 minutes ago" +%s)
 hour_ago=$(date -u --date="1 hour ago" +%s)
 one_day_ago=$(date -u --date="1 days ago" +%s)
 seven_days_ago=$(date -u --date="7 days ago" +%s)
 thirty_days_ago=$(date -u --date="30 days ago" +%s)
 id=etl.activity.count
+get_addresses
 
-reward_count() {
+activity_count() {
   log_info "processing data for ${a}"
 
   activity_types="get_activity_sent_beacons get_activity_create_challenge get_activity_challenged_beacons get_activity_data_transfer"
@@ -148,14 +148,21 @@ reward_count() {
     send_activity_counts
   done
 
-  log_debug "activity timestamps\n\n${activity_timestamps}\n"
-  log_debug "hotspot activity count:\n\n  activity_data_transfer_15m: ${activity_data_transfer_15m}\n  activity_sent_beacon_15m: ${activity_sent_beacon_15m}\n  activity_create_challenge_15m: ${activity_create_challenge_15m}\n  activity_challenged_beacon_15m: ${activity_challenged_beacon_15m}\n  activity_data_transfer_1h: ${activity_data_transfer_1h}\n  activity_sent_beacon_1h: ${activity_sent_beacon_1h}\n  activity_create_challenge_1h: ${activity_create_challenge_1h}\n  activity_challenged_beacon_1h: ${activity_challenged_beacon_1h}\n  activity_data_transfer_1d: ${activity_data_transfer_1d}\n  activity_sent_beacon_1d: ${activity_sent_beacon_1d}\n  activity_create_challenge_1d: ${activity_create_challenge_1d}\n  activity_challenged_beacon_1d: ${activity_challenged_beacon_1d}\n  activity_data_transfer_7d: ${activity_data_transfer_7d}\n  activity_sent_beacon_7d: ${activity_sent_beacon_7d}\n  activity_create_challenge_7d: ${activity_create_challenge_7d}\n  activity_challenged_beacon_7d: ${activity_challenged_beacon_7d}\n  activity_data_transfer_30d: ${activity_data_transfer_30d}\n  activity_sent_beacon_30d: ${activity_sent_beacon_30d}\n  activity_create_challenge_30d: ${activity_create_challenge_30d}\n  activity_challenged_beacon_30d: ${activity_challenged_beacon_30d}\n"
+  log_debug "activity timestamps${activity_timestamps}"
+  log_debug "hotspot activity count:  activity_data_transfer_15m: ${activity_data_transfer_15m}  activity_sent_beacon_15m: ${activity_sent_beacon_15m}  activity_create_challenge_15m: ${activity_create_challenge_15m}  activity_challenged_beacon_15m: ${activity_challenged_beacon_15m}  activity_data_transfer_1h: ${activity_data_transfer_1h}  activity_sent_beacon_1h: ${activity_sent_beacon_1h}  activity_create_challenge_1h: ${activity_create_challenge_1h}  activity_challenged_beacon_1h: ${activity_challenged_beacon_1h}  activity_data_transfer_1d: ${activity_data_transfer_1d}  activity_sent_beacon_1d: ${activity_sent_beacon_1d}  activity_create_challenge_1d: ${activity_create_challenge_1d}  activity_challenged_beacon_1d: ${activity_challenged_beacon_1d}  activity_data_transfer_7d: ${activity_data_transfer_7d}  activity_sent_beacon_7d: ${activity_sent_beacon_7d}  activity_create_challenge_7d: ${activity_create_challenge_7d}  activity_challenged_beacon_7d: ${activity_challenged_beacon_7d}  activity_data_transfer_30d: ${activity_data_transfer_30d}  activity_sent_beacon_30d: ${activity_sent_beacon_30d}  activity_create_challenge_30d: ${activity_create_challenge_30d}  activity_challenged_beacon_30d: ${activity_challenged_beacon_30d}"
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${activity_count_etl}" == "true" ]; then
-  for a in ${addresses}; do
-    get_hotspot_name
-    reward_count
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_hotspot_name
+      get_activity_elasticsearch
+      activity_count
+    done
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; activity_count_etl=${activity_count_etl})"

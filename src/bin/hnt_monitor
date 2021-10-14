@@ -24,6 +24,8 @@ init=true
 
 set_home
 get_configs
+send_addresses_elasticsearch
+sleep 1
 
 
 make_dir ${logpath}
@@ -36,11 +38,13 @@ rm_locks
 
 run() {
   while true; do
+    global_day=$(date +%Y-%m-%d)
     # Set libs
     for l in ../lib/*; do
       . "${l}"
     done
     get_configs   
+    send_addresses_elasticsearch
  
 
     if [ "${init}" == "true" ]; then
@@ -62,7 +66,7 @@ run() {
       log_info "allowing collections to finish before processesing data"
       sleep 10
       init=false
-      log_info "setting initialize to false"
+      log_info "setting initialize to [false]"
     fi
 
     sleep 60

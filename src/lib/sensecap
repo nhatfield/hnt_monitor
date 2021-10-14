@@ -1,0 +1,61 @@
+get_miner_sensecap_serial_numbers() {
+  if [ "${sensecap_serial_numbers}" ]; then
+    sensecap_serial_numbers="${client_api_key,,}:${sensecap_serial_numbers// /###}"
+    log_debug "get.miner.sensecap.serial.numbers response [${sensecap_serial_numbers//###/ }]"
+  fi
+}
+
+get_miner_sensecap_name() {
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    name=$(jq -r '.data.name' "${data_dir}"/miner.sensecap/${a}.data 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_err "Could not collect [name] on ${a}"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.sensecap.data
+    get_miner_elasticsearch
+    name=$(jq -r '.data.name' <<< "${es_miner_payload}" 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_err "Could not collect [name] on ${a}"
+  fi
+
+  name=${name:-"unknown"}
+  log_debug "get.miner.sensecap.name response [${name}]"
+}
+
+get_miner_sensecap_data() {
+  get_actual_height
+
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' "${data_dir}"/miner.sensecap/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.sensecap.data
+    get_miner_elasticsearch
+    val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+  
+  cputemp=${val[0]}
+  cpuused=${val[1]}
+  memtotal=${val[2]}
+  memused=${val[3]}
+  sdtotal=${val[4]}
+  sdused=${val[5]}
+  gain=${val[6]}
+  healthy=${val[7]}
+
+  if [ "${helium_height}" ]; then
+    block_height=${helium_height}
+  else
+    block_height=${val[8]}
+  fi
+
+  miner_height=${val[9]}
+  p2p_connected=${val[10]}
+  dialable=${val[11]}
+  nattype=${val[12]}
+  gap=$((block_height - miner_height))
+  if [ "${gap}" -ge 20 ]; then
+    sync_status=0
+  else
+    sync_status=1
+  fi
+}

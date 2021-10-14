@@ -1,21 +1,25 @@
 log_info() {
   msg=${1:-""}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+  client_id=${client_id:-"local"}
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
 }
 
 log_warn() {
   msg=${1:-""}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+  client_id=${client_id:-"local"}
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
 }
 
 log_err() {
   msg=${1:-""}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+  client_id=${client_id:-"local"}
+  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
 }
 
 log_debug() {
   msg=${1:-""}
+  client_id=${client_id:-"local"}
   if [ "${debug}" == "true" ]; then
-    echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG]: [$id] - ${msg}" >> "${logpath}/${logfile}"
+    echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
   fi
 }

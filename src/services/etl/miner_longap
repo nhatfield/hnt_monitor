@@ -7,6 +7,8 @@ if [ ${trace} == "true" ]; then
 fi
 
 id=etl.longap
+miner=longap
+get_miner_longap_addresses
 
 longap_data() {
   log_info "processing data"
@@ -17,14 +19,20 @@ longap_data() {
     send_miner_longap_data
   done
 
-  log_debug "longap data:\n\n  block_height: ${block_height}\n  miner_height: ${miner_height}\n  sync_status: ${sync_status}\n  block_connected: ${block_connected}\n  height_gap: ${gap}\n"
+  log_debug "longap data:  block_height: ${block_height}  miner_height: ${miner_height}  sync_status: ${sync_status}  block_connected: ${block_connected}  height_gap: ${gap}"
 }
 
 if [ "${longap_monitor}" == "true" ]; then
 
-  for a in ${longap_addresses}; do
-    get_miner_longap_name
-    longap_data &
+  for address in ${longap_addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_miner_longap_name
+      longap_data &
+    done
   done
 else
   log_debug "Longap monitor collection is disabled. Hint: (longap_monitor=${longap_monitor})"

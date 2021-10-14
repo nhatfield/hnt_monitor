@@ -18,7 +18,7 @@ block_height() {
     send_block_height
   done
 
-  log_debug "hotspot block data:\n\n  block_height: ${height}\n"
+  log_debug "hotspot block data:  block_height: ${height}"
 }
 
 if [ "${helium_monitor}" == "true" ] && [ "${block_height_etl}" == "true" ]; then

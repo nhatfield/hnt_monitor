@@ -5,5 +5,56 @@ get_configs() {
 }
 
 get_addresses() {
-  addresses=$(< ${HNT_HOME}/conf/address.list)
+  log_debug "getting hotspot addresses"
+  addresses=
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    addresses=$(< ${HNT_HOME}/conf/address.list)
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_addresses_elasticsearch
+
+    client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null) || log_err "could not get the hotspot client_ids"
+    for c in ${client_ids}; do
+      if [ "${addresses}" ]; then
+        addresses="${addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+      else
+        addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+      fi
+    done
+  fi
+  log_debug "get.addresses response [${addresses//###/ }]"
+}
+
+get_addresses_elasticsearch() {
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    es_addresses_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?q=_id:addresses" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [addresses] elasticsearch results"
+    log_debug "get.addresses.elasticsearch response $(jq -c <<< "${es_addresses_payload}")"
+  fi
+}
+
+get_curl_options() {
+  curl_options="-s -L"
+  if [ "${insecure_api}" == "true" ]; then
+    curl_options="${curl_options} -k"
+  fi
+}
+
+send_addresses_elasticsearch() {
+  if [ "${elasticsearch_url}" ]; then
+    hotspot=$(< ${HNT_HOME}/conf/address.list)
+    hotspot=$(echo "${hotspot}" | tr '\n' ' ' | sed "s% $%%;s%^%{ \"addresses\": \"%;s%$%\" }%")
+    bobcat=$(echo "${bobcat_ips}" | sed "s% $%%;s%^%{ \"bobcat_ips\": \"%;s%$%\" }%")
+    longap=$(echo "${longap_addresses}" | sed "s% $%%;s%^%{ \"longap_addresses\": \"%;s%$%\" }%")
+    nebra=$(echo "${nebra_ips}" | sed "s% $%%;s%^%{ \"nebra_ips\": \"%;s%$%\" }%")
+    sensecap=$(echo "${sensecap_serial_numbers}" | sed "s% $%%;s%^%{ \"sensecap_serial_numbers\": \"%;s%$%\" }%")
+    client="{ \"client_id\": \"${client_api_key,,}\" }"
+    jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client}" > /tmp/addresses || log_err "could not create address list"
+      
+    get_curl_options
+    es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_doc/addresses" -d @/tmp/addresses) || log_err "could not send [addresses] to elasticsearch"
+    rm -f /tmp/addresses
+    log_debug "send.addresses.elasticsearch response ${es_post}"
+  fi
 }

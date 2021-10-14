@@ -19,8 +19,11 @@ image=${2:-""}
 hotspot="hotspot"
 version=${version:-"$(grep '#' ../../HISTORY.md | sed 's%# %%' | sort -V | tail -1)"}
 echo "Version: ${version}"
-PG_HOST=${PG_HOST:-'""'}
+PROMETHEUS_PG_HOST=${PROMETHEUS_PG_HOST:-'""'}
+ELASTICSEARCH_URL=${ELASTICSEARCH_URL:-'""'}
 DOCKER_NETWORK=${DOCKER_NETWORK:-"bridge"}
+COLLECTOR_STORAGE_PROFILE=${COLLECTOR_STORAGE_PROFILE:-"local"}
+CLIENT_API_KEY=${CLIENT_API_KEY:-"local"}
 
 if [ ! "${container}" ]; then
   echo "Missing container name"
@@ -50,13 +53,16 @@ test() {
     -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} \
     -e HNT_HOTSPOT_ADDRESSES=${hotspot} \
     -e HNT_LONGAP_ADDRESSES=${hotspot} \
-    -e HNT_PROMETHEUS_PG_HOST=${PG_HOST} \
+    -e HNT_PROMETHEUS_PG_HOST=${PROMETHEUS_PG_HOST} \
     -e bobcat_test_url=${test_url}/bobcat \
     -e helium_test_url=${test_url}/helium \
     -e hotspot_test_url=${test_url} \
     -e nebra_test_url=${test_url}/nebra/data \
     -e longap_test_url=${test_url}/longap/status \
     -e sensecap_test_url=${test_url}/sensecap/data \
+    -e HNT_COLLECTOR_STORAGE_PROFILE=${COLLECTOR_STORAGE_PROFILE} \
+    -e HNT_ELASTICSEARCH_URL=${ELASTICSEARCH_URL} \
+    -e HNT_CLIENT_API_KEY=${CLIENT_API_KEY} \
     --name ${container} ${image} 1>/dev/null || cleanup_err
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - waiting for data to process ..."
@@ -110,6 +116,7 @@ cleanup_err() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - validation failed"
   echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - dumping docker logs to error.log"
   docker logs ${container} >> error.log || true
+  docker cp ${container}:/opt/hnt_monitor/conf/hnt_monitor.conf . || true
   echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - last validation: ${conf_var}"
   cleanup
   echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR]: [$id] - FAILED!"

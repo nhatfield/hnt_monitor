@@ -6,8 +6,8 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_addresses
 id=etl.witness
+get_addresses
 
 witness() {
   log_info "processing data for ${a}"
@@ -18,14 +18,20 @@ witness() {
     send_witness_count
   done
 
-  log_debug "hostspot witness data:\n\n  witnesses_count: ${witnesses_count}\n  witnessed_count: ${witnessed_count}\n"
+  log_debug "hostspot witness data:  witnesses_count: ${witnesses_count}  witnessed_count: ${witnessed_count}"
 }
 
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; then
-  for a in ${addresses}; do
-    get_hotspot_name
-    witness &
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_hotspot_name
+      witness &
+    done
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; witness_count_etl=${witness_count_etl})" 

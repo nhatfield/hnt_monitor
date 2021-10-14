@@ -1,0 +1,59 @@
+get_miner_longap_addresses() {
+  if [ "${longap_addresses}" ]; then
+    longap_addresses="${client_api_key,,}:${longap_addresses// /###}"
+    log_debug "get.miner.longap.addresses response [${longap_addresses//###/ }]"
+  fi
+}
+
+get_miner_longap_name() {
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    name=$(jq -r '.name' "${data_dir}"/miner.longap/${a}.status 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "Could not collect [name] on ${a}"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.longap.status
+    get_miner_elasticsearch
+    name=$(jq -r '.name' <<< "${es_miner_payload}" 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g')  || log_warn "Could not collect [name] on ${a}"
+  fi
+
+  name=${name:-"unknown"}
+  log_debug "get.miner.longap.name response [${name}]"
+}
+
+get_miner_longap_data() {
+  get_actual_height
+
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    val=($(jq -r -c '.helium.blockchain.height, .miner.blockHeight, .miner.connected' "${data_dir}"/miner.longap/${a}.status 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.longap.status
+    get_miner_elasticsearch
+    val=($(jq -r -c '.helium.blockchain.height, .miner.blockHeight, .miner.connected' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+
+  if [ "${helium_height}" ]; then
+    block_height=${helium_height}
+  else
+    block_height=${val[0]}
+  fi
+  
+  miner_height=${val[1]}
+  
+  block_conn=${val[2]}
+  if [ "${block_conn}" == "true" ]; then
+    block_connected=1
+  else
+    block_connected=0
+  fi
+  
+  gap=$((block_height - miner_height))
+  
+  if [ "${gap}" -ge 20 ]; then
+    sync_status=0
+  else
+    sync_status=1
+  fi
+ 
+}

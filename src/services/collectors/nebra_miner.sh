@@ -10,11 +10,12 @@ miner=nebra
 endpoint=data
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
+get_miner_nebra_ips
 
 get() {
   url=${nebra_test_url:-"http://${a}/?json=true"}
   url="${url}"
-  log_info "getting ${miner} ${endpoint} for ${a}"
+  log_info "getting ${miner} ${endpoint} for [${client_id} (${a})]"
   log_debug "${miner} url: ${url}"
 
   n=0
@@ -23,7 +24,7 @@ get() {
   while [ ! "$(nebra_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
-      rm_lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
+      rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
       exit
     fi
 
@@ -33,20 +34,25 @@ get() {
     get_payload
   done
 
-  send_payload write "${data_dir}/miner.${miner}/${a}.${endpoint}"
-  log_info "${miner} miner ${a} ${endpoint} ready to process"
-  log_debug "${endpoint} \n${payload}\n\n"
+  send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}"
+  log_info "${miner} miner [${a}] ${endpoint} ready to process"
 
   sleep "${nebra_data_interval}"
-  rm_lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
+  rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
 }
 
 
-for a in ${nebra_ips}; do
-  make_dir "${data_dir}/miner.${miner}"
+for address in ${nebra_ips}; do
+  addr=${address//*:/}
+  addr=${addr//###/ }
+  client_id=${address//:*/}
 
-  lock "${data_dir}/miner.${miner}/.${a}${lock_file}"
-  get &
+  for a in ${addr}; do
+    make_dir "${data_dir}/${client_id}/miner.${miner}"
 
-  sleep 1
+    lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
+    get &
+
+    sleep 1
+  done
 done

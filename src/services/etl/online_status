@@ -6,8 +6,8 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_addresses
 id=etl.online.status
+get_addresses
 
 online_status() {
   log_info "processing data for ${a}"
@@ -18,14 +18,20 @@ online_status() {
     send_online_status
   done
 
-  log_debug "hostspot online data:\n\n  online_status: ${online_status}\n"
+  log_debug "hostspot online data:  online_status: ${online_status}"
 }
 
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${online_status_etl}" == "true" ]; then
-  for a in ${addresses}; do
-    get_hotspot_name
-    online_status &
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_hotspot_name
+      online_status &
+    done
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; online_status_etl=${online_status_etl})" 

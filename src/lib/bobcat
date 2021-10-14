@@ -1,0 +1,76 @@
+get_miner_bobcat_ips() {
+  if [ "${bobcat_ips}" ]; then
+    bobcat_ips="${client_api_key,,}:${bobcat_ips// /###}"
+    log_debug "get.miner.bobcat.ips response [${bobcat_ips//###/ }]"
+  fi
+}
+
+get_miner_bobcat_name() {
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "Could not collect [name] on ${a}"
+  fi
+  
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.bobcat.miner
+    get_miner_elasticsearch
+    name=$(jq -r '.animal' <<< "${es_miner_payload}" 2> /dev/null)  || log_warn "Could not collect [name] on ${a}"
+  fi
+
+  if [ ! "${name}" ]; then
+    name=$(curl -s http://${a}/ | grep "/header" | sed 's%.*> \(.*\)</.*%\1%;s% %-%g' | tr 'A-Z' 'a-z') || log_err "Could not collect [name] on ${a}"
+  fi
+
+  name=${name:-"unknown"}
+  log_debug "get.miner.bobcat.name response [${name}]"
+}
+
+get_miner_bobcat_temp() {
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    val=($(jq -r -c '.temp0, .temp1' "${data_dir}"/miner.bobcat/${a}.temp 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.bobcat.temp
+    get_miner_elasticsearch
+    val=($(jq -r -c '.temp0, .temp1' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
+  fi
+
+  temp0=${val[0]}
+  temp1=${val[1]}
+}
+
+get_miner_bobcat_status() {
+  get_actual_height
+
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    val=($(jq -r '.miner_height, .blockchain_height, .epoch, .status' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+  
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    search=collector.bobcat.status
+    get_miner_elasticsearch
+    val=($(jq -r '.miner_height, .blockchain_height, .epoch, .status' <<< "${es_miner_payload}" 2> /dev/null)) || log_err "Could not collect [status] on ${a}"
+  fi
+
+  miner_height=${val[0]}
+    
+  if [ "${helium_height}" ]; then
+    block_height=${helium_height}
+  else
+    block_height=${val[1]}
+  fi
+  
+  epoch=${val[2]}
+  gap=$((block_height - miner_height)) || log_err "Could not collect [height gap] on ${a}"
+  stat=${val[3]}
+  
+  if [ "${gap}" -ge 20 ]; then
+    sync_status=0
+  else
+    if [ "${stat}" == "synced" ]; then
+      sync_status=1
+    else
+      sync_status=0
+    fi
+  fi
+}

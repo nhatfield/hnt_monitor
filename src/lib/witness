@@ -1,4 +1,24 @@
+get_witness_elasticsearch() {
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    es_witness_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}.*/_search?q=_id:hotspot.${a}.collector.${witness}" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [${witness}] elasticsearch results"
+    log_debug "get.witness.elasticsearch response [ $(jq -r -c '.data[].timestamp_added' <<< "${es_witness_payload}" 2>/dev/null | tr '\n' ' ')]"
+  fi
+}
+
 get_witness_count() {
-  witnessed_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/${data_format}.witnessed" 2>/dev/null | sort -u | wc -l | tr -dc .[:print:].)
-  witnesses_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/${data_format}.witnesses" 2>/dev/null | sort -u | wc -l | tr -dc .[:print:].)
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    witnessed_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/${data_format}.witnessed" 2>/dev/null | sort -u | wc -l | tr -dc .[:print:].)
+    witnesses_count=$(jq '.data[].timestamp_added' "${data_dir}/${a}/${data_format}.witnesses" 2>/dev/null | sort -u | wc -l | tr -dc .[:print:].)
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    witness=witnessed
+    get_witness_elasticsearch
+    witnessed_count=$(jq '.data[].timestamp_added' <<< "${es_witness_payload}" 2>/dev/null | sort -u | wc -l | tr -dc .[:print:].)
+
+    witness=witnesses
+    get_witness_elasticsearch
+    witnesses_count=$(jq '.data[].timestamp_added' <<< "${es_witness_payload}" 2>/dev/null | sort -u | wc -l | tr -dc .[:print:].)
+  fi
 }

@@ -1,11 +1,40 @@
+get_reward_elasticsearch() {
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    es_reward_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}.*/_search?q=_id:hotspot.${a}.collector.rewards" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [rewards] elasticsearch results"
+    log_debug "get.reward.elasticsearch response [ $(jq -r -c '.data[].timestamp' <<< "${es_reward_payload}" 2>/dev/null | tr '\n' ' ')]"
+  fi
+}
+
 get_reward_earned() {
-  earned=$(jq -r --arg r "$r" '.data[] | select(.timestamp == $r) | .amount' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward earned"
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    earned=$(jq -r --arg r "$r" '.data[] | select(.timestamp == $r) | .amount' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward earned"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_reward_elasticsearch
+    earned=$(jq -r --arg r "$r" '.data[] | select(.timestamp == $r) | .amount' <<< "${es_reward_payload}" 2>/dev/null | sort -u) || log_err "could not retrieve reward earned"
+  fi
 }
 
 get_reward_timestamps() {
-  rewards=$(jq -r '.data[].timestamp' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward timestamps"
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    rewards=$(jq -r '.data[].timestamp' "${data_dir}/${a}"/*.rewards 2>/dev/null | sort -u) || log_err "could not retrieve reward timestamps"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_reward_elasticsearch
+    rewards=$(jq -r '.data[].timestamp' <<< "${es_reward_payload}" 2>/dev/null | sort -u) || log_err "could not retrieve reward timestamps"
+  fi
 }
 
 get_reward_scale() {
-  scale=$(jq -r '.data.reward_scale' "${data_dir}/${a}/info" 2>/dev/null) || log_err "could not retrieve reward scale"
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    scale=$(jq -r '.data.reward_scale' "${data_dir}/${a}/info" 2>/dev/null) || log_err "could not retrieve reward scale"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_info_elasticsearch
+    scale=$(jq -r '.data.reward_scale' <<< "${es_info_payload}" 2>/dev/null) || log_err "could not retrieve reward scale"
+  fi
 }

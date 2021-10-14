@@ -6,6 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
+miner=helium
 endpoint=height
 lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
@@ -34,12 +35,12 @@ get() {
 
   send_payload write "${data_dir}/${endpoint}"
   log_info "Block ${endpoint} data ready to process"
-  log_debug "${endpoint} data \n${payload}\n\n"
 
   sleep "${blocks_interval}"
   rm_lock "${data_dir}/${lock_file}"
 }
 
-
-lock "${data_dir}/${lock_file}"
-get
+if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]]; then
+  lock "${data_dir}/${lock_file}"
+  get
+fi

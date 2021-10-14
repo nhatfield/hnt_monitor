@@ -6,8 +6,8 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_addresses
 id=etl.reward.scale
+get_addresses
 
 reward_scale() {
   log_info "processing data for ${a}"
@@ -18,13 +18,19 @@ reward_scale() {
     send_reward_scale
   done
 
-  log_debug "hotspot reward scale data:\n\n  reward_scale: ${scale}\n"
+  log_debug "hotspot reward scale data:  reward_scale: ${scale}"
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; then
-  for a in ${addresses}; do
-    get_hotspot_name
-    reward_scale
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_hotspot_name
+      reward_scale
+    done
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; witness_count_etl=${witness_count_etl})"

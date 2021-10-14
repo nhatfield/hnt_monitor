@@ -6,8 +6,8 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-get_addresses
 id=etl.relayed.status
+get_addresses
 
 relayed_status() {
   log_info "processing data for ${a}"
@@ -18,14 +18,20 @@ relayed_status() {
     send_relayed_status
   done
 
-  log_debug "hostspot relayed data:\n\n  relayed_status: ${relayed_status}\n"
+  log_debug "hostspot relayed data:  relayed_status: ${relayed_status}"
 }
 
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${relayed_status_etl}" == "true" ]; then
-  for a in ${addresses}; do
-    get_hotspot_name
-    relayed_status &
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    for a in ${addr}; do
+      get_hotspot_name
+      relayed_status &
+    done
   done
 else
   log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; relayed_status_etl=${relayed_status_etl})" 
