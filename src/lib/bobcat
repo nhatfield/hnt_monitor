@@ -7,7 +7,7 @@ get_miner_bobcat_ips() {
 
 get_miner_bobcat_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    name=$(jq -r '.animal' "${data_dir}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "Could not collect [name] on ${a}"
+    name=$(jq -r '.animal' "${data_dir}/${client_id}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "Could not collect [name] on ${a}"
   fi
   
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -26,7 +26,7 @@ get_miner_bobcat_name() {
 
 get_miner_bobcat_temp() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    val=($(jq -r -c '.temp0, .temp1' "${data_dir}"/miner.bobcat/${a}.temp 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
+    val=($(jq -r -c '.temp0, .temp1' "${data_dir}/${client_id}"/miner.bobcat/${a}.temp 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -43,7 +43,7 @@ get_miner_bobcat_status() {
   get_actual_height
 
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    val=($(jq -r '.miner_height, .blockchain_height, .epoch, .status' "${data_dir}"/miner.bobcat/${a}.status 2> /dev/null)) || log_err "Could not collect [status] on ${a}"
+    val=($(jq -r '.miner_height, .blockchain_height, .epoch, .status' "${data_dir}/${client_id}"/miner.bobcat/${a}.status 2> /dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
   
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then

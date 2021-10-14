@@ -8,7 +8,9 @@ get_addresses() {
   log_debug "getting hotspot addresses"
   addresses=
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    client_id=${client_id:-"${client_api_key,,}"}
     addresses=$(< ${HNT_HOME}/conf/address.list)
+    addresses="${client_id}:${addresses// /###}"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then

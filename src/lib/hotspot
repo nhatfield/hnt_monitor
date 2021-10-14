@@ -8,7 +8,7 @@ get_info_elasticsearch() {
 
 get_hotspot_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    name=$(jq -r '.data.name' "${data_dir}/${a}/info" 2>/dev/null) || log_err "could not get the miner name"
+    name=$(jq -r '.data.name' "${data_dir}/${client_id}/${a}/info" 2>/dev/null) || log_err "could not get the miner name"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -22,7 +22,7 @@ get_hotspot_name() {
 
 get_relayed_status() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    relayed_status=$(jq -r '.data.status.listen_addrs[]' "${data_dir}"/${a}/info 2>/dev/null | grep "${relayed_status_ports// /\|}" | wc -l) || true
+    relayed_status=$(jq -r '.data.status.listen_addrs[]' "${data_dir}/${client_id}"/${a}/info 2>/dev/null | grep "${relayed_status_ports// /\|}" | wc -l) || true
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -33,7 +33,7 @@ get_relayed_status() {
 
 get_online_status() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    online_status=$(jq -r '.data.status.online' "${data_dir}"/${a}/info 2>/dev/null | grep online | wc -l) || true
+    online_status=$(jq -r '.data.status.online' "${data_dir}/${client_id}"/${a}/info 2>/dev/null | grep online | wc -l) || true
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then

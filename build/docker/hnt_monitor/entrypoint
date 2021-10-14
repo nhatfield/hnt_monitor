@@ -39,7 +39,7 @@ setup() {
       KEY=$(echo "${v}" | sed 's%=.*%%;s%__%##%g;s%HNT_%%;s%##%_%g' | tr 'A-Z' 'a-z')
       VAL=$(echo "${v}" | sed "s%.*=%%;s%[']%%g")
 
-      echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - Configuring [${KEY}]: ${VAL//:#:/ }"
+      echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id] [local] - Configuring [${KEY}]: ${VAL//:#:/ }"
 
       if [ "${KEY}" == "hotspot_addresses" ]; then
         VAL=${VAL//:#:/ }

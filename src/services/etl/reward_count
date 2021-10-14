@@ -54,7 +54,6 @@ reward_count() {
     send_reward_counts
   done
 
-  log_debug "rewards timestamps${rewards}"
   log_debug "hotspot reward count:  rewards_15m: ${rewards_15m}  rewards_1h: ${rewards_1h}  rewards_1d: ${rewards_1d}  rewards_7d: ${rewards_7d}  rewards_30d: ${rewards_30d}"
 }
 
@@ -65,6 +64,7 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${reward_count_etl}" == "true" ]; th
     client_id=${address//:*/}
 
     for a in ${addr}; do
+      get_reward_elasticsearch
       get_hotspot_name
       reward_count
     done

@@ -28,6 +28,7 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; t
     client_id=${address//:*/}
 
     for a in ${addr}; do
+      get_info_elasticsearch
       get_hotspot_name
       reward_scale
     done

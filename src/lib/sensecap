@@ -7,7 +7,7 @@ get_miner_sensecap_serial_numbers() {
 
 get_miner_sensecap_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    name=$(jq -r '.data.name' "${data_dir}"/miner.sensecap/${a}.data 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_err "Could not collect [name] on ${a}"
+    name=$(jq -r '.data.name' "${data_dir}/${client_id}"/miner.sensecap/${a}.data 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_err "Could not collect [name] on ${a}"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -24,7 +24,7 @@ get_miner_sensecap_data() {
   get_actual_height
 
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' "${data_dir}"/miner.sensecap/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+    val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType' "${data_dir}/${client_id}"/miner.sensecap/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then

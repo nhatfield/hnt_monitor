@@ -1,6 +1,6 @@
 get_activity_timestamps() {
-  log_debug "${activity} timestamps"
   activity_timestamps=$(jq -r '.time' <<< "${activity_payload}" | sort -u) || log_err "could not retrieve activity timestamps"
+  log_debug "${activity} timestamps [ $(echo "${activity_timestamps}" | tr '\n' ' ') ]"
 }
 
 get_activity_elasticsearch() {
@@ -13,7 +13,7 @@ get_activity_elasticsearch() {
 
 get_activity_sent_beacons() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select((.,.path[]).challengee != null) | select((.,.path[]).challengee == $a)' "${data_dir}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve sent beacons"
+    activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select((.,.path[]).challengee != null) | select((.,.path[]).challengee == $a)' "${data_dir}/${client_id}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve sent beacons"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -23,7 +23,7 @@ get_activity_sent_beacons() {
 
 get_activity_challenged_beacons() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.challenger != null) | select(.challenger == $a)' "${data_dir}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve challenged beacons"
+    activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.challenger != null) | select(.challenger == $a)' "${data_dir}/${client_id}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve challenged beacons"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -33,7 +33,7 @@ get_activity_challenged_beacons() {
 
 get_activity_create_challenge() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    activity_payload=$(jq -r '.data[] | select(.type == "poc_request_v1")' "${data_dir}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve create challenge"
+    activity_payload=$(jq -r '.data[] | select(.type == "poc_request_v1")' "${data_dir}/${client_id}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve create challenge"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -43,7 +43,7 @@ get_activity_create_challenge() {
 
 get_activity_data_transfer() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    activity_payload=$(jq -r '.data[] | select(.type == "state_channel_close_v1")' "${data_dir}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve data transfer"
+    activity_payload=$(jq -r '.data[] | select(.type == "state_channel_close_v1")' "${data_dir}/${client_id}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve data transfer"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
