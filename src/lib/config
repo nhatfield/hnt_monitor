@@ -20,7 +20,7 @@ get_addresses() {
     client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null) || log_err "could not get the hotspot client_ids"
     
     if [ "${id}" == "etl.block.height" ]; then
-      prometheus_pg_host="$(jq -r '.prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
+      prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
     fi
 
     for c in ${client_ids}; do
@@ -31,9 +31,9 @@ get_addresses() {
       fi
 
       if [ "${pg_hosts}" ]; then
-        pg_hosts="${pg_hosts} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"    
+        pg_hosts="${pg_hosts} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')" 
       else
-        pg_hosts="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+        pg_hosts="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
       fi
     done
   fi
