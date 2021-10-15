@@ -10,7 +10,7 @@ miner=nebra
 endpoint=data
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
-get_miner_nebra_ips
+get_addresses
 
 get() {
   url=${nebra_test_url:-"http://${a}/?json=true"}

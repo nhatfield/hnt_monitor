@@ -8,7 +8,6 @@ fi
 
 id=etl.bobcat
 miner=bobcat
-get_miner_bobcat_ips
 
 bobcat_temp() {
   id="${id}.temps"
@@ -38,11 +37,14 @@ bobcat_status() {
 
 
 if [ "${bobcat_monitor}" == "true" ]; then
+  get_addresses  
 
   for address in ${bobcat_ips}; do
     addr=${address//*:/}
     addr=${addr//###/ }
     client_id=${address//:*/}
+
+    get_prometheus_pg_host
 
     for a in ${addr}; do
       get_miner_bobcat_name

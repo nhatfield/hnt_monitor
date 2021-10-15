@@ -1,10 +1,3 @@
-get_miner_bobcat_ips() {
-  if [ "${bobcat_ips}" ]; then
-    bobcat_ips="${client_api_key,,}:${bobcat_ips// /###}"
-    log_debug "get.miner.bobcat.ips response [${bobcat_ips//###/ }]"
-  fi
-}
-
 get_miner_bobcat_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     name=$(jq -r '.animal' "${data_dir}/${client_id}"/miner.bobcat/${a}.miner 2> /dev/null)  || log_warn "Could not collect [name] on ${a}"

@@ -7,7 +7,6 @@ if [ ${trace} == "true" ]; then
 fi
 
 id=etl.reward.scale
-get_addresses
 
 reward_scale() {
   log_info "processing data for ${a}"
@@ -22,10 +21,14 @@ reward_scale() {
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; then
+  get_addresses
+
   for address in ${addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }
     client_id=${address//:*/}
+
+    get_prometheus_pg_host
 
     for a in ${addr}; do
       get_info_elasticsearch

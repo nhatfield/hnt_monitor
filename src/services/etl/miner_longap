@@ -8,7 +8,6 @@ fi
 
 id=etl.longap
 miner=longap
-get_miner_longap_addresses
 
 longap_data() {
   log_info "processing data"
@@ -23,11 +22,14 @@ longap_data() {
 }
 
 if [ "${longap_monitor}" == "true" ]; then
+  get_addresses
 
   for address in ${longap_addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }
     client_id=${address//:*/}
+ 
+    get_prometheus_pg_host
 
     for a in ${addr}; do
       get_miner_longap_name

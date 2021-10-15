@@ -6,13 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-minutes_ago=$(date -u --date="20 minutes ago" +%s)
-hour_ago=$(date -u --date="1 hour ago" +%s)
-one_day_ago=$(date -u --date="1 days ago" +%s)
-seven_days_ago=$(date -u --date="7 days ago" +%s)
-thirty_days_ago=$(date -u --date="30 days ago" +%s)
 id=etl.reward.earned
-get_addresses
 
 reward_earn() {
   log_info "processing data for ${a}"
@@ -66,10 +60,19 @@ reward_earn() {
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${reward_earn_etl}" == "true" ]; then
+  minutes_ago=$(date -u --date="20 minutes ago" +%s)
+  hour_ago=$(date -u --date="1 hour ago" +%s)
+  one_day_ago=$(date -u --date="1 days ago" +%s)
+  seven_days_ago=$(date -u --date="7 days ago" +%s)
+  thirty_days_ago=$(date -u --date="30 days ago" +%s)
+  get_addresses
+
   for address in ${addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }
     client_id=${address//:*/}
+
+    get_prometheus_pg_host
 
     for a in ${addr}; do
       get_reward_elasticsearch

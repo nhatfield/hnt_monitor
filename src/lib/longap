@@ -1,10 +1,3 @@
-get_miner_longap_addresses() {
-  if [ "${longap_addresses}" ]; then
-    longap_addresses="${client_api_key,,}:${longap_addresses// /###}"
-    log_debug "get.miner.longap.addresses response [${longap_addresses//###/ }]"
-  fi
-}
-
 get_miner_longap_name() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     name=$(jq -r '.name' "${data_dir}/${client_id}"/miner.longap/${a}.status 2> /dev/null | tr 'A-Z' 'a-z' | sed 's% %-%g') || log_warn "Could not collect [name] on ${a}"
