@@ -76,12 +76,12 @@ get_addresses() {
         fi
       done
 
+      log_debug "get.addresses response [${addresses//###/ }] [${prometheus_pg_host//###/ }] [${bobcat_ips//###/ }] [${longap_addresses//###/ }] [${nebra_ips//###/ }] [${sensecap_serial_numbers//###/ }]"
     else
       get_miner_addresses
     fi
   fi
 
-  log_debug "get.addresses response [${addresses//###/ }] [${prometheus_pg_host//###/ }] [${bobcat_ips//###/ }] [${longap_addresses//###/ }] [${nebra_ips//###/ }] [${sensecap_serial_numbers//###/ }]"
 }
 
 get_miner_addresses() {
