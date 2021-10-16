@@ -42,17 +42,19 @@ get() {
 }
 
 
-for address in ${bobcat_ips}; do
-  addr=${address//*:/}
-  addr=${addr//###/ }
-  client_id=${address//:*/}
-
-  for a in ${addr}; do
-    make_dir "${data_dir}/${client_id}/miner.${miner}"
-
-    lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-    get &
-
-    sleep 1
+if [ "${miner_collector_enabled}" == "true" ]; then
+  for address in ${bobcat_ips}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+  
+    for a in ${addr}; do
+      make_dir "${data_dir}/${client_id}/miner.${miner}"
+  
+      lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
+      get &
+  
+      sleep 1
+    done
   done
-done
+fi
