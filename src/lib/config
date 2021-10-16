@@ -12,32 +12,35 @@ get_addresses() {
     client_id=${client_id:-"${client_api_key,,}"}
     addresses=$(< ${HNT_HOME}/conf/address.list)
     addresses="${client_id}:${addresses// /###}"
+    log_debug "get.addresses response [${addresses//###/ }] [${prometheus_pg_host//###/ }]"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
-    get_addresses_elasticsearch
-
-    client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null) || log_err "could not get the hotspot client_ids"
-    
-    if [ "${id}" == "etl.block.height" ]; then
-      prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
+    if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]]; then
+      get_addresses_elasticsearch
+  
+      client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null) || log_err "could not get the hotspot client_ids"
+      
+      if [ "${id}" == "etl.block.height" ]; then
+        prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
+      fi
+  
+      for c in ${client_ids}; do
+        if [ "${addresses}" ]; then
+          addresses="${addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+        else
+          addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+        fi
+  
+        if [ "${pg_hosts}" ]; then
+          pg_hosts="${pg_hosts} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')" 
+        else
+          pg_hosts="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+        fi
+      done
+      log_debug "get.addresses response [${addresses//###/ }] [${prometheus_pg_host//###/ }]"
     fi
-
-    for c in ${client_ids}; do
-      if [ "${addresses}" ]; then
-        addresses="${addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
-      else
-        addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
-      fi
-
-      if [ "${pg_hosts}" ]; then
-        pg_hosts="${pg_hosts} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')" 
-      else
-        pg_hosts="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
-      fi
-    done
   fi
-  log_debug "get.addresses response [${addresses//###/ }] [${prometheus_pg_host//###/ }]"
 
   if [ "${bobcat_ips}" ]; then
     bobcat_ips="${client_api_key,,}:${bobcat_ips// /###}"
