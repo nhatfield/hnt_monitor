@@ -10,7 +10,7 @@ miner=sensecap
 endpoint=data
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
-get_miner_sensecap_serial_numbers
+get_addresses
 
 get() {
   url=${sensecap_test_url:-"${sensecap_url}/view_device?sn=${a}&api_key=${sensecap_api_key}"}
@@ -42,17 +42,19 @@ get() {
 }
 
 
-for address in ${sensecap_serial_numbers}; do
-  addr=${address//*:/}
-  addr=${addr//###/ }
-  client_id=${address//:*/}
-
-  for a in ${addr}; do
-    make_dir "${data_dir}/${client_id}/miner.${miner}"
-
-    lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-    get &
-
-    sleep 1
+if [ "${miner_collector_enabled}" == "true" ]; then
+  for address in ${sensecap_serial_numbers}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+  
+    for a in ${addr}; do
+      make_dir "${data_dir}/${client_id}/miner.${miner}"
+  
+      lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
+      get &
+  
+      sleep 1
+    done
   done
-done
+fi

@@ -8,7 +8,6 @@ fi
 
 id=etl.nebra
 miner=nebra
-get_miner_nebra_ips
 
 nebra_data() {
   log_info "processing data"
@@ -23,11 +22,14 @@ nebra_data() {
 }
 
 if [ "${nebra_monitor}" == "true" ]; then
+  get_addresses
 
   for address in ${nebra_ips}; do
     addr=${address//*:/}
     addr=${addr//###/ }
     client_id=${address//:*/}
+
+    get_prometheus_pg_host
 
     for a in ${addr}; do
       get_miner_nebra_name

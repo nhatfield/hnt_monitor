@@ -8,7 +8,6 @@ fi
 
 id=etl.sensecap
 miner=sensecap
-get_miner_sensecap_serial_numbers
 
 sensecap_data() {
   log_info "processing data"
@@ -25,11 +24,14 @@ sensecap_data() {
 
 
 if [ "${sensecap_monitor}" == "true" ]; then
+  get_addresses
 
   for address in ${sensecap_serial_numbers}; do
     addr=${address//*:/}
     addr=${addr//###/ }
     client_id=${address//:*/}
+
+    get_prometheus_pg_host
 
     for a in ${addr}; do
       get_miner_sensecap_name
