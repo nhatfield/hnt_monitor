@@ -1,6 +1,6 @@
 send_activity_counts() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_activity_sent_beacon_15m of the miner
@@ -71,7 +71,7 @@ EOF
 
 send_block_height() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_${name}_block_height helium block height
@@ -85,7 +85,7 @@ EOF
 
 send_miner_bobcat_status() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_sync_status of the bobcat synced to blockchain 0: synching, 1: syncd
@@ -111,7 +111,7 @@ EOF
 
 send_miner_bobcat_temp() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_cpu_temperature of the bobcat miner cpu
@@ -126,7 +126,7 @@ EOF
 
 send_miner_longap_data() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_sync_status of the longap miner synced to blockchain 0: synching, 1: syncd
@@ -152,7 +152,7 @@ EOF
 
 send_miner_nebra_data() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_block_height of the helium network
@@ -190,7 +190,7 @@ EOF
 
 send_miner_sensecap_data() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_cpu_temperature of the sensecap miner cpu
@@ -246,7 +246,7 @@ EOF
 
 send_relayed_status() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_relayed_status of the miner 0: relayed, 1: not relayed
@@ -259,7 +259,7 @@ EOF
 
 send_online_status() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_online_status of the miner 0: offline, 1: online
@@ -272,7 +272,7 @@ EOF
 
 send_reward_counts() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_reward_15m total rewards count 15 minutes
@@ -298,7 +298,7 @@ EOF
 
 send_reward_earned() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_reward_earned_15m total rewards earned 15 minutes
@@ -324,7 +324,7 @@ EOF
 
 send_reward_scale() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_reward_scale based on hex and nearby miners
@@ -338,7 +338,7 @@ EOF
 
 send_witness_count() {
   get_curl_options
-  if [ "${pghost}" ]; then
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_witnessed miners
