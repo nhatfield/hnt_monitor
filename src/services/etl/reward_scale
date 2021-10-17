@@ -20,7 +20,7 @@ reward_scale() {
   log_debug "hotspot reward scale data:  reward_scale: ${scale}"
 }
 
-if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; then
+if [ "${hotspot_monitor}" == "true" ] && [ "${reward_scale_etl}" == "true" ]; then
   get_addresses
 
   for address in ${addresses}; do
