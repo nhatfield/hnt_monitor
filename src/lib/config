@@ -7,6 +7,7 @@ get_configs() {
     elasticsearch_url=${prometheus_pg_host}
     collector_storage_profile=elasticsearch
     etl_enabled=false
+    helium_monitor=false
   fi
 }
 
