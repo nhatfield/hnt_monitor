@@ -69,6 +69,40 @@ EOF
   fi
 }
 
+send_billing_count() {
+  get_curl_options
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
+    log_info "Sending data to prometheus pushgateway ${pghost}"
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}_${tag}
+# HELP ${project}_${name}_count of miners
+# TYPE ${project}_${name}_count gauge
+${project}_${name}_count{instance="${name}",clientId="${client_id}",miner="${tag}"} ${billing_count}
+EOF
+
+    log_info "[Billing count] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}_${tag}"
+  fi
+}
+
+send_billing_processing() {
+  get_curl_options
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
+    log_info "Sending data to prometheus pushgateway ${pghost}"
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}
+# HELP ${project}_${name}_total number of miners
+# TYPE ${project}_${name}_total gauge
+${project}_${name}_total{instance="${name}",clientId="${client_id}"} ${billing_total}
+# HELP ${project}_${name}_extra number of miners .1 HNT per
+# TYPE ${project}_${name}_extra gauge
+${project}_${name}_extra{instance="${name}",clientId="${client_id}"} ${billing_extras}
+# HELP ${project}_${name}_month_pay based on miner total
+# TYPE ${project}_${name}_month_pay gauge
+${project}_${name}_month_pay{instance="${name}",clientId="${client_id}"} ${month_pay}
+EOF
+
+    log_info "[Billing processing] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}"
+  fi
+}
+
 send_block_height() {
   get_curl_options
   if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
