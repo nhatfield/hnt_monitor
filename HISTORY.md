@@ -6,6 +6,7 @@ vNext
 - **Enchancement** - add support for elasticsearch data storage
 - **Enchancement** - add support for multiple relayed port verification
 - **Enchancement** - add miner type as a tag for group filtering
+- **Enchancement** - add billing etl job
 
 # 5.3.0
 

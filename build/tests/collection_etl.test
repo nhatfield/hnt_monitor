@@ -48,6 +48,7 @@ test() {
 
   docker run -d ${run_vars} -e HNT_DEBUG=true \
     --network=${DOCKER_NETWORK} \
+    -e HNT_BILLING_ETL="true" \
     -e HNT_BOBCAT_IPS="123 456" \
     -e HNT_NEBRA_IPS="123 456" \
     -e HNT_SENSECAP_SERIAL_NUMBERS=${hotspot} \

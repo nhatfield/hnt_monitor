@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+id=etl.billing
+name=billing
+lock_file=".billing.lock"
+
+get_billing_count() {
+  billing_count=$(echo "${addr}" | tr ' ' '\n' | sed '/^$/d' | wc -l)
+
+  if [ "${tag}" == "addresses" ]; then
+    if [ "${bill_addresses}" ]; then
+      bill_addresses="${bill_addresses} ${client_id}:addresses=${billing_count}"
+    else
+      bill_addresses="${client_id}:addresses=${billing_count}"
+    fi
+  fi
+
+  if [ "${tag}" == "bobcats" ]; then
+    if [ "${bill_bobcats}" ]; then
+      bill_bobcats="${bill_bobcats} ${client_id}:bobcats=${billing_count}"
+    else
+      bill_bobcats="${client_id}:bobcats=${billing_count}"
+    fi
+  fi
+
+  if [ "${tag}" == "longaps" ]; then
+    if [ "${bill_longaps}" ]; then
+      bill_longaps="${bill_longaps} ${client_id}:longaps=${billing_count}"
+    else
+      bill_longaps="${client_id}:longaps=${billing_count}"
+    fi
+  fi
+
+  if [ "${tag}" == "nebras" ]; then
+    if [ "${bill_nebras}" ]; then
+      bill_nebras="${bill_nebras} ${client_id}:nebras=${billing_count}"
+    else
+      bill_nebras="${client_id}:nebras=${billing_count}"
+    fi
+  fi
+
+  if [ "${tag}" == "sensecaps" ]; then
+    if [ "${bill_sensecaps}" ]; then
+      bill_sensecaps="${bill_sensecaps} ${client_id}:sensecaps=${billing_count}"
+    else
+      bill_sensecaps="${client_id}:sensecaps=${billing_count}"
+    fi
+  fi
+
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_billing_count
+  done
+
+  log_debug "client: ${client_id} ${tag}: ${billing_count}"
+}
+
+
+bill_processing() {
+  total_count=$(echo "${bill_bobcats} ${bill_longaps} ${bill_nebras} ${bill_sensecaps}" | tr ' ' '\n' | grep "${client_id}" | awk -F ':' '{print $2}' | awk -F '=' '{print $2}')
+  for t in ${total_count}; do
+    billing_total=$((billing_total + t))
+  done
+
+  addresses_count=$(echo "${bill_addresses}" | tr ' ' '\n' | grep "${client_id}" | awk -F ':' '{print $2}' | awk -F '=' '{print $2}')
+  if [ ${addresses_count} -gt ${billing_total} ]; then
+    diff=$((addresses_count - billing_total))
+    billing_total=$((billing_total + diff))
+  fi
+
+  if [ "$((billing_total - 5))" -gt 0 ]; then
+    billing_extras=$((billing_total - 5))
+  fi
+
+  if [ "${billing_total}" -le 5 ]; then
+    month_pay=1
+  else
+    diff=$((billing_total - 5))
+    month_pay=$(echo "1 + $(echo "${diff} * .1" | bc)" | bc)
+  fi
+
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_billing_processing
+  done
+
+  log_debug "total: ${billing_total} extras: ${billing_extras} month_pay: ${month_pay}"
+}
+
+if [ "${billing_etl}" == "true" ]; then
+  bill_addresses=
+  bill_bobcats=
+  bill_longaps=
+  bill_nebras=
+  bill_sensecaps=
+
+  make_dir "${data_dir}"
+  lock "${data_dir}/${lock_file}"
+
+  minutes_ago=$(date -u --date="20 minutes ago" +%s)
+  hour_ago=$(date -u --date="1 hour ago" +%s)
+  one_day_ago=$(date -u --date="1 days ago" +%s)
+  seven_days_ago=$(date -u --date="7 days ago" +%s)
+  thirty_days_ago=$(date -u --date="30 days ago" +%s)
+  get_addresses
+
+  log_info "processing billing data"
+
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    tag=addresses
+    get_prometheus_pg_host
+
+    get_billing_count
+  done
+
+  for address in ${bobcat_ips}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    tag=bobcats
+    get_prometheus_pg_host
+
+    get_billing_count
+  done
+
+  for address in ${longap_addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    tag=longaps
+    get_prometheus_pg_host
+
+    get_billing_count
+  done
+
+  for address in ${nebra_ips}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    tag=nebras
+    get_prometheus_pg_host
+
+    get_billing_count
+  done
+
+  for address in ${sensecap_serial_numbers}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    tag=sensecaps
+    get_prometheus_pg_host
+
+    get_billing_count
+  done
+
+  bill_clients=$(echo "${bill_addresses} ${bill_bobcats} ${bill_longaps} ${bill_nebras} ${bill_sensecaps}" | tr ' ' '\n' | awk -F ':' '{print $1}' | sort -u)
+
+  for cids in ${bill_clients}; do
+    billing_total=0
+    billing_extras=0
+    client_id=${cids}
+    get_prometheus_pg_host
+
+    bill_processing
+  done
+
+  sleep "${billing_interval}"
+  rm_lock "${data_dir}/${lock_file}"
+else
+  log_debug "Billing etl is disabled. Hint: (billing_etl=${billing_etl})"
+  true
+fi

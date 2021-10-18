@@ -21,6 +21,7 @@ get_addresses() {
     addresses=$(< ${HNT_HOME}/conf/address.list)
     addresses="${client_id}:${addresses// /###}"
     get_miner_addresses
+    log_debug "get.addresses response [${addresses//###/ }]"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -85,28 +86,28 @@ get_addresses() {
 }
 
 get_miner_addresses() {
-  if [[ "${id}" == *"bobcat"* ]]; then
+  if [[ "${id}" == *"bobcat"* ]] || [[ "${id}" == *"billing"* ]]; then
     if [ "${bobcat_ips}" ]; then
       bobcat_ips="${client_api_key,,}:${bobcat_ips// /###}"
       log_debug "get.miner.bobcat.ips response [${bobcat_ips//###/ }]"
     fi
   fi
   
-  if [[ "${id}" == *"longap_addresses"* ]]; then
+  if [[ "${id}" == *"longap"* ]] || [[ "${id}" == *"billing"* ]]; then
     if [ "${longap_addresses}" ]; then
       longap_addresses="${client_api_key,,}:${longap_addresses// /###}"
       log_debug "get.miner.longap.addresses response [${longap_addresses//###/ }]"
     fi
   fi
   
-  if [[ "${id}" == *"nebra_ips"* ]]; then
+  if [[ "${id}" == *"nebra"* ]] || [[ "${id}" == *"billing"* ]]; then
     if [ "${nebra_ips}" ]; then
       nebra_ips="${client_api_key,,}:${nebra_ips// /###}"
       log_debug "get.miner.nebra.ips response [${nebra_ips//###/ }]"
     fi
   fi
   
-  if [[ "${id}" == *"sensecap_serial_numbers"* ]]; then
+  if [[ "${id}" == *"sensecap"* ]] || [[ "${id}" == *"billing"* ]]; then
     if [ "${sensecap_serial_numbers}" ]; then
       sensecap_serial_numbers="${client_api_key,,}:${sensecap_serial_numbers// /###}"
       log_debug "get.miner.sensecap.serial.numbers response [${sensecap_serial_numbers//###/ }]"
