@@ -7,7 +7,6 @@ get_configs() {
     elasticsearch_url=${prometheus_pg_host}
     collector_storage_profile=elasticsearch
     etl_enabled=false
-    helium_monitor=false
   fi
 }
 
@@ -22,7 +21,8 @@ get_addresses() {
     addresses=$(< ${HNT_HOME}/conf/address.list)
     addresses="${client_id}:${addresses// /###}"
     get_miner_addresses
-    log_debug "get.addresses response [${addresses//###/ }]"
+    get_wallet_addresses
+    log_debug "get.addresses response [hotspots: ${addresses//###/ }]"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
@@ -31,7 +31,8 @@ get_addresses() {
       longap_addresses=
       nebra_ips=
       sensecap_serial_numbers=
-
+      wallet_client_addresses=
+ 
       get_addresses_elasticsearch
   
       client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null) || log_err "could not get the hotspot client_ids"
@@ -76,11 +77,18 @@ get_addresses() {
         else
           sensecap_serial_numbers="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .sensecap_serial_numbers' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         fi
+
+        if [ "${wallet_client_addresses}" ]; then
+          wallet_client_addresses="${wallet_client_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .wallet' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+        else
+          wallet_client_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .wallet' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+        fi
       done
 
-      log_debug "get.addresses response [${addresses//###/ }] [${prometheus_pg_host//###/ }] [${bobcat_ips//###/ }] [${longap_addresses//###/ }] [${nebra_ips//###/ }] [${sensecap_serial_numbers//###/ }]"
+      log_debug "get.addresses response [hotspots: ${addresses//###/ }] [prometheus_gw: ${prometheus_pg_host//###/ }] [bobcats: ${bobcat_ips//###/ }] [longaps: ${longap_addresses//###/ }] [nebras: ${nebra_ips//###/ }] [sensecaps: ${sensecap_serial_numbers//###/ }] [wallets: ${wallet_client_addresses}]"
     else
       get_miner_addresses
+      get_wallet_addresses
     fi
   fi
 
@@ -116,6 +124,15 @@ get_miner_addresses() {
   fi
 }
 
+get_wallet_addresses() {
+  if [[ "${id}" == *"wallet"* ]] || [[ "${id}" == *"billing"* ]]; then
+    if [ "${wallet_client_addresses}" ]; then
+      wallet_client_addresses="${client_api_key,,}:${wallet_client_addresses// /###}"
+      log_debug "get.wallet.addresses response [${wallet_client_addresses//###/ }]"
+    fi
+  fi
+}
+
 get_addresses_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
@@ -147,7 +164,8 @@ send_addresses_elasticsearch() {
     sensecap=$(echo "${sensecap_serial_numbers}" | sed "s% $%%;s%^%{ \"sensecap_serial_numbers\": \"%;s%$%\" }%")
     client="{ \"client_id\": \"${client_api_key,,}\" }"
     prometheus=$(echo "${prometheus_pg_host}" | sed "s% $%%;s%^%{ \"prometheus_pg_host\": \"%;s%$%\" }%")
-    jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5] + .[6])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client} ${prometheus}" > /tmp/addresses || log_err "could not create address list"
+    wallet=$(echo "${wallet_client_address}" | sed "s% $%%;s%^%{ \"wallet\": \"%;s%$%\" }%")
+    jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5] + .[6] + .[7])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client} ${prometheus} ${wallet}" > /tmp/addresses || log_err "could not create address list"
       
     get_curl_options
     es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_doc/addresses" -d @/tmp/addresses) || log_err "could not send [addresses] to elasticsearch"

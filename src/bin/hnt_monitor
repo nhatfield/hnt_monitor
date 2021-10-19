@@ -47,7 +47,7 @@ run() {
     send_addresses_elasticsearch
  
 
-    if [ "${init}" == "true" ]; then
+    if [ "${init}" == "true" ] && [ "${collector_backfill_enabled}" == "true" ]; then
       when="30 days ago"
     else
       when=
