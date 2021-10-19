@@ -142,7 +142,7 @@ get_addresses_elasticsearch() {
 }
 
 get_curl_options() {
-  curl_options="-s -L"
+  curl_options="-s -L --speed-limit 100 --speed-time 60"
   if [ "${insecure_api}" == "true" ]; then
     curl_options="${curl_options} -k"
   fi
