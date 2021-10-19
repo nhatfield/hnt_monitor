@@ -63,11 +63,11 @@ get() {
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${wallet_collector_billing_enabled}" == "true" ]; then
 
-  if [ ! "${wallet_billing_address}" ]; then
-    log_debug "no billing walletaddresses have been found"
+  if [ ! "${wallet_billing_addresses}" ]; then
+    log_debug "no billing wallet addresses have been found"
   fi
 
-  for a in ${wallet_billing_address}; do
+  for a in ${wallet_billing_addresses}; do
     client_id=master
     make_dir "${data_dir}/${client_id}/${a}"
 

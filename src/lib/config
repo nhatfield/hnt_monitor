@@ -164,7 +164,7 @@ send_addresses_elasticsearch() {
     sensecap=$(echo "${sensecap_serial_numbers}" | sed "s% $%%;s%^%{ \"sensecap_serial_numbers\": \"%;s%$%\" }%")
     client="{ \"client_id\": \"${client_api_key,,}\" }"
     prometheus=$(echo "${prometheus_pg_host}" | sed "s% $%%;s%^%{ \"prometheus_pg_host\": \"%;s%$%\" }%")
-    wallet=$(echo "${wallet_client_address}" | sed "s% $%%;s%^%{ \"wallet\": \"%;s%$%\" }%")
+    wallet=$(echo "${wallet_client_addresses}" | sed "s% $%%;s%^%{ \"wallet\": \"%;s%$%\" }%")
     jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5] + .[6] + .[7])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client} ${prometheus} ${wallet}" > /tmp/addresses || log_err "could not create address list"
       
     get_curl_options
