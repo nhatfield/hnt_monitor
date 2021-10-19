@@ -6,7 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-id=etl.billing
+id=etl.billing.process
 name=billing
 lock_file=".billing.lock"
 

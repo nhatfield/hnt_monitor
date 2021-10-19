@@ -35,7 +35,7 @@ get_miner_longap_data() {
   miner_height=${val[1]}
   
   block_conn=${val[2]}
-  if [ "${block_conn}" == "true" ]; then
+  if [ "$(echo "${block_conn}" | grep -i "true")" ]; then
     block_connected=1
   else
     block_connected=0

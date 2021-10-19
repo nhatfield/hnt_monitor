@@ -13,6 +13,7 @@ lock() {
 }
 
 rm_locks() {
+  rm -f "${data_dir}"/*/*/.*lock
   rm -f "${data_dir}"/*/.*lock
   rm -f "${data_dir}"/.*lock
 }

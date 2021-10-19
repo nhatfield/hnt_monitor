@@ -60,7 +60,7 @@ get_miner_bobcat_status() {
   if [ "${gap}" -ge 20 ]; then
     sync_status=0
   else
-    if [ "${stat}" == "synced" ]; then
+    if [ "$(echo "${stat}" | grep -i "synced")" ]; then
       sync_status=1
     else
       sync_status=0

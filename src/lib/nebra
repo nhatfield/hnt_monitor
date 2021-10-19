@@ -42,28 +42,28 @@ get_miner_nebra_data() {
   fi
 
   sync_perc=${val[3]}
-  if [[ "${sync_perc}" == *"load"* ]]; then
+  if [ "$(echo "${sync_perc}" | grep -i "load")" ]; then
     sync_percent=0
   else
     sync_percent=${sync_perc}
   fi
 
   bt_conn=${val[4]}
-  if [ "${bt_conn}" == "true" ]; then
+  if [ "$(echo "${bt_conn}" | grep -i "true")" ]; then
     bluetooth_connected=1
   else
     bluetooth_connected=0 
   fi
 
   lo_stat=${val[5]}
-  if [ "${lo_stat}" == "true" ]; then
+  if [ "$(echo "${lo_stat}" | grep -i "true")" ]; then
     lora_status=1
   else
     lora_status=0
   fi
 
   mn_conn=${val[6]}
-  if [ "${mn_conn}" == "yes" ]; then
+  if [ "$(echo "${mn_conn}" | grep -i "yes")" ]; then
     miner_connected=1
   else
     miner_connected=0
