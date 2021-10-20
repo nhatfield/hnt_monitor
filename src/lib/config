@@ -15,7 +15,7 @@ get_configs() {
   fi
 
   if [ "${longap_addresses}" ]; then
-    longap_addresses=true
+    longap_monitor=true
     longap_collector_enabled=true
   fi
 
@@ -27,6 +27,12 @@ get_configs() {
   if [ "${sensecap_serial_numbers}" ]; then
     sensecap_monitor=true
     sensecap_collector_enabled=true
+  fi
+
+  hs_mon=$(< ${HNT_HOME}/conf/address.list)
+
+  if [ "${hs_mon}" ]; then
+    hotspot_monitor=true
   fi
 }
 
