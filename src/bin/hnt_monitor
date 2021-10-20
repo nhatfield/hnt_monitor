@@ -55,6 +55,9 @@ run() {
 
     if [ "${collector_enabled}" == "true" ]; then
       run_collector
+    else
+      init=false
+      log_info "collection disabled. setting initialize to [false]"
     fi
 
     if [ "${init}" == "false" ]; then

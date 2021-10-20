@@ -42,7 +42,7 @@ get() {
 }
 
 
-if [ "${miner_collector_enabled}" == "true" ]; then
+if [ "${miner_collector_enabled}" == "true" ] && [ "${sensecap_collector_enabled}" == "true" ]; then
   for address in ${sensecap_serial_numbers}; do
     addr=${address//*:/}
     addr=${addr//###/ }

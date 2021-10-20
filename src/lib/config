@@ -8,6 +8,26 @@ get_configs() {
     collector_storage_profile=elasticsearch
     etl_enabled=false
   fi
+
+  if [ "${bobcat_ips}" ]; then
+    bobcat_monitor=true
+    bobcat_collector_enabled=true
+  fi
+
+  if [ "${longap_addresses}" ]; then
+    longap_addresses=true
+    longap_collector_enabled=true
+  fi
+
+  if [ "${nebra_ips}" ]; then
+    nebra_monitor=true
+    nebra_collector_enabled=true
+  fi
+
+  if [ "${sensecap_serial_numbers}" ]; then
+    sensecap_monitor=true
+    sensecap_collector_enabled=true
+  fi
 }
 
 get_addresses() {
