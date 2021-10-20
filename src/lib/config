@@ -8,6 +8,32 @@ get_configs() {
     collector_storage_profile=elasticsearch
     etl_enabled=false
   fi
+
+  if [ "${bobcat_ips}" ]; then
+    bobcat_monitor=true
+    bobcat_collector_enabled=true
+  fi
+
+  if [ "${longap_addresses}" ]; then
+    longap_monitor=true
+    longap_collector_enabled=true
+  fi
+
+  if [ "${nebra_ips}" ]; then
+    nebra_monitor=true
+    nebra_collector_enabled=true
+  fi
+
+  if [ "${sensecap_serial_numbers}" ]; then
+    sensecap_monitor=true
+    sensecap_collector_enabled=true
+  fi
+
+  hs_mon=$(< ${HNT_HOME}/conf/address.list)
+
+  if [ "${hs_mon}" ]; then
+    hotspot_monitor=true
+  fi
 }
 
 get_addresses() {
@@ -43,9 +69,9 @@ get_addresses() {
   
       for c in ${client_ids}; do
         if [ "${addresses}" ]; then
-          addresses="${addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          addresses="${addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.addresses != null) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         else
-          addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.addresses != null) | .addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         fi
   
         if [ "${pg_hosts}" ]; then
@@ -55,33 +81,33 @@ get_addresses() {
         fi
 
         if [ "${bobcat_ips}" ]; then
-          bobcat_ips="${bobcat_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .bobcat_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          bobcat_ips="${bobcat_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.bobcat_ips != null) | .bobcat_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         else
-          bobcat_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .bobcat_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          bobcat_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.bobcat_ips != null) | .bobcat_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         fi
       
         if [ "${longap_addresses}" ]; then
-          longap_addresses="${longap_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .longap_addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          longap_addresses="${longap_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.longap_addresses != null) | .longap_addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         else 
-          longap_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .longap_addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          longap_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.longap_addresses != null) | .longap_addresses' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         fi
       
         if [ "${nebra_ips}" ]; then
-          nebra_ips="${nebra_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .nebra_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          nebra_ips="${nebra_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.nebra_ips != null) | .nebra_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         else
-          nebra_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .nebra_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          nebra_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.nebra_ips != null) | .nebra_ips' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         fi
       
         if [ "${sensecap_serial_numbers}" ]; then
-          sensecap_serial_numbers="${sensecap_serial_numbers} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .sensecap_serial_numbers' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          sensecap_serial_numbers="${sensecap_serial_numbers} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.sensecap_serial_numbers != null) | .sensecap_serial_numbers' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         else
-          sensecap_serial_numbers="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .sensecap_serial_numbers' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          sensecap_serial_numbers="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.sensecap_serial_numbers != null) | .sensecap_serial_numbers' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         fi
 
         if [ "${wallet_client_addresses}" ]; then
-          wallet_client_addresses="${wallet_client_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .wallet' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          wallet_client_addresses="${wallet_client_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.wallet != null) | .wallet' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         else
-          wallet_client_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | .wallet' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
+          wallet_client_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.wallet != null) | .wallet' <<< "${es_addresses_payload}" 2>/dev/null | sed 's% %###%g')"
         fi
       done
 

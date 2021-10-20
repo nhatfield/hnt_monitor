@@ -42,7 +42,7 @@ get() {
 }
 
 
-if [ "${miner_collector_enabled}" == "true" ]; then
+if [ "${miner_collector_enabled}" == "true" ] && [ "${nebra_collector_enabled}" == "true" ]; then
   for address in ${nebra_ips}; do
     addr=${address//*:/}
     addr=${addr//###/ }

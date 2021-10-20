@@ -61,7 +61,7 @@ get() {
   rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 
-if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]]; then
+if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${reward_collector_enabled}" == "true" ]; then
   get_addresses
 
   if [ ! "${addresses}" ]; then

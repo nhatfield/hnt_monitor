@@ -40,7 +40,7 @@ get() {
   rm_lock "${data_dir}/${lock_file}"
 }
 
-if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]]; then
+if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${block_height_collector_enabled}" == "true" ]; then
   lock "${data_dir}/${lock_file}"
   get
 fi
