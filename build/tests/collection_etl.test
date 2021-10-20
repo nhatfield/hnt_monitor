@@ -38,9 +38,6 @@ fi
 
 id=etl.test
 test_url="http://devbox.blackem.net:9999"
-#configs=$(grep "=" ../../src/conf/hnt_monitor.conf | sed 's%=.*%%' | grep "_monitor")
-#vars=$(echo "${configs}" | sed 's%^%HNT_%' | tr 'a-z' 'A-Z')
-#run_vars=$(echo "${vars}" | sed 's%^%-e %;s%$%=true%' | tr '\n' ' ')
 
 test() {
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - starting validation"
