@@ -16,7 +16,7 @@ wallet_data() {
 
   for t in ${billing_wallet_timestamps}; do
     days_elapsed=$(( ($(date --date @${now_epoch} +%s) - $(date --date @${t} +%s) )/(60*60*24) ))
-    get_amount=$(jq -r --arg w "${a}" '.data[] | select(.payer == $w) | .payments[].amount' <<< "${es_billing_wallet_payload}")
+    get_amount=$(jq -r --arg w "${a}" --argjson t "${t}" '.data[] | select(.time == $t) | select(.payer == $w) | .payments[].amount' <<< "${es_billing_wallet_payload}")
 
     amount=$((amount + get_amount)) || true
     days_total=$((days_total + days_elapsed)) || true

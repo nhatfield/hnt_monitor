@@ -57,7 +57,7 @@ get() {
 
   log_info "[${a}] wallet ${endpoint} data ready to process"
 
-  sleep "${wallet_interval}"
+  sleep "${wallet_client_interval}"
   rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 

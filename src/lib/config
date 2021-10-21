@@ -34,6 +34,10 @@ get_configs() {
   if [ "${hs_mon}" ]; then
     hotspot_monitor=true
   fi
+
+  if [ ! "${wallet_billing_backend_url}" ]; then
+    wallet_billing_backend_url=${elasticsearch_url}
+  fi
 }
 
 get_addresses() {
@@ -162,7 +166,21 @@ get_wallet_addresses() {
 get_addresses_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    es_addresses_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?q=_id:addresses" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [addresses] elasticsearch results"
+    miner=${miner:-""}
+
+    case ${miner} in
+                wallet.client)
+                  es_url=${wallet_client_backend_url}
+                  if [[ "${es_url}" == *"hntmonitor.com"* ]] || [[ "${es_url}" == *"nginx-api"* ]]; then
+                    index="hnt-account"
+                  fi
+                  ;;
+    esac
+
+    es_url=${es_url:-"${elasticsearch_url}"}
+    index=${index:-"hnt-"}
+
+    es_addresses_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}*/_search?q=_id:account" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [client config] elasticsearch results"
     log_debug "get.addresses.elasticsearch response $(jq -c <<< "${es_addresses_payload}")"
   fi
 }
@@ -194,7 +212,7 @@ send_addresses_elasticsearch() {
     jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5] + .[6] + .[7])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client} ${prometheus} ${wallet}" > /tmp/addresses || log_err "could not create address list"
       
     get_curl_options
-    es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_doc/addresses" -d @/tmp/addresses) || log_err "could not send [addresses] to elasticsearch"
+    es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_doc/account" -d @/tmp/addresses) || log_err "could not send [addresses] to elasticsearch"
     rm -f /tmp/addresses
     log_debug "send.addresses.elasticsearch response ${es_post}"
   fi
