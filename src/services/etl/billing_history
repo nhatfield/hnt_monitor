@@ -6,7 +6,7 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-id=etl.wallet.billing
+id=etl.billing.history
 name=billing
 
 wallet_data() {
@@ -26,10 +26,8 @@ wallet_data() {
   modifier=$(echo "${days_total} * .0333" | bc)
   billing_balance=$(echo "${amount} - ${modifier}" | bc)
   
-  for p in ${prometheus_pg_host}; do
-    pghost=${p}
-    send_billing_balance
-  done
+  pghost=${p}
+  send_billing_balance
 
   log_debug "billing balance: ${billing_balance} days_elapsed: ${days_total}"
 }
@@ -39,16 +37,23 @@ if [ "${wallet_etl_billing}" == "true" ]; then
   get_addresses
   get_billing_wallet_elasticsearch
 
+
   for address in ${wallet_client_addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }
     client_id=${address//:*/}
-    amount=0
-    days_total=0
 
     get_prometheus_pg_host
 
-    for a in ${addr}; do
+    for p in ${prometheus_pg_host}; do
+      if [[ "${p}" == *"hntmonitor.com"* ]] || [[ "${p}" == *"nginx-api"* ]]; then
+        get_client_account
+      fi
+    done
+
+    for a in ${wallet_client_addresses}; do
+      amount=0
+      days_total=0
       wallet_data
     done
   done
