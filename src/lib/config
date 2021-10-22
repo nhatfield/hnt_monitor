@@ -45,6 +45,7 @@ get_addresses() {
 
   addresses=
   pg_hosts=
+  client_ids=
 
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     client_id=${client_id:-"${client_api_key,,}"}
