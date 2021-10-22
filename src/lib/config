@@ -115,7 +115,7 @@ get_addresses() {
         fi
       done
 
-      log_debug "get.addresses response [hotspots: ${addresses//###/ }] [prometheus_gw: ${prometheus_pg_host//###/ }] [bobcats: ${bobcat_ips//###/ }] [longaps: ${longap_addresses//###/ }] [nebras: ${nebra_ips//###/ }] [sensecaps: ${sensecap_serial_numbers//###/ }] [wallets: ${wallet_client_addresses}]"
+      log_debug "get.addresses response [hotspots: ${addresses//###/ }] [prometheus_gw: ${pg_hosts//###/ }] [bobcats: ${bobcat_ips//###/ }] [longaps: ${longap_addresses//###/ }] [nebras: ${nebra_ips//###/ }] [sensecaps: ${sensecap_serial_numbers//###/ }] [wallets: ${wallet_client_addresses}]"
     else
       get_miner_addresses
       get_wallet_addresses
