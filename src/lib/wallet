@@ -1,0 +1,20 @@
+get_billing_wallet_timestamps() {
+  billing_wallet_timestamps=$(jq -r --arg w "${a}" '.data[] | select(.payer == $w) | .time' <<< "${es_billing_wallet_payload}" | sort -u) || log_err "could not retrieve billing_wallet timestamps"
+  log_debug "get.billing_wallet.timestamps response [ $(echo "${billing_wallet_timestamps}" | tr '\n' ' ')]"
+}
+
+get_billing_wallet_elasticsearch() {
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    es_billing_wallet_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${wallet_billing_backend_url}/hnt-billing.*/_search?q=_id:wallet.billing.${wallet_billing_addresses}.collector.wallet.billing" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [billing_wallet] elasticsearch results"
+    log_debug "get.billing_wallet.elasticsearch response [ $(jq -r -c '.data[].time' <<< "${es_billing_wallet_payload}" 2>/dev/null | tr '\n' ' ')]"
+  fi
+}
+
+get_client_account() {
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    wallet_client_addresses=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${p}/hnt-account/_search?q=_id:account" | jq -r 'select(.hits != null) | .hits.hits[]._source | select(.wallet !=null) | .wallet' 2>/dev/null) || log_err "could not retrieve [client_wallet] elasticsearch results"
+    log_debug "get.client_wallet.elasticsearch response [ $(jq -r -c '.wallet' <<< "${wallet_client_addresses}" 2>/dev/null | tr '\n' ' ')]"
+  fi
+}

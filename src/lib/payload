@@ -43,6 +43,7 @@ send_payload() {
     a=${a:-"${endpoint}"}
     client_id=${client_id:-"${client_api_key,,}"}
     tempfile="${client_id}.${id}.${a}.$(date +%s)"
+    es_url=
     log_debug "sending payload to client id [${client_id}]"
   
     document="${miner}.${a}.${id}"
@@ -59,6 +60,9 @@ send_payload() {
                       bobcat|helium|longap|nebra|sensecap)
                         index="hnt-${client_id}"
                         ;;
+                      wallet.billing)
+                        es_url=${wallet_billing_backend_url}
+                        ;;
         esac
 
         case ${id} in
@@ -68,19 +72,20 @@ send_payload() {
         esac
 
         index=${index:-"hnt-${client_id}.${global_day}"}
+        es_url=${es_url:-"${elasticsearch_url}"}
 
-        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
 
       elif [ "${option}" == "append" ]; then
         index="hnt-${client_id}.${global_day}"
         upd_data=$(jq -r '.data[]' <<< "${payload}")
         upd_payload > /tmp/"${tempfile}"
 
-        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}/_update" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}/_update" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
         
         if [ ! "$(jq -r '.result' <<< "${es_post}")" == "updated"  ]; then
           echo "${payload}" > /tmp/"${tempfile}"
-          es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+          es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
         else
           log_info "updated elasticsearch document [${document}]"
         fi

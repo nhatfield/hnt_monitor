@@ -57,7 +57,7 @@ get() {
 
   log_info "[${a}] wallet ${endpoint} data ready to process"
 
-  sleep "${wallet_interval}"
+  sleep "${wallet_billing_interval}"
   rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 
@@ -68,7 +68,7 @@ if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${wallet_collector
   fi
 
   for a in ${wallet_billing_addresses}; do
-    client_id=master
+    client_id=billing
     make_dir "${data_dir}/${client_id}/${a}"
 
     lock "${data_dir}/${client_id}/${a}/${lock_file}"

@@ -45,6 +45,10 @@ test() {
 
   docker run -d -e HNT_DEBUG=true \
     --network=${DOCKER_NETWORK} \
+    -e HNT_WALLET_ETL_BILLING="true" \
+    -e HNT_WALLET_COLLECTOR_BILLING_ENABLED="true" \
+    -e HNT_WALLET_ETL_CLIENT="true" \
+    -e HNT_WALLET_COLLECTOR_CLIENT_ENABLED="true" \
     -e HNT_BILLING_ETL="true" \
     -e HNT_BOBCAT_IPS="123 456" \
     -e HNT_NEBRA_IPS="123 456" \

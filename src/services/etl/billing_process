@@ -93,7 +93,7 @@ bill_processing() {
   log_debug "total: ${billing_total} extras: ${billing_extras} month_pay: ${month_pay}"
 }
 
-if [ "${billing_etl}" == "true" ]; then
+if [ "${wallet_etl_client}" == "true" ]; then
   bill_addresses=
   bill_bobcats=
   bill_longaps=
@@ -181,6 +181,6 @@ if [ "${billing_etl}" == "true" ]; then
   sleep "${billing_interval}"
   rm_lock "${data_dir}/${lock_file}"
 else
-  log_debug "Billing etl is disabled. Hint: (billing_etl=${billing_etl})"
+  log_debug "Billing etl is disabled. Hint: (wallet_etl_client=${wallet_etl_client})"
   true
 fi

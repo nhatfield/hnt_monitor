@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+id=etl.billing.history
+name=billing
+
+wallet_data() {
+  log_info "processing data for ${a}"
+
+  get_billing_wallet_timestamps
+
+  for t in ${billing_wallet_timestamps}; do
+    days_elapsed=$(( ($(date --date @${now_epoch} +%s) - $(date --date @${t} +%s) )/(60*60*24) ))
+    get_amount=$(jq -r --arg w "${a}" --argjson t "${t}" '.data[] | select(.time == $t) | select(.payer == $w) | .payments[].amount' <<< "${es_billing_wallet_payload}")
+
+    amount=$((amount + get_amount)) || true
+    days_total=$((days_total + days_elapsed)) || true
+  done
+
+  amount=$(echo "${amount} * .00000001" | bc)
+  modifier=$(echo "${days_total} * .0333" | bc)
+  billing_balance=$(echo "${amount} - ${modifier}" | bc)
+  
+  pghost=${p}
+  send_billing_balance
+
+  log_debug "billing balance: ${billing_balance} days_elapsed: ${days_total}"
+}
+
+if [ "${wallet_etl_billing}" == "true" ]; then
+  now_epoch=$(date +%s)
+  get_addresses
+  get_billing_wallet_elasticsearch
+
+
+  for address in ${wallet_client_addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+
+    get_prometheus_pg_host
+
+    for p in ${prometheus_pg_host}; do
+      if [[ "${p}" == *"hntmonitor.com"* ]] || [[ "${p}" == *"nginx-api"* ]]; then
+        get_client_account
+      fi
+    done
+
+    for a in ${wallet_client_addresses}; do
+      amount=0
+      days_total=0
+      wallet_data
+    done
+  done
+else
+  log_debug "Wallet etl data is disabled. Hint: (wallet_etl_billing=${wallet_etl_billing})"
+  true
+fi
