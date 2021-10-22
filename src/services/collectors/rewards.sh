@@ -8,7 +8,6 @@ fi
 
 when=${when:-"15 minutes ago"}
 miner=hotspot
-current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
 endpoint=rewards
 lock_file=".${endpoint}.lock"
 id=collector.${endpoint}
@@ -62,6 +61,7 @@ get() {
 }
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${reward_collector_enabled}" == "true" ]; then
+  current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
   get_addresses
 
   if [ ! "${addresses}" ]; then

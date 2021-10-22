@@ -8,7 +8,6 @@ fi
 
 miner=wallet.billing
 when=${when:-"15 minutes ago"}
-current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
 endpoint=activity
 lock_file=".${miner}.${endpoint}.lock"
 id=collector.${miner}
@@ -62,6 +61,7 @@ get() {
 }
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${wallet_collector_billing_enabled}" == "true" ]; then
+  current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
 
   if [ ! "${wallet_billing_addresses}" ]; then
     log_debug "no billing wallet addresses have been found"
