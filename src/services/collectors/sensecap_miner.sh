@@ -10,7 +10,6 @@ miner=sensecap
 endpoint=data
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
-get_addresses
 
 get() {
   url=${sensecap_test_url:-"${sensecap_url}/view_device?sn=${a}&api_key=${sensecap_api_key}"}
@@ -43,6 +42,7 @@ get() {
 
 
 if [ "${miner_collector_enabled}" == "true" ] && [ "${sensecap_collector_enabled}" == "true" ]; then
+  get_addresses
   for address in ${sensecap_serial_numbers}; do
     addr=${address//*:/}
     addr=${addr//###/ }

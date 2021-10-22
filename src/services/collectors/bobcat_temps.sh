@@ -10,7 +10,6 @@ miner=bobcat
 endpoint=temp
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
-get_addresses
 
 get() {
   url=${bobcat_test_url:-"http://${a}"}
@@ -43,6 +42,7 @@ get() {
 
 
 if [ "${miner_collector_enabled}" == "true" ] && [ "${bobcat_collector_enabled}" == "true" ]; then
+  get_addresses
   for address in ${bobcat_ips}; do
     addr=${address//*:/}
     addr=${addr//###/ }

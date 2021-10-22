@@ -10,7 +10,6 @@ miner=longap
 endpoint=status
 lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
-get_addresses
 
 get() {
   url=${longap_test_url:-"${longap_url}/hotspot/status/${a}"}
@@ -43,6 +42,7 @@ get() {
 
 
 if [ "${miner_collector_enabled}" == "true" ] && [ "${longap_collector_enabled}" == "true" ]; then
+  get_addresses
   for address in ${longap_addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }
