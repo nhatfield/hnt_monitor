@@ -15,6 +15,6 @@ get_client_account() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
     wallet_client_addresses=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${p}/hnt-account/_search?q=_id:account" | jq -r 'select(.hits != null) | .hits.hits[]._source | select(.wallet !=null) | .wallet' 2>/dev/null) || log_err "could not retrieve [client_wallet] elasticsearch results"
-    log_debug "get.client_wallet.elasticsearch response [ $(jq -r -c '.wallet' <<< "${wallet_client_addresses}" 2>/dev/null | tr '\n' ' ')]"
+    log_debug "get.client_wallet.elasticsearch response [ $(echo "${wallet_client_addresses}" | tr '\n' ' ') ]"
   fi
 }

@@ -37,24 +37,25 @@ if [ "${wallet_etl_billing}" == "true" ]; then
   get_addresses
   get_billing_wallet_elasticsearch
 
-
-  for address in ${wallet_client_addresses}; do
-    addr=${address//*:/}
-    addr=${addr//###/ }
-    client_id=${address//:*/}
+  for c in ${client_ids}; do
+    client_id=${c}
 
     get_prometheus_pg_host
 
     for p in ${prometheus_pg_host}; do
+      log_debug "pg_host = ${p}"
+
       if [[ "${p}" == *"hntmonitor.com"* ]] || [[ "${p}" == *"nginx-api"* ]]; then
         get_client_account
+      else
+        wallet_client_addresses=""
       fi
-    done
 
-    for a in ${wallet_client_addresses}; do
-      amount=0
-      days_total=0
-      wallet_data
+      for a in ${wallet_client_addresses}; do
+        amount=0
+        days_total=0
+        wallet_data
+      done
     done
   done
 else
