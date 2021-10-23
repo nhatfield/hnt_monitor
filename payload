@@ -53,19 +53,15 @@ send_payload() {
       option=write
     fi
 
-    case ${miner} in
-            wallet.billing)
-                    es_url=${wallet_billing_backend_url}
-                    ;;
-    esac
-
     if [ "${id}" ]; then
       if [ "${option}" == "write" ]; then
-        log_debug "writing data to elasticsearch"
 
         case ${miner} in
                       bobcat|helium|longap|nebra|sensecap)
                         index="hnt-${client_id}"
+                        ;;
+                      wallet.billing)
+                        es_url=${wallet_billing_backend_url}
                         ;;
         esac
     
@@ -81,12 +77,13 @@ send_payload() {
         es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
 
       elif [ "${option}" == "append" ]; then
-        log_debug "appending data to elasticsearch"
         index="hnt-${client_id}.${global_day}"
-        es_url=${es_url:-"${elasticsearch_url}"}
+        log_debug "appending new payload"
 
-        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}.$(date +%s)" -d @/tmp/"${tempfile}") || log_err "could not append collector data to elasticsearch"
+        curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}.$(date +%s)" -d @/tmp/"${tempfile}" 
 
+# || log_err "could not append collector data to elasticsearch"
+        
         log_info "updated elasticsearch document [${document}.$(date +%s)]"
       else
         log_err "invalid option ${option}"
@@ -129,5 +126,6 @@ sensecap_success_payload() {
 }
 
 validate_payload() {
+  log_debug "validating payload: ${payload}"
   jq '.data[]' <<< "${payload}" 2>/dev/null
 }
