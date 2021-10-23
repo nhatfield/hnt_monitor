@@ -210,9 +210,11 @@ search_query() {
 cat <<EOF
 {
   "query": {
-     "wildcard": {
-       "docId" : "${q}*"
-     }
+    "bool": {
+      "must": [
+        { "match": { "docId": "${q}" } }
+      ]
+    }
   }
 }
 EOF
