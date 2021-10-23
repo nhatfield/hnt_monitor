@@ -6,7 +6,7 @@ get_billing_wallet_timestamps() {
 get_billing_wallet_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    es_billing_wallet_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${wallet_billing_backend_url}/hnt-billing.*/_search?q=_id:wallet.billing.${wallet_billing_addresses}.collector.wallet.billing" | jq '.hits.hits[]._source' 2>/dev/null) || log_err "could not retrieve [billing_wallet] elasticsearch results"
+    es_billing_wallet_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${wallet_billing_backend_url}/hnt-billing.*/_search?size=${elasticsearch_item_query_limit}" | jq '.hits.hits[] | select(._id | startswith('\"wallet.billing.${wallet_billing_addresses}.collector.wallet.billing\"')) | ._source' 2>/dev/null) || log_err "could not retrieve [billing_wallet] elasticsearch results"
     log_debug "get.billing_wallet.elasticsearch response [ $(jq -r -c '.data[].time' <<< "${es_billing_wallet_payload}" 2>/dev/null | tr '\n' ' ')]"
   fi
 }
