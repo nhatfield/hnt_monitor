@@ -47,6 +47,9 @@ send_payload() {
     log_debug "sending payload to client id [${client_id}]"
   
     document="${miner}.${a}.${id}"
+    docid=$(echo "${document}" | sed "s%^%{ \"docId\": \"%;s%$%\" }%")
+    ct=$(echo "$(date +%Y-%m-%dT%H:%M:%S)" | sed "s%^%{ \"collectionTime\": \"%;s%$%\" }%")
+    payload=$(jq -s '(.[0] + .[1] + .[2])' <<< "${payload} ${docid} ${ct}")
     echo "${payload}" > /tmp/"${tempfile}"
     
     if [ "${init}" == "true" ]; then
