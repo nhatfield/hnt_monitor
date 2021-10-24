@@ -69,6 +69,15 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 - sync status
 <br />
 
+## System Requirements
+
+Minimum system resources to run this stack are. This will support 5 miners with decent activity
+
+* CoreI5
+* 6GB RAM
+* 7200 RPM Disk
+<br />
+
 ## Prerequisite
 
 ### Linux +(MacOS): Without using docker ###
