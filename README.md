@@ -73,7 +73,7 @@ This repo is used to produce metrics from miner api's and the Helium blockchain.
 
 ### Linux +(MacOS): Without using docker ###
 
-If you plan to not use docker to manage your metric collection, you should at least have your monitoring platform setup by using `prometheus`, `prometheus push gateway`, and `grafana`. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
+If you plan to not use docker to manage your metric collection, you will need to have your monitoring platform setup by using `prometheus`, `prometheus push gateway`, and `grafana`. The pushgateway, from prometheus, will allow us to push metrics to prometheus instead of trying to host the metrics ourselves on an http endpoint.
 
 - **Prometheus**
   - [prometheus push gateway](https://github.com/prometheus/pushgateway)
@@ -293,6 +293,7 @@ $> docker run -it --rm hnt_monitor help
 - [Setup Grafana](docs/setup.md)
 - [Create Dashboards](docs/dashboards.md)
 - [Create Alerts](docs/alerts.md)
+- [Advanced Settings](docs/advanced.md)
 <br />
 
 ## Tips & Donations

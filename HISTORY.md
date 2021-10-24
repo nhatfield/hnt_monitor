@@ -7,6 +7,7 @@ vNext
 - **Enchancement** - add support for multiple relayed port verification
 - **Enchancement** - add miner type as a tag for group filtering
 - **Enchancement** - add billing etl job
+- **Enchancement** - add advanced setup readme
 
 # 5.3.0
 
