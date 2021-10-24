@@ -126,6 +126,10 @@ bobcat_status_success_payload() {
   jq 'select(.status != null)' <<< "${payload}" 2>/dev/null
 }
 
+elasticserarch_query_success_payload() {
+  jq '.hits.hits[]._id' <<< "${es_query_payload}" 2>/dev/null
+}
+
 longap_success_payload() {
   jq 'select(.[].publicKey != null)' <<< "${payload}" 2>/dev/null
 }

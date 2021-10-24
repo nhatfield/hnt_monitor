@@ -7,7 +7,23 @@ get_billing_wallet_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
     q=wallet.billing.${wallet_billing_addresses}.collector.wallet.billing
-    es_billing_wallet_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${wallet_billing_backend_url}/hnt-billing.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)" | jq '.hits.hits[] | select(._id | startswith('\"wallet.billing.${wallet_billing_addresses}.collector.wallet.billing\"')) | ._source' 2>/dev/null) || log_err "could not retrieve [billing_wallet] elasticsearch results"
+    n=0
+
+    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-billing.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
+
+    while [ ! "$(elasticserarch_query_success_payload)" ]; do
+      if [ "${n}" -ge "${api_retry_threshold}" ]; then
+        log_err "maximum retries have been reached ${api_retry_threshold}. could not retrieve [${q}] elasticsearch results: [${es_query_payload}]"
+        exit 1
+      fi
+
+      log_warn "bad response from the elasticsearch api while retrieving [${q}] data. Retrying in 5 seconds..."
+      ((n++)) || true
+      sleep "${api_retry_wait}"
+      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-billing.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
+    done
+
+    es_billing_wallet_payload=$(jq '.hits.hits[] | select(._id | startswith('\"${q}\"')) | ._source' <<< "${es_query_payload}" 2>/dev/null)
     log_debug "get.billing_wallet.elasticsearch response [ $(jq -r -c '.data[].time' <<< "${es_billing_wallet_payload}" 2>/dev/null | tr '\n' ' ')]"
   fi
 }

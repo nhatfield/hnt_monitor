@@ -2,7 +2,24 @@ get_reward_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
     q=hotspot.${a}.collector.rewards
-    es_reward_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)" | jq '.hits.hits[] | select(._id | startswith('\"hotspot.${a}.collector.rewards\"')) | ._source' 2>/dev/null) || log_err "could not retrieve [rewards] elasticsearch results"
+    n=0
+
+    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
+
+    while [ ! "$(elasticserarch_query_success_payload)" ]; do
+      if [ "${n}" -ge "${api_retry_threshold}" ]; then
+        log_err "maximum retries have been reached ${api_retry_threshold}. could not retrieve [${q}] elasticsearch results: [${es_query_payload}]"
+        exit 1
+      fi
+
+      log_warn "bad response from the elasticsearch api while retrieving [${q}] data. Retrying in 5 seconds..."
+      ((n++)) || true
+      sleep "${api_retry_wait}"
+      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
+    done
+
+    es_reward_payload=$(jq '.hits.hits[] | select(._id | startswith('\"${q}\"')) | ._source' <<< "${es_query_payload}" 2>/dev/null)
+    log_debug "get.reward.elasticsearch response [ $(jq -r -c '.data.name' <<< "${es_reward_payload}" 2>/dev/null) ]"
   fi
 }
 
