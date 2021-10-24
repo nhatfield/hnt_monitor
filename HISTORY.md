@@ -1,5 +1,7 @@
 vNext
 
+# 6.0.0
+
 - **Enchancement** - update bobcat blue dashboard json
 - **Enchancement** - add nginx for api authentication option
 - **Enchancement** - add support for api authentication on metric payload 
