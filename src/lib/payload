@@ -82,7 +82,7 @@ send_payload() {
         payload=$(jq -s '(.[0] + .[1] + .[2])' <<< "${payload} ${docid} ${ct}")
         echo "${payload}" > /tmp/"${tempfile}"
 
-        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
 
       elif [ "${option}" == "append" ]; then
         log_debug "appending data to elasticsearch"
@@ -95,7 +95,7 @@ send_payload() {
         payload=$(jq -s '(.[0] + .[1] + .[2])' <<< "${payload} ${docid} ${ct}")
         echo "${payload}" > /tmp/"${tempfile}"
 
-        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}.${epoch}" -d @/tmp/"${tempfile}") || log_err "could not append collector data to elasticsearch"
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc" -d @/tmp/"${tempfile}") || log_err "could not append collector data to elasticsearch"
 
         log_info "updated elasticsearch document [${document}.${epoch}]"
       else
@@ -127,7 +127,7 @@ bobcat_status_success_payload() {
 }
 
 elasticserarch_query_success_payload() {
-  jq '.hits.hits[]._id' <<< "${es_query_payload}" 2>/dev/null
+  jq '.docId' <<< "${es_query_payload}" 2>/dev/null
 }
 
 longap_success_payload() {
