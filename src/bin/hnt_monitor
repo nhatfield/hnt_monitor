@@ -72,7 +72,7 @@ run() {
       log_info "setting initialize to [false]"
     fi
 
-    sleep 60
+    sleep ${master_schedule}
 
   done
 }

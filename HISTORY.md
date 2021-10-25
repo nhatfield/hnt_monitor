@@ -1,5 +1,8 @@
 vNext
 
+- **Enchancement** - update increased wait time interval for master schedule
+- **Enchancement** - update master schedule is now configurable via env variables
+
 # 6.0.0
 
 - **Enchancement** - update bobcat blue dashboard json
