@@ -5,6 +5,23 @@ get_height() {
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    height=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-local/_search?q=docId:helium.height.collector.height" | jq '.hits.hits[]._source | select(.data.height != null) | .data.height' 2>/dev/null) || log_err "could not retrieve [block height] elasticsearch results"
+    q=helium.height.collector.height
+    n=0
+
+    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-local/_search?filter_path=hits.hits._source&q=docId:${q}")
+
+    while [ ! "$(elasticserarch_query_success_payload)" ]; do
+      if [ "${n}" -ge "${api_retry_threshold}" ]; then
+        log_err "maximum retries have been reached ${api_retry_threshold}. could not retrieve [${q}] elasticsearch results: [${es_query_payload}]"
+        exit 1
+      fi
+
+      log_warn "bad response from the elasticsearch api while retrieving [${q}] data. Retrying in 5 seconds..."
+      ((n++)) || true
+      sleep "${api_retry_wait}"
+      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-local/_search?filter_path=hits.hits._source&q=docId:${q}")
+    done
+
+    height=$(jq 'select(.hits.hits[]._source.data.height != null) | .hits.hits[]._source.data.height' <<< "${es_query_payload}" 2>/dev/null)
   fi
 }

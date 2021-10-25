@@ -184,7 +184,7 @@ get_addresses_elasticsearch() {
       es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?filter_path=hits.hits._source&size=${elasticsearch_item_query_limit}&q=_id:${q}")
     done
 
-    es_addresses_payload=${es_query_payload}
+    es_addresses_payload=$(jq '.hits.hits[]._source' <<< ${es_query_payload})
     log_debug "get.addresses.elasticsearch response $(jq -c <<< "${es_addresses_payload}")"
   fi
 }

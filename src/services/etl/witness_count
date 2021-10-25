@@ -14,14 +14,17 @@ witness() {
   get_witness_count
   for p in ${prometheus_pg_host}; do
     pghost=${p}
-    send_witness_count
+    send_witness_count || log_err "could not send [$id] data to prometheus gateway"
   done
 
-  log_debug "hostspot witness data:  witnesses_count: ${witnesses_count}  witnessed_count: ${witnessed_count}"
+  log_debug "hostspot witness data:  witnesses_count: ${witnesses_count}  witnessed count: ${witnessed_count}"
+
+  rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; then
+  lock_file=".${id}.lock"
   get_addresses
 
   for address in ${addresses}; do
@@ -32,6 +35,9 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${witness_count_etl}" == "true" ]; t
     get_prometheus_pg_host
 
     for a in ${addr}; do
+      make_dir "${data_dir}/${client_id}/${a}"
+      lock "${data_dir}/${client_id}/${a}/${lock_file}"
+
       get_hotspot_name
       witness &
     done

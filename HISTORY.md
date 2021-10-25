@@ -1,5 +1,7 @@
 vNext
 
+- **Enchancement** - update backfill days from 30 to 5
+
 # 6.1.0 
 
 - **Enchancement** - update increased wait time interval for master schedule

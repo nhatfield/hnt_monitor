@@ -53,10 +53,12 @@ reward_earn() {
 
   for p in ${prometheus_pg_host}; do
     pghost=${p}
-    send_reward_earned
+    send_reward_earned || log_err "could not send [$id] data to prometheus gateway"
   done
 
   log_debug "hotspot reward earnings:  rewards_earned_15m: ${rewards_earned_15m}  rewards_earned_1h: ${rewards_earned_1h}  rewards_earned_1d: ${rewards_earned_1d}  rewards_earned_7d: ${rewards_earned_7d}  rewards_earned_30d: ${rewards_earned_30d}"
+
+  rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${reward_earn_etl}" == "true" ]; then
@@ -65,6 +67,7 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${reward_earn_etl}" == "true" ]; the
   one_day_ago=$(date -u --date="1 days ago" +%s)
   seven_days_ago=$(date -u --date="7 days ago" +%s)
   thirty_days_ago=$(date -u --date="30 days ago" +%s)
+  lock_file=".${id}.lock"
   get_addresses
 
   for address in ${addresses}; do
@@ -75,6 +78,9 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${reward_earn_etl}" == "true" ]; the
     get_prometheus_pg_host
 
     for a in ${addr}; do
+      make_dir "${data_dir}/${client_id}/${a}"
+      lock "${data_dir}/${client_id}/${a}/${lock_file}"
+
       get_reward_elasticsearch
       get_hotspot_name
       reward_earn
