@@ -68,7 +68,7 @@ test() {
     --name ${container} ${image} 1>/dev/null || cleanup_err
 
   echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO]: [$id] - waiting for data to process ..."
-  sleep 90
+  sleep 150
   logs=$(docker logs ${container})
 
   for v in $(set -o posix; set | sed 's% %:#:%g'); do
