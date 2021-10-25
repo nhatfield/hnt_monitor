@@ -1,5 +1,7 @@
 vNext
 
+# 6.1.0 
+
 - **Enchancement** - update increased wait time interval for master schedule
 - **Enchancement** - update master schedule is now configurable via env variables
 
