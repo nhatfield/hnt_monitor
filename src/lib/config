@@ -231,7 +231,7 @@ cat <<EOF
   "query": {
     "bool": {
       "must": [
-        { "match": { "docId": "${q}" } }
+        { "match": { "docId": "${q//\./}" } }
       ]
     }
   }

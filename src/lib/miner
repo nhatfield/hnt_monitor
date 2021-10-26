@@ -1,10 +1,10 @@
 get_miner_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    q=${miner}.${a}.${search}
+    q=${miner}${a}${search}
     n=0
 
-    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}/_search?size=${elasticsearch_item_query_limit}&q=docId:${q}")
+    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
 
     while [ ! "$(elasticserarch_query_success_payload)" ]; do
       if [ "${n}" -ge "${api_retry_threshold}" ]; then
@@ -15,10 +15,10 @@ get_miner_elasticsearch() {
       log_warn "bad response from the elasticsearch api while retrieving [${q}] data. Retrying in 5 seconds..."
       ((n++)) || true
       sleep "${api_retry_wait}"
-      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}.*/_search?size=${elasticsearch_item_query_limit}&q=docId:${q}")
+      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
     done
 
-    es_miner_payload=$(jq '.hits.hits[] | select(._id | startswith('\"${miner}.${a}.${search}\"')) | ._source' <<< "${es_query_payload}" 2>/dev/null)
+    es_miner_payload=$(jq '.hits.hits[] | select(._source != null) | ._source' <<< "${es_query_payload}" 2>/dev/null)
     log_debug "get.miner.elasticsearch response $(jq -c <<< "${es_miner_payload}")"
   fi
 }

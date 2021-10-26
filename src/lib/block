@@ -5,7 +5,7 @@ get_height() {
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    q=helium.height.collector.height
+    q=heliumheightcollectorheight
     n=0
 
     es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-local/_search?filter_path=hits.hits._source&q=docId:${q}")

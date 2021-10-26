@@ -6,7 +6,7 @@ get_activity_timestamps() {
 get_activity_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    q="hotspot.${a}.collector.activity"
+    q="hotspot${a}collectoractivity"
     n=0
 
     es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
@@ -23,7 +23,7 @@ get_activity_elasticsearch() {
       es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_id}.*/_search?size=${elasticsearch_item_query_limit}" -d "$(search_query)")
     done
 
-    es_activity_payload=$(jq '.hits.hits[] | select(._id | startswith('\"${q}\"')) | ._source' <<< "${es_query_payload}" 2>/dev/null)
+    es_activity_payload=$(jq '.hits.hits[] | select(._source != null) | ._source | select(.docId | startswith('\"${q}\"'))' <<< "${es_query_payload}" 2>/dev/null)
     log_debug "get.activity.elasticsearch response [ $(jq -r -c '.data[].time' <<< "${es_activity_payload}" 2>/dev/null | tr '\n' ' ')]"
   fi
 }
