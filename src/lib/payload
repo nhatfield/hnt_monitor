@@ -44,6 +44,7 @@ send_payload() {
     client_id=${client_id:-"${client_api_key,,}"}
     tempfile="${client_id}.${id}.${a}.$(date +%s)"
     es_url=
+    ct=$(echo "$(date +%Y-%m-%dT%H:%M:%S)" | sed "s%^%{ \"collectionTime\": \"%;s%$%\" }%")
     log_debug "sending payload to client id [${client_id}]"
   
     document="${miner}.${a}.${id}"
@@ -61,43 +62,43 @@ send_payload() {
     if [ "${id}" ]; then
       if [ "${option}" == "write" ]; then
         log_debug "writing data to elasticsearch"
+        es_url=${es_url:-"${elasticsearch_url}"}
 
         case ${miner} in
                       bobcat|helium|longap|nebra|sensecap)
                         index="hnt-${client_id}"
+                        payload_url="${es_url}/${index}/_doc/${document}"
                         ;;
         esac
     
         case ${id} in
                    collector.info)
                      index="hnt-${client_id}"
+                     payload_url="${es_url}/${index}/_doc/${document}"
                      ;;
         esac
     
         index=${index:-"hnt-${client_id}.${global_day}"}
-        es_url=${es_url:-"${elasticsearch_url}"}
+        payload_url=${payload_url:-"${es_url}/${index}/_doc/"}
 
-        docid=$(echo "${document}" | sed "s%^%{ \"docId\": \"%;s%$%\" }%")
-        ct=$(echo "$(date +%Y-%m-%dT%H:%M:%S)" | sed "s%^%{ \"collectionTime\": \"%;s%$%\" }%")
+        docid=$(echo "${document//\./}" | sed "s%^%{ \"docId\": \"%;s%$%\" }%")
         payload=$(jq -s '(.[0] + .[1] + .[2])' <<< "${payload} ${docid} ${ct}")
         echo "${payload}" > /tmp/"${tempfile}"
 
-        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${payload_url}" -d @/tmp/"${tempfile}") || log_err "could not post collector data to elasticsearch"
 
       elif [ "${option}" == "append" ]; then
         log_debug "appending data to elasticsearch"
         index="hnt-${client_id}.${global_day}"
         es_url=${es_url:-"${elasticsearch_url}"}
 
-        epoch=$(date +%s)
-        docid=$(echo "${document}.${epoch}" | sed "s%^%{ \"docId\": \"%;s%$%\" }%")
-        ct=$(echo "$(date +%Y-%m-%dT%H:%M:%S -d @${epoch})" | sed "s%^%{ \"collectionTime\": \"%;s%$%\" }%")
+        docid=$(echo "${document//\./}" | sed "s%^%{ \"docId\": \"%;s%$%\" }%")
         payload=$(jq -s '(.[0] + .[1] + .[2])' <<< "${payload} ${docid} ${ct}")
         echo "${payload}" > /tmp/"${tempfile}"
 
-        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/${document}.${epoch}" -d @/tmp/"${tempfile}") || log_err "could not append collector data to elasticsearch"
+        es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${es_url}/${index}/_doc/" -d @/tmp/"${tempfile}") || log_err "could not append collector data to elasticsearch"
 
-        log_info "updated elasticsearch document [${document}.${epoch}]"
+        log_info "updated elasticsearch document [${document}]"
       else
         log_err "invalid option ${option}"
       fi
@@ -127,7 +128,7 @@ bobcat_status_success_payload() {
 }
 
 elasticserarch_query_success_payload() {
-  jq '.hits.hits[]._id' <<< "${es_query_payload}" 2>/dev/null
+  jq 'select(.hits != null)' <<< "${es_query_payload}" 2>/dev/null
 }
 
 longap_success_payload() {

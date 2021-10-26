@@ -168,13 +168,29 @@ get_addresses_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
     q=account
-    es_addresses_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?q=_id:account" | jq '.hits.hits[] | select(._id | startswith('\"account\"')) | ._source' 2>/dev/null) || log_err "could not retrieve [client config] elasticsearch results"
+    n=0
+
+    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?filter_path=hits.hits._source&size=${elasticsearch_item_query_limit}&q=_id:${q}")
+
+    while [ ! "$(elasticserarch_query_success_payload)" ]; do
+      if [ "${n}" -ge "${api_retry_threshold}" ]; then
+        log_err "maximum retries have been reached ${api_retry_threshold}. could not retrieve [${q}] elasticsearch results: [${es_query_payload}]"
+        exit 1
+      fi
+
+      log_warn "bad response from the elasticsearch api while retrieving [${q}] data. Retrying in 5 seconds..."
+      ((n++)) || true
+      sleep "${api_retry_wait}"
+      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?filter_path=hits.hits._source&size=${elasticsearch_item_query_limit}&q=_id:${q}")
+    done
+
+    es_addresses_payload=$(jq '.hits.hits[]._source' <<< ${es_query_payload})
     log_debug "get.addresses.elasticsearch response $(jq -c <<< "${es_addresses_payload}")"
   fi
 }
 
 get_curl_options() {
-  curl_options="-s -L --speed-limit 100 --speed-time 60"
+  curl_options="-s -L --speed-limit 50 --speed-time 60"
   if [ "${insecure_api}" == "true" ]; then
     curl_options="${curl_options} -k"
   fi
@@ -197,10 +213,13 @@ send_addresses_elasticsearch() {
     client="{ \"client_id\": \"${client_api_key,,}\" }"
     prometheus=$(echo "${prometheus_pg_host}" | sed "s% $%%;s%^%{ \"prometheus_pg_host\": \"%;s%$%\" }%")
     wallet=$(echo "${wallet_client_addresses}" | sed "s% $%%;s%^%{ \"wallet\": \"%;s%$%\" }%")
-    jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5] + .[6] + .[7])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client} ${prometheus} ${wallet}" > /tmp/addresses || log_err "could not create address list"
+    docid='{ "docId" : "account" }'
+    ct=$(echo "$(date +%Y-%m-%dT%H:%M:%S)" | sed "s%^%{ \"collectionTime\": \"%;s%$%\" }%")
+
+    jq -s '(.[0] + .[1] + .[2] + .[3] + .[4] + .[5] + .[6] + .[7] + .[8] + .[9])' <<< "${hotspot} ${bobcat} ${longap} ${nebra} ${sensecap} ${client} ${prometheus} ${wallet} ${docid} ${ct}" > /tmp/addresses || log_err "could not create address list"
       
     get_curl_options
-    es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_doc/account" -d @/tmp/addresses) || log_err "could not send [addresses] to elasticsearch"
+    es_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-${client_api_key,,}/_doc/account" -d @/tmp/addresses) || log_err "could not send [account] to elasticsearch"
     rm -f /tmp/addresses
     log_debug "send.addresses.elasticsearch response ${es_post}"
   fi
@@ -212,7 +231,7 @@ cat <<EOF
   "query": {
     "bool": {
       "must": [
-        { "match": { "docId": "${q}" } }
+        { "match": { "docId": "${q//\./}" } }
       ]
     }
   }

@@ -1,5 +1,9 @@
 vNext
 
+- **Enchancement** - update backfill days from 30 to 5
+- **Enchancement** - update elasticsearch queries to be more efficient
+- **Enchancement** - update min threshold on bytes received 
+
 # 6.1.0 
 
 - **Enchancement** - update increased wait time interval for master schedule

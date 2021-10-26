@@ -139,10 +139,12 @@ activity_count() {
 
   for p in ${prometheus_pg_host}; do
     pghost=${p}
-    send_activity_counts
+    send_activity_counts || log_err "could not send [$id] data to prometheus gateway"
   done
 
   log_debug "hotspot activity count:  activity_data_transfer_15m: ${activity_data_transfer_15m}  activity_sent_beacon_15m: ${activity_sent_beacon_15m}  activity_create_challenge_15m: ${activity_create_challenge_15m}  activity_challenged_beacon_15m: ${activity_challenged_beacon_15m}  activity_data_transfer_1h: ${activity_data_transfer_1h}  activity_sent_beacon_1h: ${activity_sent_beacon_1h}  activity_create_challenge_1h: ${activity_create_challenge_1h}  activity_challenged_beacon_1h: ${activity_challenged_beacon_1h}  activity_data_transfer_1d: ${activity_data_transfer_1d}  activity_sent_beacon_1d: ${activity_sent_beacon_1d}  activity_create_challenge_1d: ${activity_create_challenge_1d}  activity_challenged_beacon_1d: ${activity_challenged_beacon_1d}  activity_data_transfer_7d: ${activity_data_transfer_7d}  activity_sent_beacon_7d: ${activity_sent_beacon_7d}  activity_create_challenge_7d: ${activity_create_challenge_7d}  activity_challenged_beacon_7d: ${activity_challenged_beacon_7d}  activity_data_transfer_30d: ${activity_data_transfer_30d}  activity_sent_beacon_30d: ${activity_sent_beacon_30d}  activity_create_challenge_30d: ${activity_create_challenge_30d}  activity_challenged_beacon_30d: ${activity_challenged_beacon_30d}"
+
+  rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${activity_count_etl}" == "true" ]; then
@@ -151,6 +153,7 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${activity_count_etl}" == "true" ]; 
   one_day_ago=$(date -u --date="1 days ago" +%s)
   seven_days_ago=$(date -u --date="7 days ago" +%s)
   thirty_days_ago=$(date -u --date="30 days ago" +%s)
+  lock_file=".${id}.lock"
   get_addresses
 
   for address in ${addresses}; do
@@ -161,6 +164,9 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${activity_count_etl}" == "true" ]; 
     get_prometheus_pg_host
 
     for a in ${addr}; do
+      make_dir "${data_dir}/${client_id}/${a}"
+      lock "${data_dir}/${client_id}/${a}/${lock_file}"
+
       get_activity_elasticsearch
       get_hotspot_name
       activity_count

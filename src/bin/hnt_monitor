@@ -48,7 +48,7 @@ run() {
  
 
     if [ "${init}" == "true" ] && [ "${collector_backfill_enabled}" == "true" ]; then
-      when="30 days ago"
+      when="5 days ago"
     else
       when=
     fi
