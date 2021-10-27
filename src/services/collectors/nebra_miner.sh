@@ -35,6 +35,7 @@ get() {
 
   if [ "$(echo "${a}" | awk -F '.' '{print $1,$2,$3,$4}' | wc -w | tr -dc .[:print:].)" -eq 4 ]; then
     latency=$(ping -W 5 -c 1 ${a} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%' | grep 'response_time')
+    latency=${latency:-"{ \"response_time\": \"-1\" }"}
   else
     latency='{ "response_time": "-1" }'
   fi
