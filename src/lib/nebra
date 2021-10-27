@@ -17,7 +17,7 @@ get_miner_nebra_data() {
   get_actual_height
 
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC' "${data_dir}/${client_id}"/miner.nebra/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+    val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC, .response_time' "${data_dir}/${client_id}"/miner.nebra/${a}.data 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then

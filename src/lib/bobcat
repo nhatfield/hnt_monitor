@@ -19,7 +19,7 @@ get_miner_bobcat_name() {
 
 get_miner_bobcat_temp() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
-    val=($(jq -r -c '.temp0, .temp1' "${data_dir}/${client_id}"/miner.bobcat/${a}.temp 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
+    val=($(jq -r -c '.temp0, .temp1, .response_time' "${data_dir}/${client_id}"/miner.bobcat/${a}.temp 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then

@@ -166,6 +166,9 @@ send_miner_bobcat_temp() {
 # TYPE ${project}_cpu_temperature gauge
 ${project}_cpu_temperature{instance="${name}",miner="bobcat",core="0"} ${temp0}
 ${project}_cpu_temperature{instance="${name}",miner="bobcat",core="1"} ${temp1}
+# HELP ${project}_response_time of the miner -1: unreachable
+# TYPE ${project}_response_time gauge
+${project}_miner_response_time{instance="${name}",miner="bobcat"} ${miner_response_time}
 EOF
 
     log_info "[Temperature] data push to ${pghost}/metrics/job/${project}_${name//-/_}"
@@ -230,6 +233,9 @@ ${project}_miner_connected{instance="${name}",miner="nebra"} ${miner_connected}
 # HELP ${project}_height_gap of the nebra height to blockchain
 # TYPE ${project}_height_gap gauge
 ${project}_height_gap{instance="${name}",miner="nebra"} ${gap}
+# HELP ${project}_response_time of the miner -1: unreachable
+# TYPE ${project}_response_time gauge
+${project}_miner_response_time{instance="${name}",miner="nebra"} ${miner_response_time}
 EOF
 
     log_info "[Miner] data push to ${pghost}/metrics/job/${project}_${name//-/_}"
@@ -286,6 +292,9 @@ ${project}_height_gap{instance="${name}",miner="sensecap"} ${gap}
 # HELP ${project}_sync_status of the sensecap miner synced to blockchain 0: synching, 1: syncd
 # TYPE ${project}_sync_status gauge
 ${project}_sync_status{instance="${name}",miner="sensecap"} ${sync_status}
+# HELP ${project}_response_time of the miner -1: unreachable
+# TYPE ${project}_response_time gauge
+${project}_miner_response_time{instance="${name}",miner="sensecap"} ${miner_response_time}
 EOF
 
     log_info "[Miner] data push to ${pghost}/metrics/job/${project}_${name//-/_}"
@@ -313,19 +322,6 @@ send_online_status() {
 # HELP ${project}_online_status of the miner 0: offline, 1: online
 # TYPE ${project}_online_status gauge
 ${project}_online_status{instance="${name}"} ${online_status}
-EOF
-    log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
-  fi
-}
-
-send_miner_response_time() {
-  get_curl_options
-  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
-    log_info "Sending data to prometheus pushgateway ${pghost}"
-    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_response_time of the miner
-# TYPE ${project}_response_time gauge
-${project}_miner_response_time{instance="${name}",miner="bobcat",ip_address="${ip_address}"} ${miner_response_time}
 EOF
     log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
   fi
