@@ -18,7 +18,7 @@ nebra_data() {
     send_miner_nebra_data
   done
 
-  log_debug "nebra data:  block_height: ${block_height}  miner_height: ${miner_height}  sync_status: ${sync_status}  frequency: ${frequency}  bluetooth_connected: ${bluetooth_connected}  lora_connected: ${lora_status}  miner_connected: ${miner_connected}  height_gap: ${gap}  sync_percent: ${sync_percent}"
+  log_debug "nebra data:  block_height: ${block_height}  miner_height: ${miner_height}  sync_status: ${sync_status}  frequency: ${frequency}  bluetooth_connected: ${bluetooth_connected}  lora_connected: ${lora_status}  miner_connected: ${miner_connected}  height_gap: ${gap}  sync_percent: ${sync_percent} response_time: ${miner_response_time}"
 }
 
 if [ "${nebra_monitor}" == "true" ]; then

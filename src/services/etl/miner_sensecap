@@ -18,10 +18,8 @@ sensecap_data() {
     send_miner_sensecap_data
   done
 
-  log_debug "sensecap data:  cpu_temperature: ${cputemp}  cpu_used: ${cpuused}  memory_total: ${memtotal}  memory_used: ${memused}  sd_total: ${sdtotal}  sd_used: ${sdused}  antenna_gain: ${gain}  is_healthy: ${healthy}  block_height: ${block_height}  miner_height: ${miner_height}  p2p_connected: ${p2p_connected}  dialable_status: ${dialable}  nat_type: ${nattype}  height_gap: ${gap}"
-
+  log_debug "sensecap data:  cpu_temperature: ${cputemp}  cpu_used: ${cpuused}  memory_total: ${memtotal}  memory_used: ${memused}  sd_total: ${sdtotal}  sd_used: ${sdused}  antenna_gain: ${gain}  is_healthy: ${healthy}  block_height: ${block_height}  miner_height: ${miner_height}  p2p_connected: ${p2p_connected}  dialable_status: ${dialable}  nat_type: ${nattype}  height_gap: ${gap} response_time: ${miner_response_time}"
 }
-
 
 if [ "${sensecap_monitor}" == "true" ]; then
   get_addresses

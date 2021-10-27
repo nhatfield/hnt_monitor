@@ -4,7 +4,7 @@ get_configs() {
   done
 
   if [[ "${prometheus_pg_host}" == *"hntmonitor.com"* ]]; then
-    elasticsearch_url=${prometheus_pg_host}
+    elasticsearch_url=${prometheus_pg_host// */}
     collector_storage_profile=elasticsearch
     etl_enabled=false
   fi
