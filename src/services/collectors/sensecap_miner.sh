@@ -35,7 +35,7 @@ get() {
 
   ip_address=$(jq -r '.data.ipEthLocal' <<< "${payload}")
   if [ "$(echo "${ip_address}" | awk -F '.' '{print $1,$2,$3,$4}' | wc -w | tr -dc .[:print:].)" -eq 4 ]; then
-    latency=$(ping -W 5 -c 1 ${ip_address} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%')
+    latency=$(ping -W 5 -c 1 ${ip_address} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%' | grep 'response_time')
   else
     latency='{ "response_time": "-1" }'
   fi
