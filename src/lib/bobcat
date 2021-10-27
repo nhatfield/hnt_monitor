@@ -25,11 +25,12 @@ get_miner_bobcat_temp() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     search=collector.bobcat.temp
     get_miner_elasticsearch
-    val=($(jq -r -c '.temp0, .temp1' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
+    val=($(jq -r -c '.temp0, .temp1, .response_time' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [temps] on ${a}"
   fi
 
   temp0=${val[0]}
   temp1=${val[1]}
+  miner_response_time=${val[2]}
 }
 
 get_miner_bobcat_status() {

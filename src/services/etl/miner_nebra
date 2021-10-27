@@ -18,20 +18,7 @@ nebra_data() {
     send_miner_nebra_data
   done
 
-  log_debug "nebra data:  block_height: ${block_height}  miner_height: ${miner_height}  sync_status: ${sync_status}  frequency: ${frequency}  bluetooth_connected: ${bluetooth_connected}  lora_connected: ${lora_status}  miner_connected: ${miner_connected}  height_gap: ${gap}  sync_percent: ${sync_percent}"
-}
-
-nebra_latency() {
-  id="${id}.latency"
-  log_info "processing data"
-
-  get_miner_response_time
-  for p in ${prometheus_pg_host}; do
-    pghost=${p}
-    send_miner_response_time
-  done
-
-  log_debug "${miner} latecny data:  miner_response: ${miner_response_time}"
+  log_debug "nebra data:  block_height: ${block_height}  miner_height: ${miner_height}  sync_status: ${sync_status}  frequency: ${frequency}  bluetooth_connected: ${bluetooth_connected}  lora_connected: ${lora_status}  miner_connected: ${miner_connected}  height_gap: ${gap}  sync_percent: ${sync_percent} response_time: ${miner_response_time}"
 }
 
 if [ "${nebra_monitor}" == "true" ]; then
@@ -47,7 +34,6 @@ if [ "${nebra_monitor}" == "true" ]; then
     for a in ${addr}; do
       get_miner_nebra_name
       nebra_data &
-      nebra_latency &
     done
   done
 else

@@ -23,7 +23,7 @@ get_miner_nebra_data() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     search=collector.nebra.data
     get_miner_elasticsearch
-    val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
+    val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC, .response_time' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
 
   if [ "${helium_height}" ]; then
@@ -69,4 +69,5 @@ get_miner_nebra_data() {
     miner_connected=0
   fi
   
+  miner_response_time=${val[7]}
 }

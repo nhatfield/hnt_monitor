@@ -19,7 +19,7 @@ bobcat_temp() {
     send_miner_bobcat_temp
   done
 
-  log_debug "${miner} temperature data:  cpu0: ${temp0}  cpu1: ${temp1}"
+  log_debug "${miner} temperature data:  cpu0: ${temp0}  cpu1: ${temp1} response_time: ${miner_response_time}"
 }
 
 bobcat_status() {
@@ -33,19 +33,6 @@ bobcat_status() {
   done
 
   log_debug "${miner} status data:  sync_status: ${sync_status}  height_gap: ${gap}  miner_height: ${miner_height}  block_height: ${block_height}  epoch: ${epoch}"
-}
-
-bobcat_latency() {
-  id="${id}.latency"
-  log_info "processing data"
-
-  get_miner_response_time
-  for p in ${prometheus_pg_host}; do
-    pghost=${p}
-    send_miner_response_time
-  done
-
-  log_debug "${miner} latecny data:  miner_response: ${miner_response_time}"
 }
 
 if [ "${bobcat_monitor}" == "true" ]; then
@@ -62,7 +49,6 @@ if [ "${bobcat_monitor}" == "true" ]; then
       get_miner_bobcat_name
       bobcat_temp &
       bobcat_status &
-      bobcat_latency &
     done
   done
 else

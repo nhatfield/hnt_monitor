@@ -18,23 +18,9 @@ sensecap_data() {
     send_miner_sensecap_data
   done
 
-  log_debug "sensecap data:  cpu_temperature: ${cputemp}  cpu_used: ${cpuused}  memory_total: ${memtotal}  memory_used: ${memused}  sd_total: ${sdtotal}  sd_used: ${sdused}  antenna_gain: ${gain}  is_healthy: ${healthy}  block_height: ${block_height}  miner_height: ${miner_height}  p2p_connected: ${p2p_connected}  dialable_status: ${dialable}  nat_type: ${nattype}  height_gap: ${gap}"
+  log_debug "sensecap data:  cpu_temperature: ${cputemp}  cpu_used: ${cpuused}  memory_total: ${memtotal}  memory_used: ${memused}  sd_total: ${sdtotal}  sd_used: ${sdused}  antenna_gain: ${gain}  is_healthy: ${healthy}  block_height: ${block_height}  miner_height: ${miner_height}  p2p_connected: ${p2p_connected}  dialable_status: ${dialable}  nat_type: ${nattype}  height_gap: ${gap} response_time: ${miner_response_time}"
 
 }
-
-sensecap_latency() {
-  id="${id}.latency"
-  log_info "processing data"
-
-  get_miner_response_time
-  for p in ${prometheus_pg_host}; do
-    pghost=${p}
-    send_miner_response_time
-  done
-
-  log_debug "${miner} latecny data:  response_time: ${miner_response_time}"
-}
-
 
 if [ "${sensecap_monitor}" == "true" ]; then
   get_addresses
@@ -49,7 +35,6 @@ if [ "${sensecap_monitor}" == "true" ]; then
     for a in ${addr}; do
       get_miner_sensecap_name
       sensecap_data &
-      sensecap_latency &
     done
   done
 else
