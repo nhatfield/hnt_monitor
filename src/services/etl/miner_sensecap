@@ -22,6 +22,19 @@ sensecap_data() {
 
 }
 
+sensecap_latency() {
+  id="${id}.latency"
+  log_info "processing data"
+
+  get_miner_response_time
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_miner_response_time
+  done
+
+  log_debug "${miner} latecny data:  response_time: ${miner_response_time}"
+}
+
 
 if [ "${sensecap_monitor}" == "true" ]; then
   get_addresses
@@ -36,6 +49,7 @@ if [ "${sensecap_monitor}" == "true" ]; then
     for a in ${addr}; do
       get_miner_sensecap_name
       sensecap_data &
+      sensecap_latency &
     done
   done
 else

@@ -27,3 +27,7 @@ get_actual_height() {
   get_height
   helium_height=${height}
 }
+
+get_miner_response_time() {
+  miner_response_time=$(jq -r '.response_time' <<< "${es_miner_payload}")
+}

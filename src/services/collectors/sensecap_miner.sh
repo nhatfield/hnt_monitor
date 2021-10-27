@@ -33,6 +33,14 @@ get() {
     get_payload
   done
 
+  ip_address=$(jq -r '.data.ipEthLocal' <<< "${payload}")
+  if [ "$(echo "${ip_address}" | awk -F '.' '{print $1,$2,$3,$4}' | wc -w | tr -dc .[:print:].)" -eq 4 ]; then
+    latency=$(ping -W 5 -c 1 ${ip_address} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%')
+  else
+    latency='{ "response_time": "-1" }'
+  fi
+  payload=$(jq -s '(.[0] + .[1])' <<< "${payload} ${latency}")
+
   send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}"
   log_info "${miner} miner [${a}] ${endpoint} ready to process"
 

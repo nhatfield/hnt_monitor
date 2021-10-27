@@ -1,5 +1,7 @@
 vNext
 
+- **Enchancement** - add miner response time
+
 # 6.2.0
 
 - **Enchancement** - update backfill days from 30 to 5

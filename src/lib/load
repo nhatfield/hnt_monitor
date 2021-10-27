@@ -318,6 +318,19 @@ EOF
   fi
 }
 
+send_miner_response_time() {
+  get_curl_options
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
+    log_info "Sending data to prometheus pushgateway ${pghost}"
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
+# HELP ${project}_response_time of the miner
+# TYPE ${project}_response_time gauge
+${project}_miner_response_time{instance="${name}",miner="bobcat",ip_address="${ip_address}"} ${miner_response_time}
+EOF
+    log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
+  fi
+}
+
 send_reward_counts() {
   get_curl_options
   if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
