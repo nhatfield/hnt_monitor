@@ -3,69 +3,151 @@ send_activity_counts() {
   if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_activity_sent_beacon_15m of the miner
-# TYPE ${project}_activity_sent_beacon_15m gauge
-${project}_activity_sent_beacon_15m{instance="${name}"} ${activity_sent_beacon_15m}
 # HELP ${project}_activity_create_challenge_15m of the miner
 # TYPE ${project}_activity_create_challenge_15m gauge
 ${project}_activity_create_challenge_15m{instance="${name}"} ${activity_create_challenge_15m}
-# HELP ${project}_activity_challenged_beacon_15m of the miner
-# TYPE ${project}_activity_challenged_beacon_15m gauge
-${project}_activity_challenged_beacon_15m{instance="${name}"} ${activity_challenged_beacon_15m}
 # HELP ${project}_activity_data_transfer_15m of the miner
 # TYPE ${project}_activity_data_transfer_15m gauge
 ${project}_activity_data_transfer_15m{instance="${name}"} ${activity_data_transfer_15m}
-# HELP ${project}_activity_sent_beacon_1h of the miner
-# TYPE ${project}_activity_sent_beacon_1h gauge
-${project}_activity_sent_beacon_1h{instance="${name}"} ${activity_sent_beacon_1h}
 # HELP ${project}_activity_create_challenge_1h of the miner
 # TYPE ${project}_activity_create_challenge_1h gauge
 ${project}_activity_create_challenge_1h{instance="${name}"} ${activity_create_challenge_1h}
-# HELP ${project}_activity_challenged_beacon_1h of the miner
-# TYPE ${project}_activity_challenged_beacon_1h gauge
-${project}_activity_challenged_beacon_1h{instance="${name}"} ${activity_challenged_beacon_1h}
 # HELP ${project}_activity_data_transfer_1h of the miner
 # TYPE ${project}_activity_data_transfer_1h gauge
 ${project}_activity_data_transfer_1h{instance="${name}"} ${activity_data_transfer_1h}
-# HELP ${project}_activity_sent_beacon_1d of the miner
-# TYPE ${project}_activity_sent_beacon_1d gauge
-${project}_activity_sent_beacon_1d{instance="${name}"} ${activity_sent_beacon_1d}
 # HELP ${project}_activity_create_challenge_1d of the miner
 # TYPE ${project}_activity_create_challenge_1d gauge
 ${project}_activity_create_challenge_1d{instance="${name}"} ${activity_create_challenge_1d}
-# HELP ${project}_activity_challenged_beacon_1d of the miner
-# TYPE ${project}_activity_challenged_beacon_1d gauge
-${project}_activity_challenged_beacon_1d{instance="${name}"} ${activity_challenged_beacon_1d}
 # HELP ${project}_activity_data_transfer_1d of the miner
 # TYPE ${project}_activity_data_transfer_1d gauge
 ${project}_activity_data_transfer_1d{instance="${name}"} ${activity_data_transfer_1d}
-# HELP ${project}_activity_sent_beacon_7d of the miner
-# TYPE ${project}_activity_sent_beacon_7d gauge
-${project}_activity_sent_beacon_7d{instance="${name}"} ${activity_sent_beacon_7d}
 # HELP ${project}_activity_create_challenge_7d of the miner
 # TYPE ${project}_activity_create_challenge_7d gauge
 ${project}_activity_create_challenge_7d{instance="${name}"} ${activity_create_challenge_7d}
-# HELP ${project}_activity_challenged_beacon_7d of the miner
-# TYPE ${project}_activity_challenged_beacon_7d gauge
-${project}_activity_challenged_beacon_7d{instance="${name}"} ${activity_challenged_beacon_7d}
 # HELP ${project}_activity_data_transfer_7d of the miner
 # TYPE ${project}_activity_data_transfer_7d gauge
 ${project}_activity_data_transfer_7d{instance="${name}"} ${activity_data_transfer_7d}
-# HELP ${project}_activity_sent_beacon_30d of the miner
-# TYPE ${project}_activity_sent_beacon_30d gauge
-${project}_activity_sent_beacon_30d{instance="${name}"} ${activity_sent_beacon_30d}
 # HELP ${project}_activity_create_challenge_30d of the miner
 # TYPE ${project}_activity_create_challenge_30d gauge
 ${project}_activity_create_challenge_30d{instance="${name}"} ${activity_create_challenge_30d}
-# HELP ${project}_activity_challenged_beacon_30d of the miner
-# TYPE ${project}_activity_challenged_beacon_30d gauge
-${project}_activity_challenged_beacon_30d{instance="${name}"} ${activity_challenged_beacon_30d}
 # HELP ${project}_activity_data_transfer_30d of the miner
 # TYPE ${project}_activity_data_transfer_30d gauge
 ${project}_activity_data_transfer_30d{instance="${name}"} ${activity_data_transfer_30d}
 EOF
 
     log_info "[Hotspot activity] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
+  fi
+}
+
+send_activity_challenged_beacon_count() {
+  get_curl_options
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
+    log_info "Sending data to prometheus pushgateway ${pghost}"
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}
+# HELP ${project}_activity_challenged_beacon_15m of the miner
+# TYPE ${project}_activity_challenged_beacon_15m gauge
+${project}_activity_challenged_beacon_15m{instance="${name}"} ${activity_challenged_beacon_15m}
+# HELP ${project}_activity_challenged_beacon_witnesses_success_15m of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_success_15m gauge
+${project}_activity_challenged_beacon_witnesses_success_15m{instance="${name}"} ${activity_challenged_beacon_witnesses_success_15m}
+# HELP ${project}_activity_challenged_beacon_witnesses_failed_15m of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_failed_15m gauge
+${project}_activity_challenged_beacon_witnesses_failed_15m{instance="${name}"} ${activity_challenged_beacon_witnesses_failed_15m}
+# HELP ${project}_activity_challenged_beacon_1h of the miner
+# TYPE ${project}_activity_challenged_beacon_1h gauge
+${project}_activity_challenged_beacon_1h{instance="${name}"} ${activity_challenged_beacon_1h}
+# HELP ${project}_activity_challenged_beacon_witnesses_success_1h of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_success_1h gauge
+${project}_activity_challenged_beacon_witnesses_success_1h{instance="${name}"} ${activity_challenged_beacon_witnesses_success_1h}
+# HELP ${project}_activity_challenged_beacon_witnesses_failed_1h of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_failed_1h gauge
+${project}_activity_challenged_beacon_witnesses_failed_1h{instance="${name}"} ${activity_challenged_beacon_witnesses_failed_1h}
+# HELP ${project}_activity_challenged_beacon_1d of the miner
+# TYPE ${project}_activity_challenged_beacon_1d gauge
+${project}_activity_challenged_beacon_1d{instance="${name}"} ${activity_challenged_beacon_1d}
+# HELP ${project}_activity_challenged_beacon_witnesses_success_1d of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_success_1d gauge
+${project}_activity_challenged_beacon_witnesses_success_1d{instance="${name}"} ${activity_challenged_beacon_witnesses_success_1d}
+# HELP ${project}_activity_challenged_beacon_witnesses_failed_1d of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_failed_1d gauge
+${project}_activity_challenged_beacon_witnesses_failed_1d{instance="${name}"} ${activity_challenged_beacon_witnesses_failed_1d}
+# HELP ${project}_activity_challenged_beacon_7d of the miner
+# TYPE ${project}_activity_challenged_beacon_7d gauge
+${project}_activity_challenged_beacon_7d{instance="${name}"} ${activity_challenged_beacon_7d}
+# HELP ${project}_activity_challenged_beacon_witnesses_success_7d of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_success_7d gauge
+${project}_activity_challenged_beacon_witnesses_success_7d{instance="${name}"} ${activity_challenged_beacon_witnesses_success_7d}
+# HELP ${project}_activity_challenged_beacon_witnesses_failed_7d of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_failed_7d gauge
+${project}_activity_challenged_beacon_witnesses_failed_7d{instance="${name}"} ${activity_challenged_beacon_witnesses_failed_7d}
+# HELP ${project}_activity_challenged_beacon_30d of the miner
+# TYPE ${project}_activity_challenged_beacon_30d gauge
+${project}_activity_challenged_beacon_30d{instance="${name}"} ${activity_challenged_beacon_30d}
+# HELP ${project}_activity_challenged_beacon_witnesses_success_30d of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_success_30d gauge
+${project}_activity_challenged_beacon_witnesses_success_30d{instance="${name}"} ${activity_challenged_beacon_witnesses_success_30d}
+# HELP ${project}_activity_challenged_beacon_witnesses_failed_30d of the miner
+# TYPE ${project}_activity_challenged_beacon_witnesses_failed_30d gauge
+${project}_activity_challenged_beacon_witnesses_failed_30d{instance="${name}"} ${activity_challenged_beacon_witnesses_failed_30d}
+EOF
+
+    log_info "[Activity Challenged Beacons] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}"
+  fi
+}
+
+send_activity_sent_beacon_count() {
+  get_curl_options
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
+    log_info "Sending data to prometheus pushgateway ${pghost}"
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}
+# HELP ${project}_activity_sent_beacon_15m of the miner
+# TYPE ${project}_activity_sent_beacon_15m gauge
+${project}_activity_sent_beacon_15m{instance="${name}"} ${activity_sent_beacon_15m}
+# HELP ${project}_activity_sent_beacon_witnesses_success_15m of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_success_15m gauge
+${project}_activity_sent_beacon_witnesses_success_15m{instance="${name}"} ${activity_sent_beacon_witnesses_success_15m}
+# HELP ${project}_activity_sent_beacon_witnesses_failed_15m of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_failed_15m gauge
+${project}_activity_sent_beacon_witnesses_failed_15m{instance="${name}"} ${activity_sent_beacon_witnesses_failed_15m}
+# HELP ${project}_activity_sent_beacon_1h of the miner
+# TYPE ${project}_activity_sent_beacon_1h gauge
+${project}_activity_sent_beacon_1h{instance="${name}"} ${activity_sent_beacon_1h}
+# HELP ${project}_activity_sent_beacon_witnesses_success_1h of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_success_1h gauge
+${project}_activity_sent_beacon_witnesses_success_1h{instance="${name}"} ${activity_sent_beacon_witnesses_success_1h}
+# HELP ${project}_activity_sent_beacon_witnesses_failed_1h of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_failed_1h gauge
+${project}_activity_sent_beacon_witnesses_failed_1h{instance="${name}"} ${activity_sent_beacon_witnesses_failed_1h}
+# HELP ${project}_activity_sent_beacon_1d of the miner
+# TYPE ${project}_activity_sent_beacon_1d gauge
+${project}_activity_sent_beacon_1d{instance="${name}"} ${activity_sent_beacon_1d}
+# HELP ${project}_activity_sent_beacon_witnesses_success_1d of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_success_1d gauge
+${project}_activity_sent_beacon_witnesses_success_1d{instance="${name}"} ${activity_sent_beacon_witnesses_success_1d}
+# HELP ${project}_activity_sent_beacon_witnesses_failed_1d of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_failed_1d gauge
+${project}_activity_sent_beacon_witnesses_failed_1d{instance="${name}"} ${activity_sent_beacon_witnesses_failed_1d}
+# HELP ${project}_activity_sent_beacon_7d of the miner
+# TYPE ${project}_activity_sent_beacon_7d gauge
+${project}_activity_sent_beacon_7d{instance="${name}"} ${activity_sent_beacon_7d}
+# HELP ${project}_activity_sent_beacon_witnesses_success_7d of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_success_7d gauge
+${project}_activity_sent_beacon_witnesses_success_7d{instance="${name}"} ${activity_sent_beacon_witnesses_success_7d}
+# HELP ${project}_activity_sent_beacon_witnesses_failed_7d of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_failed_7d gauge
+${project}_activity_sent_beacon_witnesses_failed_7d{instance="${name}"} ${activity_sent_beacon_witnesses_failed_7d}
+# HELP ${project}_activity_sent_beacon_30d of the miner
+# TYPE ${project}_activity_sent_beacon_30d gauge
+${project}_activity_sent_beacon_30d{instance="${name}"} ${activity_sent_beacon_30d}
+# HELP ${project}_activity_sent_beacon_witnesses_success_30d of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_success_30d gauge
+${project}_activity_sent_beacon_witnesses_success_30d{instance="${name}"} ${activity_sent_beacon_witnesses_success_30d}
+# HELP ${project}_activity_sent_beacon_witnesses_failed_30d of the miner
+# TYPE ${project}_activity_sent_beacon_witnesses_failed_30d gauge
+${project}_activity_sent_beacon_witnesses_failed_30d{instance="${name}"} ${activity_sent_beacon_witnesses_failed_30d}
+EOF
+
+    log_info "[Activity Sent Beacon] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}"
   fi
 }
 
@@ -393,14 +475,37 @@ EOF
   fi
 }
 
-send_witness_count() {
+send_witnessed_count() {
   get_curl_options
   if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
-# HELP ${project}_witnessed miners
-# TYPE ${project}_witnessed gauge
-${project}_witnessed{instance="${name}",address="${a}"} ${witnessed_count}
+# HELP ${project}_witnessed_15m miners
+# TYPE ${project}_witnessed_15m gauge
+${project}_witnessed_15m{instance="${name}",address="${a}"} ${activity_witnessed_beacon_15m}
+# HELP ${project}_witnessed_1h miners
+# TYPE ${project}_witnessed_1h gauge
+${project}_witnessed_1h{instance="${name}",address="${a}"} ${activity_witnessed_beacon_1h}
+# HELP ${project}_witnessed_1d miners
+# TYPE ${project}_witnessed_1d gauge
+${project}_witnessed_1d{instance="${name}",address="${a}"} ${activity_witnessed_beacon_1d}
+# HELP ${project}_witnessed_7d miners
+# TYPE ${project}_witnessed_7d gauge
+${project}_witnessed_7d{instance="${name}",address="${a}"} ${activity_witnessed_beacon_7d}
+# HELP ${project}_witnessed_30d miners
+# TYPE ${project}_witnessed_30d gauge
+${project}_witnessed_30d{instance="${name}",address="${a}"} ${activity_witnessed_beacon_30d}
+EOF
+
+    log_info "[${a}] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
+  fi
+}
+
+send_witnesses_count() {
+  get_curl_options
+  if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
+    log_info "Sending data to prometheus pushgateway ${pghost}"
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_witnesses miners
 # TYPE ${project}_witnesses gauge
 ${project}_witnesses{instance="${name}",address="${a}"} ${witnesses_count}

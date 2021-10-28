@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ ${trace} == "true" ]; then
+  set -x
+fi
+
+id=etl.activity.challenged.count
+
+activity_count() {
+  log_info "processing data for ${a}"
+
+  activity_types="get_activity_challenged_beacons"
+
+  activity_challenged_beacon_15m=0
+  activity_challenged_beacon_witnesses_success_15m=0
+  activity_challenged_beacon_witnesses_failed_15m=0
+  activity_challenged_beacon_1h=0
+  activity_challenged_beacon_witnesses_success_1h=0
+  activity_challenged_beacon_witnesses_failed_1h=0
+  activity_challenged_beacon_1d=0
+  activity_challenged_beacon_witnesses_success_1d=0
+  activity_challenged_beacon_witnesses_failed_1d=0
+  activity_challenged_beacon_7d=0
+  activity_challenged_beacon_witnesses_success_7d=0
+  activity_challenged_beacon_witnesses_failed_7d=0
+  activity_challenged_beacon_30d=0
+  activity_challenged_beacon_witnesses_success_30d=0
+  activity_challenged_beacon_witnesses_failed_30d=0
+
+  for activity in ${activity_types}; do
+    ${activity}
+    get_activity_timestamps
+
+    for t in ${activity_timestamps}; do
+      time=${t}
+      get_activity_challenged_beacon_witnesses
+
+      if [ "${minutes_ago}" -le "${time}" ]; then
+        ((activity_challenged_beacon_15m++)) || true
+        activity_challenged_beacon_witnesses_success_15m=$((activity_challenged_beacon_witnesses_success_15m + challenged_beacon_success_witnesses)) || true
+        activity_challenged_beacon_witnesses_failed_15m=$((activity_challenged_beacon_witnesses_failed_15m + challenged_beacon_failed_witnesses)) || true
+      fi
+
+      if [ "${hour_ago}" -le "${time}" ]; then
+        ((activity_challenged_beacon_1h++)) || true
+        activity_challenged_beacon_witnesses_success_15m=$((activity_challenged_beacon_witnesses_success_15m + challenged_beacon_success_witnesses)) || true
+        activity_challenged_beacon_witnesses_failed_15m=$((activity_challenged_beacon_witnesses_failed_15m + challenged_beacon_failed_witnesses)) || true
+      fi
+
+      if [ "${one_day_ago}" -le "${time}" ]; then
+        ((activity_challenged_beacon_1d++)) || true
+        activity_challenged_beacon_witnesses_success_15m=$((activity_challenged_beacon_witnesses_success_15m + challenged_beacon_success_witnesses)) || true
+        activity_challenged_beacon_witnesses_failed_15m=$((activity_challenged_beacon_witnesses_failed_15m + challenged_beacon_failed_witnesses)) || true
+      fi
+
+      if [ "${seven_days_ago}" -le "${time}" ]; then
+        ((activity_challenged_beacon_7d++)) || true
+        activity_challenged_beacon_witnesses_success_15m=$((activity_challenged_beacon_witnesses_success_15m + challenged_beacon_success_witnesses)) || true
+        activity_challenged_beacon_witnesses_failed_15m=$((activity_challenged_beacon_witnesses_failed_15m + challenged_beacon_failed_witnesses)) || true
+      fi
+
+      if [ "${thirty_days_ago}" -le "${time}" ]; then
+        ((activity_challenged_beacon_30d++)) || true
+        activity_challenged_beacon_witnesses_success_15m=$((activity_challenged_beacon_witnesses_success_15m + challenged_beacon_success_witnesses)) || true
+        activity_challenged_beacon_witnesses_failed_15m=$((activity_challenged_beacon_witnesses_failed_15m + challenged_beacon_failed_witnesses)) || true
+      fi
+    done
+  done
+
+  for p in ${prometheus_pg_host}; do
+    pghost=${p}
+    send_activity_challenged_beacon_count || log_err "could not send [$id] data to prometheus gateway"
+  done
+
+  log_debug "hotspot activity challenged beacon counts:  activity_challenged_beacon_15m: ${activity_challenged_beacon_15m} activity_challenged_beacon_witnesses_success_15m: ${activity_challenged_beacon_witnesses_success_15m} activity_challenged_beacon_witnesses_failed_15m: ${activity_challenged_beacon_witnesses_failed_15m} activity_challenged_beacon_1h: ${activity_challenged_beacon_1h} activity_challenged_beacon_witnesses_success_1h: ${activity_challenged_beacon_witnesses_success_1h} activity_challenged_beacon_witnesses_failed_1h: ${activity_challenged_beacon_witnesses_failed_1h} activity_challenged_beacon_1d: ${activity_challenged_beacon_1d} activity_challenged_beacon_witnesses_success_1d: ${activity_challenged_beacon_witnesses_success_1d} activity_challenged_beacon_witnesses_failed_1d: ${activity_challenged_beacon_witnesses_failed_1d} activity_challenged_beacon_7d: ${activity_challenged_beacon_7d} activity_challenged_beacon_witnesses_success_7d: ${activity_challenged_beacon_witnesses_success_7d} activity_challenged_beacon_witnesses_failed_7d: ${activity_challenged_beacon_witnesses_failed_7d} activity_challenged_beacon_30d: ${activity_challenged_beacon_30d} activity_challenged_beacon_witnesses_success_30d: ${activity_challenged_beacon_witnesses_success_30d} activity_challenged_beacon_witnesses_failed_30d: ${activity_challenged_beacon_witnesses_failed_30d}"
+
+  rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
+}
+
+if [ "${hotspot_monitor}" == "true" ] && [ "${activity_challenged_beacon_etl}" == "true" ]; then
+  minutes_ago=$(date -u --date="20 minutes ago" +%s)
+  hour_ago=$(date -u --date="1 hour ago" +%s)
+  one_day_ago=$(date -u --date="1 days ago" +%s)
+  seven_days_ago=$(date -u --date="7 days ago" +%s)
+  thirty_days_ago=$(date -u --date="30 days ago" +%s)
+  lock_file=".${id}.lock"
+  get_addresses
+
+  for address in ${addresses}; do
+    addr=${address//*:/}
+    addr=${addr//###/ }
+    client_id=${address//:*/}
+ 
+    get_prometheus_pg_host
+
+    for a in ${addr}; do
+      make_dir "${data_dir}/${client_id}/${a}"
+      lock "${data_dir}/${client_id}/${a}/${lock_file}"
+
+      get_activity_elasticsearch
+      get_hotspot_name
+      activity_count
+    done
+  done
+else
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; activity_challenged_beacon_etl=${activity_challenged_beacon_etl})"
+  true
+fi
