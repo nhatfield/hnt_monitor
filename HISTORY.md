@@ -1,5 +1,7 @@
 vNext
 
+# 7.0.0
+
 - **Enchancement** - witnesses and witnessed directly from activity
 
 # 6.3.0
