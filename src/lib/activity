@@ -38,6 +38,11 @@ get_activity_sent_beacons() {
   fi
 }
 
+get_activity_sent_beacon_witnesses() {
+  sent_beacon_success_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | select(.path[].witnesses[] != null) | .path[].witnesses[].timestamp' <<< "${activity_payload}" 2>/dev/null | sort -u | wc -l) || log_warn "could not retreive sent beacon success witnesses count"
+  sent_beacon_failed_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | .path[]' <<< "${activity_payload}" 2>/dev/null | sort -u | grep 'witnesses\": \[\]' | wc -l) || log_warn "could not retreive sent beacon failed witnesses count"
+}
+
 get_activity_challenged_beacons() {
   if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
     activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.challenger != null) | select(.challenger == $a)' "${data_dir}/${client_id}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve challenged beacons"
@@ -46,6 +51,11 @@ get_activity_challenged_beacons() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.challenger != null) | select(.challenger == $a)' <<< "${es_activity_payload}" 2>/dev/null) || log_err "could not retrieve challenged beacons"
   fi
+}
+
+get_activity_challenged_beacon_witnesses() {
+  challenged_beacon_success_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | select(.path[].witnesses[] != null) | .path[].witnesses[].timestamp' <<< "${activity_payload}" 2>/dev/null | sort -u | wc -l) || log_warn "could not retreive challenged beacon success witnesses count"
+  challenged_beacon_failed_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | .path[]' <<< "${activity_payload}" 2>/dev/null | sort -u | grep 'witnesses\": \[\]' | wc -l) || log_warn "could not retreive challenged beacon failed witnesses count"
 }
 
 get_activity_create_challenge() {
@@ -65,5 +75,15 @@ get_activity_data_transfer() {
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     activity_payload=$(jq -r '.data[] | select(.type == "state_channel_close_v1")' <<< "${es_activity_payload}" 2>/dev/null) || log_err "could not retrieve data transfer"
+  fi
+}
+
+get_activity_witnessed_beacons() {
+  if [[ "${collector_storage_profile}" == *"local"* ]] || [ ! "${collector_storage_profile}" ]; then
+    activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.path[].witnesses != null) | select(.path[].witnesses[].gateway == $a)' "${data_dir}/${client_id}/${a}"/*.activity 2>/dev/null) || log_err "could not retrieve challenged beacons"
+  fi
+
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    activity_payload=$(jq -r --arg a "${a}" '.data[] | select(.type == "poc_receipts_v1") | select(.path[].witnesses != null) | select(.path[].witnesses[].gateway == $a)' <<< "${es_activity_payload}" 2>/dev/null) || log_err "could not retrieve challenged beacons"
   fi
 }

@@ -1,5 +1,7 @@
 vNext
 
+- **Enchancement** - witnesses and witnessed directly from activity
+
 # 6.3.0
 
 - **Enchancement** - add miner response time
