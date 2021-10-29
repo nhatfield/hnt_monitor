@@ -79,7 +79,7 @@ activity_count() {
   rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
 }
 
-if [ "${hotspot_monitor}" == "true" ] && [ "${activity_sent_beacon_etl}" == "true" ]; then
+if [ "${hotspot_monitor}" == "true" ] && [ "${activity_sent_beacon_etl}" == "true" ] && [ "${activity_count_etl}" == "true" ]; then
   minutes_ago=$(date -u --date="20 minutes ago" +%s)
   hour_ago=$(date -u --date="1 hour ago" +%s)
   one_day_ago=$(date -u --date="1 days ago" +%s)
@@ -105,6 +105,6 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${activity_sent_beacon_etl}" == "tru
     done
   done
 else
-  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; activity_sent_beacon_etl=${activity_sent_beacon_etl})"
+  log_debug "Hotspot monitor collection is disabled. Hint: (hotspot_monitor=${hotspot_monitor}; activity_count_etl=${activity_count_etl}; activity_sent_beacon_etl=${activity_sent_beacon_etl})"
   true
 fi

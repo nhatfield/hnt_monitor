@@ -1,5 +1,9 @@
 vNext
 
+# 7.1.0
+
+- **Enchancement** - give inidividual control to activity etl types
+
 # 7.0.0
 
 - **Enchancement** - witnesses and witnessed directly from activity
