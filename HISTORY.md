@@ -1,5 +1,7 @@
 vNext
 
+# 6.3.0
+
 - **Enchancement** - add miner response time
 - **Enchancement** - allow user controlled account share in production
 
