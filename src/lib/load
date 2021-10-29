@@ -43,7 +43,7 @@ send_activity_challenged_beacon_count() {
   get_curl_options
   if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
-    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_activity_challenged_beacon_15m of the miner
 # TYPE ${project}_activity_challenged_beacon_15m gauge
 ${project}_activity_challenged_beacon_15m{instance="${name}"} ${activity_challenged_beacon_15m}
@@ -91,7 +91,7 @@ ${project}_activity_challenged_beacon_witnesses_success_30d{instance="${name}"} 
 ${project}_activity_challenged_beacon_witnesses_failed_30d{instance="${name}"} ${activity_challenged_beacon_witnesses_failed_30d}
 EOF
 
-    log_info "[Activity Challenged Beacons] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}"
+    log_info "[Activity Challenged Beacons] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
   fi
 }
 
@@ -99,7 +99,7 @@ send_activity_sent_beacon_count() {
   get_curl_options
   if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then
     log_info "Sending data to prometheus pushgateway ${pghost}"
-    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}
 # HELP ${project}_activity_sent_beacon_15m of the miner
 # TYPE ${project}_activity_sent_beacon_15m gauge
 ${project}_activity_sent_beacon_15m{instance="${name}"} ${activity_sent_beacon_15m}
@@ -147,7 +147,7 @@ ${project}_activity_sent_beacon_witnesses_success_30d{instance="${name}"} ${acti
 ${project}_activity_sent_beacon_witnesses_failed_30d{instance="${name}"} ${activity_sent_beacon_witnesses_failed_30d}
 EOF
 
-    log_info "[Activity Sent Beacon] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}"
+    log_info "[Activity Sent Beacon] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}"
   fi
 }
 

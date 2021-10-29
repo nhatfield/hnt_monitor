@@ -39,8 +39,8 @@ get_activity_sent_beacons() {
 }
 
 get_activity_sent_beacon_witnesses() {
-  sent_beacon_success_witnesses=$(jq -r --argjson t "$t" '.data[] | select(.time == $t) | select(.path[].witnesses[] != null) | .path[].witnesses[].timestamp' <<< "${activity_payload}" 2>/dev/null | wc -l) || log_err "could not retreive sent beacon success witnesses count"
-  sent_beacon_failed_witnesses=$(jq -r --argjson t "$t" '.data[] | select(.time == $t) | .path[]' <<< "${activity_payload}" 2>/dev/null | grep 'witnesses\": \[\]' | wc -l) || log_err "could not retreive sent beacon failed witnesses count"
+  sent_beacon_success_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | select(.path[].witnesses[] != null) | .path[].witnesses[].timestamp' <<< "${activity_payload}" 2>/dev/null | sort -u | wc -l) || log_warn "could not retreive sent beacon success witnesses count"
+  sent_beacon_failed_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | .path[]' <<< "${activity_payload}" 2>/dev/null | sort -u | grep 'witnesses\": \[\]' | wc -l) || log_warn "could not retreive sent beacon failed witnesses count"
 }
 
 get_activity_challenged_beacons() {
@@ -54,8 +54,8 @@ get_activity_challenged_beacons() {
 }
 
 get_activity_challenged_beacon_witnesses() {
-  challenged_beacon_success_witnesses=$(jq -r --argjson t "$t" '.data[] | select(.time == $t) | select(.path[].witnesses[] != null) | .path[].witnesses[].timestamp' <<< "${activity_payload}" 2>/dev/null | wc -l) || log_err "could not retreive challenged beacon success witnesses count"
-  challenged_beacon_failed_witnesses=$(jq -r --argjson t "$t" '.data[] | select(.time == $t) | .path[]' <<< "${activity_payload}" 2>/dev/null | grep 'witnesses\": \[\]' | wc -l) || log_err "could not retreive challenged beacon failed witnesses count"
+  challenged_beacon_success_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | select(.path[].witnesses[] != null) | .path[].witnesses[].timestamp' <<< "${activity_payload}" 2>/dev/null | sort -u | wc -l) || log_warn "could not retreive challenged beacon success witnesses count"
+  challenged_beacon_failed_witnesses=$(jq -r --argjson t "$t" 'select(.time == $t) | .path[]' <<< "${activity_payload}" 2>/dev/null | sort -u | grep 'witnesses\": \[\]' | wc -l) || log_warn "could not retreive challenged beacon failed witnesses count"
 }
 
 get_activity_create_challenge() {

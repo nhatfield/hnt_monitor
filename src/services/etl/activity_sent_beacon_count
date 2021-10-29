@@ -45,26 +45,26 @@ activity_count() {
 
       if [ "${hour_ago}" -le "${time}" ]; then
         ((activity_sent_beacon_1h++)) || true
-        activity_sent_beacon_witnesses_success_15m=$((activity_sent_beacon_witnesses_success_15m + sent_beacon_success_witnesses)) || true
-        activity_sent_beacon_witnesses_failed_15m=$((activity_sent_beacon_witnesses_failed_15m + sent_beacon_failed_witnesses)) || true
+        activity_sent_beacon_witnesses_success_1h=$((activity_sent_beacon_witnesses_success_1h + sent_beacon_success_witnesses)) || true
+        activity_sent_beacon_witnesses_failed_1h=$((activity_sent_beacon_witnesses_failed_1h + sent_beacon_failed_witnesses)) || true
       fi
 
       if [ "${one_day_ago}" -le "${time}" ]; then
         ((activity_sent_beacon_1d++)) || true
-        activity_sent_beacon_witnesses_success_15m=$((activity_sent_beacon_witnesses_success_15m + sent_beacon_success_witnesses)) || true
-        activity_sent_beacon_witnesses_failed_15m=$((activity_sent_beacon_witnesses_failed_15m + sent_beacon_failed_witnesses)) || true
+        activity_sent_beacon_witnesses_success_1d=$((activity_sent_beacon_witnesses_success_1d + sent_beacon_success_witnesses)) || true
+        activity_sent_beacon_witnesses_failed_1d=$((activity_sent_beacon_witnesses_failed_1d + sent_beacon_failed_witnesses)) || true
       fi
 
       if [ "${seven_days_ago}" -le "${time}" ]; then
         ((activity_sent_beacon_7d++)) || true
-        activity_sent_beacon_witnesses_success_15m=$((activity_sent_beacon_witnesses_success_15m + sent_beacon_success_witnesses)) || true
-        activity_sent_beacon_witnesses_failed_15m=$((activity_sent_beacon_witnesses_failed_15m + sent_beacon_failed_witnesses)) || true
+        activity_sent_beacon_witnesses_success_7d=$((activity_sent_beacon_witnesses_success_7d + sent_beacon_success_witnesses)) || true
+        activity_sent_beacon_witnesses_failed_7d=$((activity_sent_beacon_witnesses_failed_7d + sent_beacon_failed_witnesses)) || true
       fi
 
       if [ "${thirty_days_ago}" -le "${time}" ]; then
         ((activity_sent_beacon_30d++)) || true
-        activity_sent_beacon_witnesses_success_15m=$((activity_sent_beacon_witnesses_success_15m + sent_beacon_success_witnesses)) || true
-        activity_sent_beacon_witnesses_failed_15m=$((activity_sent_beacon_witnesses_failed_15m + sent_beacon_failed_witnesses)) || true
+        activity_sent_beacon_witnesses_success_30d=$((activity_sent_beacon_witnesses_success_30d + sent_beacon_success_witnesses)) || true
+        activity_sent_beacon_witnesses_failed_30d=$((activity_sent_beacon_witnesses_failed_30d + sent_beacon_failed_witnesses)) || true
       fi
     done
   done
