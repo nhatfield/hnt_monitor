@@ -39,9 +39,9 @@ get() {
   else
     latency='{ "response_time": "-1" }'
   fi
-  payload=$(jq -s '(.[0] + .[1])' <<< "${payload} ${latency}")
+  payload=$(jq -s '(.[0] + .[1])' <<< "${payload} ${latency}") || true
 
-  send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}"
+  send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}" || true
   log_info "${miner} miner [${a}] ${endpoint} ready to process"
 
   sleep "${sensecap_data_interval}"

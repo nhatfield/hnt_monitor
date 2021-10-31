@@ -1,5 +1,10 @@
 vNext
 
+- **Enchancement** - silence warnings for beacon witness counts
+- **Enchancement** - allow mulitple payment wallets for billing analysis
+- **BugFix** - billing wallet is not properly applying based on cost
+- **BugFix** - miner collectors could die and leave locks forcing container restart
+
 # 7.1.0
 
 - **Enchancement** - give inidividual control to activity etl types
