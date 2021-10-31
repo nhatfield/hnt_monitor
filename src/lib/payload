@@ -78,7 +78,12 @@ send_payload() {
                      ;;
                    etl.billing.process)
                      index="hnt-account"
-                     document="cost"
+                     document="${endpoint}"
+                     payload_url="${es_url}/${index}/_doc/${document}"
+                     ;;
+                   etl.billing.balance)
+                     index="hnt-account"
+                     document="${endpoint}"
                      payload_url="${es_url}/${index}/_doc/${document}"
                      ;;
         esac
