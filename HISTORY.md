@@ -1,5 +1,7 @@
 vNext
 
+# 7.2.0
+
 - **Enchancement** - silence warnings for beacon witness counts
 - **Enchancement** - allow mulitple payment wallets for billing analysis
 - **BugFix** - billing wallet is not properly applying based on cost
