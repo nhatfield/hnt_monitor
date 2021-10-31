@@ -1,5 +1,7 @@
 vNext
 
+- **Enchancement** - increase collector frequency on rewards and activity
+
 # 7.2.0
 
 - **Enchancement** - silence warnings for beacon witness counts
