@@ -158,7 +158,7 @@ send_billing_balance() {
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}
 # HELP ${project}_${name}_balance of your account
 # TYPE ${project}_${name}_balance gauge
-${project}_${name}_balance{instance="${name}",clientId="${client_id}"} ${billing_balance}
+${project}_${name}_balance{instance="${name}",clientId="${client_id}"} ${total_balance}
 EOF
 
     log_info "[Billing balance] data pushed to ${pghost}/metrics/job/${project}_${name//-/_}_${client_id}"

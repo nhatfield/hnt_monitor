@@ -31,7 +31,16 @@ get_billing_wallet_elasticsearch() {
 get_client_account() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
     get_curl_options
-    wallet_client_addresses=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${p}/hnt-account/_search?q=_id:account" | jq -r 'select(.hits != null) | .hits.hits[]._source | select(.wallet != null) | .wallet' 2>/dev/null) || log_err "could not retrieve [client_wallet] elasticsearch results"
+    wallet_client_addresses=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${p}/hnt-account/_search?q=_id:account" | jq -r 'select(.hits != null) | .hits.hits[]._source | select(.wallet != null) | .wallet' 2>/dev/null) || log_warn "could not retrieve [client_wallet] elasticsearch results"
     log_debug "get.client_wallet.elasticsearch response [ $(echo "${wallet_client_addresses}" | tr '\n' ' ') ]"
+  fi
+}
+
+get_client_cost() {
+  if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    get_curl_options
+    client_account_cost=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${p}/hnt-account/_search?q=_id:cost" | jq -r 'select(.hits != null) | .hits.hits[]._source | select(.cost != null) | .cost' 2>/dev/null) || log_warn "could not retrieve [account_cost] elasticsearch results"
+    client_account_cost=${client_account_cost:-"1"}
+    log_debug "get.client_cost.elasticsearch response [ $(echo "${client_account_cost}") ]"
   fi
 }

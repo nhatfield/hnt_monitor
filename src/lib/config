@@ -66,7 +66,7 @@ get_addresses() {
  
       get_addresses_elasticsearch
   
-      client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null) || log_err "could not get the hotspot client_ids"
+      client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the hotspot client_ids"
       
       if [ "${id}" == "etl.block.height" ]; then
         prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
@@ -198,7 +198,7 @@ get_curl_options() {
 
 get_prometheus_pg_host() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
-    prometheus_pg_host="$(echo "${pg_hosts}" | tr ' ' '\n' | grep "^${client_id}" | sed "s%^${client_id}:%%;s%###% %g")"
+    prometheus_pg_host="$(echo "${pg_hosts}" | tr ' ' '\n' | sort -u | grep "^${client_id}" | sed "s%^${client_id}:%%;s%###% %g")"
   fi
 }
 

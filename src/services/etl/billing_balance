@@ -6,30 +6,31 @@ if [ ${trace} == "true" ]; then
   set -x
 fi
 
-id=etl.billing.history
+id=etl.billing.balance
 name=billing
 
 wallet_data() {
   log_info "processing data for ${a}"
 
   get_billing_wallet_timestamps
+  get_client_cost
 
   for t in ${billing_wallet_timestamps}; do
     days_elapsed=$(( ($(date --date @${now_epoch} +%s) - $(date --date @${t} +%s) )/(60*60*24) ))
-    get_amount=$(jq -r --arg w "${a}" --argjson t "${t}" '.data[] | select(.time == $t) | select(.payer == $w) | .payments[].amount' <<< "${es_billing_wallet_payload}")
+    get_amount=$(jq -r --arg w "${a}" --argjson t "${t}" '.data[] | select(.time == $t) | select(.payer == $w) | .payments[].amount' <<< "${es_billing_wallet_payload}" | sort -u)
 
     amount=$((amount + get_amount)) || true
     days_total=$((days_total + days_elapsed)) || true
   done
 
+  acc_cost=$(echo "scale=4; ${client_account_cost} / 30" | bc -l)
   amount=$(echo "${amount} * .00000001" | bc)
-  modifier=$(echo "${days_total} * .0333" | bc)
-  billing_balance=$(echo "${amount} - ${modifier}" | bc)
+  modifier=$(echo "${days_total} * ${acc_cost}" | bc -l)
+  billing_balance=$(echo "${amount} - ${modifier}" | bc -l)
   
-  pghost=${p}
-  send_billing_balance
+  total_balance=$(echo "scale=4; ${total_balance} + ${billing_balance}" | bc -l)
 
-  log_debug "billing balance: ${billing_balance} days_elapsed: ${days_total}"
+  log_debug "billing balance: ${total_balance} days_elapsed: ${days_total}"
 }
 
 if [ "${wallet_etl_billing}" == "true" ]; then
@@ -39,6 +40,7 @@ if [ "${wallet_etl_billing}" == "true" ]; then
 
   for c in ${client_ids}; do
     client_id=${c}
+    total_balance=0
 
     get_prometheus_pg_host
 
@@ -56,6 +58,9 @@ if [ "${wallet_etl_billing}" == "true" ]; then
         days_total=0
         wallet_data
       done
+
+      pghost=${p}
+      send_billing_balance
     done
   done
 else
