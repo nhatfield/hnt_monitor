@@ -77,12 +77,12 @@ send_payload() {
                      payload_url="${es_url}/${index}/_doc/${document}"
                      ;;
                    etl.billing.process)
-                     index="hnt-account"
+                     index="hnt-admin"
                      document="${endpoint}"
                      payload_url="${es_url}/${index}/_doc/${document}"
                      ;;
                    etl.billing.balance)
-                     index="hnt-account"
+                     index="hnt-admin"
                      document="${endpoint}"
                      payload_url="${es_url}/${index}/_doc/${document}"
                      ;;

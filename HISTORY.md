@@ -2,6 +2,7 @@ vNext
 
 - **Enhancement** - increase collector frequency on rewards and activity
 - **Enhancement** - add account balance to users backend
+- **Enhancement** - move billing index to its own
 
 # 7.2.0
 
