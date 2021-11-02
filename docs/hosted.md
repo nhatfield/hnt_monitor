@@ -2,7 +2,7 @@
 
 Why hosted? Here's what you get...
 
-**The basics**
+**The Basics**
 
 * Non-shared tenant environment
 * Encrypted transactions over SSL
@@ -15,14 +15,17 @@ Why hosted? Here's what you get...
 
 **The Bonus**
 
-* Get upates without needed to manually update your personal stack
+* Get upates without needing to manually update your personal stack
 * Get help with creating dashboards and new visualizations for your fleet
 * Get help with creating alerts, setting thresholds, and actionable descriptions
 * Have data to help troubleshoot with your vendor to quickly figure out anomalies
 * Dont have to worry about scaling services to keep up with your growing fleet
-* Support available for your fleet management
+* Support is available for your fleet management
 
-If you're serious about your fleet's performance, then you will want a tool that can help you manage your miners uptime as well as keep you informed of their performance on the blockchain. Stop having an offline miner for multiple days that is not collecting coin for you.
+If you're serious about your fleet's performance, then you will want a tool that can help you manage your miners uptime as well as keep you informed of their performance on the blockchain, all in a single UI. Stop daling with an offline miner for multiple days that is not collecting coins for you.
+
+<br>
+<br>
 
 ## Operations
 
