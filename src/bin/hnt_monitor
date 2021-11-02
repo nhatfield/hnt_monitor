@@ -24,15 +24,14 @@ init=true
 
 set_home
 get_configs
-send_addresses_elasticsearch
-sleep 1
-
 
 make_dir ${logpath}
 make_dir ${data_dir}
 
-
 log_info "initializing hnt monitor version [$(grep '#' /HISTORY.md 2>/dev/null | sed 's%# %%' | sort -V | tail -1)]"
+send_addresses_elasticsearch
+sleep 5
+
 log_info "removing stale locks"
 rm_locks
 
@@ -44,8 +43,6 @@ run() {
       . "${l}"
     done
     get_configs   
-    send_addresses_elasticsearch
- 
 
     if [ "${init}" == "true" ] && [ "${collector_backfill_enabled}" == "true" ]; then
       when="5 days ago"
