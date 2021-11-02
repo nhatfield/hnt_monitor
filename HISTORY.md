@@ -1,8 +1,11 @@
 vNext
 
+# 7.3.0
+
 - **Enhancement** - increase collector frequency on rewards and activity
 - **Enhancement** - add account balance to users backend
 - **Enhancement** - move billing index to its own
+- **Enhancement** - limit billing balance minimum to 0 instead of negative
 
 # 7.2.0
 
