@@ -59,8 +59,21 @@ if [ "${wallet_etl_billing}" == "true" ]; then
         wallet_data
       done
 
+      if [ "$(echo "${total_balance}" | cut -c 1-5)" == "0.000" ]; then
+        total_balance=0
+      fi
+
+      payload="{ \"balance\": \"${total_balance}\" }"
+      endpoint=balance
+      if [[ "${p}" == *"hntmonitor.com"* ]]; then
+        es_url=${p}
+      else
+        es_url=${elasticsearch_url}
+      fi
+
       pghost=${p}
       send_billing_balance
+      send_payload write "${data_dir}/${client_id}/${name}"
     done
   done
 else
