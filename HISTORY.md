@@ -1,5 +1,9 @@
 vNext
 
+- **Enhancement** - improve warning message output to include hotspot address
+- **Enhancement** - update READEME to include hosted pricing and support
+- **Enhancement** - update addresses only update on collector startup
+
 # 7.3.0
 
 - **Enhancement** - increase collector frequency on rewards and activity

@@ -28,7 +28,7 @@ get() {
       exit
     fi
 
-    log_warn "bad response from the api gateway while retrieving ${endpoint} data. Retrying in 5 seconds..."
+    log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload
