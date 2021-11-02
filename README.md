@@ -303,6 +303,7 @@ $> docker run -it --rm hnt_monitor help
 - [Create Dashboards](docs/dashboards.md)
 - [Create Alerts](docs/alerts.md)
 - [Advanced Settings](docs/advanced.md)
+- [Hosted Solution](docs/hosted.md)
 <br />
 
 ## Tips & Donations
