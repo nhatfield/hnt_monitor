@@ -73,7 +73,12 @@ get_addresses() {
       fi
   
       for c in ${client_ids}; do
-        client_url=$(jq -r --arg c "${c}" 'select(.client_id == $c) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the clients prometheus gateway"
+        get_url=$(jq -r --arg c "${c}" 'select(.client_id == $c) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the clients prometheus gateway"
+        if [[ "${get_url}" == *"hntmonitor.com"* ]] || [[ "${get_url}" == *"nginx-api"* ]]; then
+          client_url=${get_url}
+        else
+          client_url=${elasticsearch_url}
+        fi
         get_client_config
 
         if [ "${addresses}" ]; then
