@@ -67,10 +67,7 @@ get_addresses() {
       get_addresses_elasticsearch
   
       client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the hotspot client_ids"
-      
-      if [ "${id}" == "etl.block.height" ]; then
-        prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
-      fi
+      prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
   
       for c in ${client_ids}; do
         get_url=$(jq -r --arg c "${c}" 'select(.client_id == $c) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the clients prometheus gateway"

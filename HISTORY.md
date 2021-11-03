@@ -1,5 +1,9 @@
 vNext
 
+# 7.4.2
+
+- **BugFix** - block height missing prometheus gateway
+
 # 7.4.1
 
 - **BugFix** - jobs break when supplying multiple prometheus endpoints
