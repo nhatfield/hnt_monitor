@@ -2,9 +2,9 @@ vNext
 
 - **Enhancement** - improve warning message output to include hotspot address
 - **Enhancement** - update READEME to include hosted pricing and support
-- **Enhancement** - update addresses only update on collector startup
-- **Enhancement** - collector configs from account index
-- **Enhancement** - get_addresses at the master scheduler
+- **Enhancement** - addresses only update on collector startup
+- **Enhancement** - get collector configs from account index
+- **Enhancement** - get addresses at the master scheduler
 
 # 7.3.0
 
