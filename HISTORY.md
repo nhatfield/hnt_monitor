@@ -1,5 +1,7 @@
 vNext
 
+# 7.4.0
+
 - **Enhancement** - improve warning message output to include hotspot address
 - **Enhancement** - update READEME to include hosted pricing and support
 - **Enhancement** - addresses only update on collector startup
