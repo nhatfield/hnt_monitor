@@ -57,75 +57,97 @@ get_addresses() {
   fi
 
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
-    if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]]; then
-      bobcat_ips=
-      longap_addresses=
-      nebra_ips=
-      sensecap_serial_numbers=
-      wallet_client_addresses=
+    bobcat_ips=
+    longap_addresses=
+    nebra_ips=
+    sensecap_serial_numbers=
+    wallet_client_addresses=
  
-      get_addresses_elasticsearch
-  
-      client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the hotspot client_ids"
-      prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
-  
-      for c in ${client_ids}; do
-        get_url=$(jq -r --arg c "${c}" 'select(.client_id == $c) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the clients prometheus gateway"
-        if [[ "${get_url}" == *"hntmonitor.com"* ]] || [[ "${get_url}" == *"nginx-api"* ]]; then
-          client_url=${get_url// */}
-        else
-          client_url=${elasticsearch_url}
-        fi
-        get_client_config
+    get_addresses_elasticsearch
 
-        if [ "${addresses}" ]; then
-          addresses="${addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.addresses != null) | .addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        else
-          addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.addresses != null) | .addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        fi
-  
-        if [ "${pg_hosts}" ]; then
-          pg_hosts="${pg_hosts} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')" 
-        else
-          pg_hosts="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        fi
+    client_ids=$(jq -r '.client_id' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the hotspot client_ids"
+    prometheus_pg_host="$(jq -r 'select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null)" || log_err "could not get the clients prometheus pg hosts"
 
-        if [ "${bobcat_ips}" ]; then
-          bobcat_ips="${bobcat_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.bobcat_ips != null) | .bobcat_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        else
-          bobcat_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.bobcat_ips != null) | .bobcat_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        fi
-      
-        if [ "${longap_addresses}" ]; then
-          longap_addresses="${longap_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.longap_addresses != null) | .longap_addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        else 
-          longap_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.longap_addresses != null) | .longap_addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        fi
-      
-        if [ "${nebra_ips}" ]; then
-          nebra_ips="${nebra_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.nebra_ips != null) | .nebra_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        else
-          nebra_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.nebra_ips != null) | .nebra_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        fi
-      
-        if [ "${sensecap_serial_numbers}" ]; then
-          sensecap_serial_numbers="${sensecap_serial_numbers} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.sensecap_serial_numbers != null) | .sensecap_serial_numbers' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        else
-          sensecap_serial_numbers="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.sensecap_serial_numbers != null) | .sensecap_serial_numbers' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        fi
+    for c in ${client_ids}; do
+      get_url=$(jq -r --arg c "${c}" 'select(.client_id == $c) | .prometheus_pg_host' <<< "${es_addresses_payload}" 2>/dev/null | sort -u) || log_err "could not get the clients prometheus gateway"
+      if [[ "${get_url}" == *"hntmonitor.com"* ]] || [[ "${get_url}" == *"nginx-api"* ]]; then
+        client_url=${get_url// */}
+      else
+        client_url=${elasticsearch_url}
+      fi
+      get_client_config
 
-        if [ "${wallet_client_addresses}" ]; then
-          wallet_client_addresses="${wallet_client_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.wallet != null) | .wallet' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        else
-          wallet_client_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.wallet != null) | .wallet' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
-        fi
-      done
+      if [ "${addresses}" ]; then
+        addresses="${addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.addresses != null) | .addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      else
+        addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.addresses != null) | .addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      fi
 
-      log_debug "get.addresses response [hotspots: ${addresses//###/ }] [prometheus_gw: ${pg_hosts//###/ }] [bobcats: ${bobcat_ips//###/ }] [longaps: ${longap_addresses//###/ }] [nebras: ${nebra_ips//###/ }] [sensecaps: ${sensecap_serial_numbers//###/ }] [wallets: ${wallet_client_addresses}]"
-    else
-      get_miner_addresses
-      get_wallet_addresses
+      if [ "${pg_hosts}" ]; then
+        pg_hosts="${pg_hosts} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')" 
+      else
+        pg_hosts="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.prometheus_pg_host != null) | .prometheus_pg_host' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      fi
+
+      if [ "${bobcat_ips}" ]; then
+        bobcat_ips="${bobcat_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.bobcat_ips != null) | .bobcat_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      else
+        bobcat_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.bobcat_ips != null) | .bobcat_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      fi
+    
+      if [ "${longap_addresses}" ]; then
+        longap_addresses="${longap_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.longap_addresses != null) | .longap_addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      else 
+        longap_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.longap_addresses != null) | .longap_addresses' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      fi
+    
+      if [ "${nebra_ips}" ]; then
+        nebra_ips="${nebra_ips} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.nebra_ips != null) | .nebra_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      else
+        nebra_ips="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.nebra_ips != null) | .nebra_ips' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      fi
+    
+      if [ "${sensecap_serial_numbers}" ]; then
+        sensecap_serial_numbers="${sensecap_serial_numbers} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.sensecap_serial_numbers != null) | .sensecap_serial_numbers' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      else
+        sensecap_serial_numbers="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.sensecap_serial_numbers != null) | .sensecap_serial_numbers' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      fi
+
+      if [ "${wallet_client_addresses}" ]; then
+        wallet_client_addresses="${wallet_client_addresses} ${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.wallet != null) | .wallet' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      else
+        wallet_client_addresses="${c}:$(jq -r --arg c "${c}" 'select(.client_id == $c) | select(.wallet != null) | .wallet' <<< "${client_config_payload}" 2>/dev/null | sort -u | sed 's% %###%g')"
+      fi
+    done
+
+    if [[ "${elasticsearch_url}" == *"hntmonitor"* ]] || [[ "${elasticsearch_url}" == *"nginx-api"* ]]; then
+      if [ "${bobcat_ips}" ]; then
+        bobcat_collector_enabled=true
+        log_debug "setting bobcat_collector_enabled [true]"
+      fi
+    
+      if [ "${longap_addresses}" ]; then
+        longap_collector_enabled=true
+        log_debug "setting longap_collector_enabled [true]"
+      fi
+    
+      if [ "${nebra_ips}" ]; then
+        nebra_collector_enabled=true
+        log_debug "setting nebra_collector_enabled [true]"
+      fi
+    
+      if [ "${sensecap_serial_numbers}" ]; then
+        sensecap_collector_enabled=true
+        log_debug "setting sensecap_collector_enabled [true]"
+      fi
+
+      if [ "${syncrobit_ips}" ]; then
+        syncrobit_collector_enabled=true
+        log_debug "setting syncrobit_collector_enabled [true]"
+      fi
     fi
+
+    log_debug "get.addresses response [hotspots: ${addresses//###/ }] [prometheus_gw: ${pg_hosts//###/ }] [bobcats: ${bobcat_ips//###/ }] [longaps: ${longap_addresses//###/ }] [nebras: ${nebra_ips//###/ }] [sensecaps: ${sensecap_serial_numbers//###/ }] [wallets: ${wallet_client_addresses}]"
   fi
 
 }
@@ -163,11 +185,16 @@ get_wallet_addresses() {
 
 get_addresses_elasticsearch() {
   if [[ "${collector_storage_profile}" == *"elasticsearch"* ]] && [ "${elasticsearch_url}" ]; then
+    if [[ "${elasticsearch_url}" == *"hntmonitor"* ]] || [[ "${elasticsearch_url}" == *"nginx-api"* ]]; then
+      add_index="hnt-account"
+    else
+      add_index="hnt-"
+    fi
     get_curl_options
     q=account
     n=0
 
-    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?filter_path=hits.hits._source&size=${elasticsearch_item_query_limit}&q=_id:${q}")
+    es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${add_index}*/_search?filter_path=hits.hits._source&size=${elasticsearch_item_query_limit}&q=_id:${q}")
 
     while [ ! "$(elasticserarch_query_success_payload)" ]; do
       if [ "${n}" -ge "${api_retry_threshold}" ]; then
@@ -178,7 +205,7 @@ get_addresses_elasticsearch() {
       log_warn "bad response from the elasticsearch api while retrieving [${q}] data. Retrying in 5 seconds..."
       ((n++)) || true
       sleep "${api_retry_wait}"
-      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-*/_search?filter_path=hits.hits._source&size=${elasticsearch_item_query_limit}&q=_id:${q}")
+      es_query_payload=$(curl ${curl_options} -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/${add_index}*/_search?filter_path=hits.hits._source&size=${elasticsearch_item_query_limit}&q=_id:${q}")
     done
 
     es_addresses_payload=$(jq '.hits.hits[]._source' <<< ${es_query_payload})
