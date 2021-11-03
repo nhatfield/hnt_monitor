@@ -298,12 +298,13 @@ $> docker run -it --rm hnt_monitor help
 
 ## What's next
 
-- [Scheduling](docs/scheduling.md)
-- [Setup Grafana](docs/setup.md)
-- [Create Dashboards](docs/dashboards.md)
-- [Create Alerts](docs/alerts.md)
-- [Advanced Settings](docs/advanced.md)
-- [Hosted Solution](docs/hosted.md)
+### [Scheduling](docs/scheduling.md)
+### [Setup Grafana](docs/setup.md)
+### [Create Dashboards](docs/dashboards.md)
+### [Create Alerts](docs/alerts.md)
+### [Advanced Settings](docs/advanced.md)
+### [Hosted Solution](docs/hosted.md)
+
 <br />
 
 ## Tips & Donations
