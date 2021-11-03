@@ -15,7 +15,7 @@ Why hosted? Here's what you get...
 
 **The Bonus**
 
-* Get upates without needing to manually update your personal stack
+* Get updates without needing to manually manage your personal stack
 * Get help with creating dashboards and new visualizations for your fleet
 * Get help with creating alerts, setting thresholds, and actionable descriptions
 * Have data to help troubleshoot with your vendor to quickly figure out anomalies

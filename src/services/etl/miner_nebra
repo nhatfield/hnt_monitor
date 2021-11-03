@@ -22,8 +22,6 @@ nebra_data() {
 }
 
 if [ "${nebra_monitor}" == "true" ]; then
-  get_addresses
-
   for address in ${nebra_ips}; do
     addr=${address//*:/}
     addr=${addr//###/ }

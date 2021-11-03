@@ -42,7 +42,6 @@ get() {
 
 
 if [ "${miner_collector_enabled}" == "true" ] && [ "${longap_collector_enabled}" == "true" ]; then
-  get_addresses
   for address in ${longap_addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }

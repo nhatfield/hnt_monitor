@@ -22,8 +22,6 @@ longap_data() {
 }
 
 if [ "${longap_monitor}" == "true" ]; then
-  get_addresses
-
   for address in ${longap_addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }

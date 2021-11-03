@@ -23,7 +23,6 @@ block_height() {
 
 if [ "${helium_monitor}" == "true" ] && [ "${block_height_etl}" == "true" ]; then
   name=helium
-  get_addresses
   block_height
 else
   log_debug "Blocks monitor collection is disabled. Hint: (helium_monitor=${helium_monitor}; block_height_etl=${block_height_etl})"

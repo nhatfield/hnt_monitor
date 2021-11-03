@@ -118,7 +118,6 @@ if [ "${wallet_etl_client}" == "true" ]; then
   one_day_ago=$(date -u --date="1 days ago" +%s)
   seven_days_ago=$(date -u --date="7 days ago" +%s)
   thirty_days_ago=$(date -u --date="30 days ago" +%s)
-  get_addresses
 
   log_info "processing billing data"
 

@@ -41,8 +41,6 @@ get() {
 }
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${info_collector_enabled}" == "true" ]; then
-  get_addresses
-
   if [ ! "${addresses}" ]; then
     log_debug "no hotspot addresses have been found"
   fi

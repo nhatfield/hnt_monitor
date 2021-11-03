@@ -63,8 +63,6 @@ get() {
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${wallet_collector_client_enabled}" == "true" ]; then
   current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
 
-  get_addresses
-
   if [ ! "${wallet_client_addresses}" ]; then
     log_debug "no client walletaddresses have been found"
   fi
