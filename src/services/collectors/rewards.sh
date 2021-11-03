@@ -62,8 +62,6 @@ get() {
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${reward_collector_enabled}" == "true" ]; then
   current_date=$(date +%Y-%m-%dT%H:%M:%S -u --date="${when}")
-  get_addresses
-
   if [ ! "${addresses}" ]; then
     log_debug "no hotspot addresses have been found"
   fi

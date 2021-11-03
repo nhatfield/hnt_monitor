@@ -49,7 +49,6 @@ get() {
 
 
 if [ "${miner_collector_enabled}" == "true" ] && [ "${bobcat_collector_enabled}" == "true" ]; then
-  get_addresses
   for address in ${bobcat_ips}; do
     addr=${address//*:/}
     addr=${addr//###/ }

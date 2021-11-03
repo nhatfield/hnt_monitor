@@ -49,7 +49,6 @@ get() {
 
 
 if [ "${miner_collector_enabled}" == "true" ] && [ "${nebra_collector_enabled}" == "true" ]; then
-  get_addresses
   for address in ${nebra_ips}; do
     addr=${address//*:/}
     addr=${addr//###/ }

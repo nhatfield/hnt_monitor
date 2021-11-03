@@ -90,7 +90,6 @@ if [ "${hotspot_monitor}" == "true" ] && [ "${activity_challenged_beacon_etl}" =
   seven_days_ago=$(date -u --date="7 days ago" +%s)
   thirty_days_ago=$(date -u --date="30 days ago" +%s)
   lock_file=".${id}.lock"
-  get_addresses
 
   for address in ${addresses}; do
     addr=${address//*:/}

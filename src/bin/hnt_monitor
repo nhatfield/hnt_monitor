@@ -43,6 +43,7 @@ run() {
       . "${l}"
     done
     get_configs   
+    get_addresses
 
     if [ "${init}" == "true" ] && [ "${collector_backfill_enabled}" == "true" ]; then
       when="5 days ago"

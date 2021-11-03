@@ -22,8 +22,6 @@ relayed_status() {
 
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${relayed_status_etl}" == "true" ]; then
-  get_addresses
-
   for address in ${addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }

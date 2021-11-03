@@ -22,8 +22,6 @@ sensecap_data() {
 }
 
 if [ "${sensecap_monitor}" == "true" ]; then
-  get_addresses
-
   for address in ${sensecap_serial_numbers}; do
     addr=${address//*:/}
     addr=${addr//###/ }

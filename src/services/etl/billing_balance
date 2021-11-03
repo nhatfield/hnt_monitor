@@ -35,7 +35,6 @@ wallet_data() {
 
 if [ "${wallet_etl_billing}" == "true" ]; then
   now_epoch=$(date +%s)
-  get_addresses
   get_billing_wallet_elasticsearch
 
   for c in ${client_ids}; do

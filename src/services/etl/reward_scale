@@ -21,8 +21,6 @@ reward_scale() {
 }
 
 if [ "${hotspot_monitor}" == "true" ] && [ "${reward_scale_etl}" == "true" ]; then
-  get_addresses
-
   for address in ${addresses}; do
     addr=${address//*:/}
     addr=${addr//###/ }
