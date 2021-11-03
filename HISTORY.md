@@ -1,5 +1,9 @@
 vNext
 
+# 7.4.1
+
+- **BugFix** - jobs break when supplying multiple prometheus endpoints
+
 # 7.4.0
 
 - **Enhancement** - improve warning message output to include hotspot address
