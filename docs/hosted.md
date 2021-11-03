@@ -22,7 +22,7 @@ Why hosted? Here's what you get...
 * Dont have to worry about scaling services to keep up with your growing fleet
 * Support is available for your fleet management
 
-If you're serious about your fleet's performance, then you will want a tool that can help you manage your miners uptime as well as keep you informed of their performance on the blockchain, all in a single UI. Stop daling with an offline miner for multiple days that is not collecting coins for you.
+If you're serious about your fleet's performance, then you will want a tool that can help you manage your miners uptime as well as keep you informed of their performance on the blockchain, all in a single UI. Stop dealing with an offline miner for multiple days that is not collecting coins for you.
 
 <br>
 <br>
@@ -62,3 +62,5 @@ HNT: 13Vazr2mTQSbu2wBGAkqpaLvJQEdSv5aMd3qpdXFJSw2pfNpqC4
 ## Contact
 
 * **Email:** - support@hntmonitor.com 
+
+
