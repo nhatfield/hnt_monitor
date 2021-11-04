@@ -7,6 +7,7 @@ get_configs() {
     elasticsearch_url=${prometheus_pg_host// */}
     collector_storage_profile=elasticsearch
     etl_enabled=false
+    elasticsearch_logging_enabled=true
   fi
 
   if [ "${bobcat_ips}" ]; then
@@ -37,6 +38,10 @@ get_configs() {
 
   if [ ! "${wallet_billing_backend_url}" ]; then
     wallet_billing_backend_url=${elasticsearch_url}
+  fi
+
+  if [ ! "${pg_admin_host}" ]; then
+    pg_admin_host=${prometheus_pg_host// */}
   fi
 }
 

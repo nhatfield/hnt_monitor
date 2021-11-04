@@ -1,25 +1,77 @@
 log_info() {
   msg=${1:-""}
   client_id=${client_id:-"local"}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [INFO] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+  level=INFO
+  ((info_count++)) || true
+
+  if [[ "${elasticsearch_url}" == *"hntmonitor"* ]] || [[ "${elasticsearch_url}" == *"nginx-api"* ]] || [ "${elasticsearch_logging_enabled}" == "true" ]; then
+    temp_log_file="${level}.${client_id}.$(date +%s)"
+    log_es > /tmp/"${temp_log_file}"
+    log_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-collectorlog-$(date +%Y.%m.%d)/_doc" -d @/tmp/"${temp_log_file}") || true
+    rm -f /tmp/"${temp_log_file}"
+  else
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [${level}] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+  fi
 }
 
 log_warn() {
   msg=${1:-""}
   client_id=${client_id:-"local"}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [WARN] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+  level=WARN
+  ((warn_count++)) || true
+
+  if [[ "${elasticsearch_url}" == *"hntmonitor"* ]] || [[ "${elasticsearch_url}" == *"nginx-api"* ]] || [ "${elasticsearch_logging_enabled}" == "true" ]; then
+    temp_log_file="${level}.${client_id}.$(date +%s)"
+    log_es > /tmp/"${temp_log_file}"
+    log_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-collectorlog-$(date +%Y.%m.%d)/_doc" -d @/tmp/"${temp_log_file}") || true
+    rm -f /tmp/"${temp_log_file}"
+  else
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [${level}] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+  fi
 }
 
 log_err() {
   msg=${1:-""}
   client_id=${client_id:-"local"}
-  echo "$(date +%Y-%m-%dT%H:%M:%S) [ERROR] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+  level=ERROR
+  ((err_count++)) || true
+
+  if [[ "${elasticsearch_url}" == *"hntmonitor"* ]] || [[ "${elasticsearch_url}" == *"nginx-api"* ]] || [ "${elasticsearch_logging_enabled}" == "true" ]; then
+    temp_log_file="${level}.${client_id}.$(date +%s)"
+    log_es > /tmp/"${temp_log_file}"
+    log_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-collectorlog-$(date +%Y.%m.%d)/_doc" -d @/tmp/"${temp_log_file}") || true
+    rm -f /tmp/"${temp_log_file}"
+  else
+    echo "$(date +%Y-%m-%dT%H:%M:%S) [${level}] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+  fi
 }
 
 log_debug() {
   msg=${1:-""}
   client_id=${client_id:-"local"}
+  level=DEBUG
+
   if [ "${debug}" == "true" ]; then
-    echo -e "$(date +%Y-%m-%dT%H:%M:%S) [DEBUG] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+    if [[ "${elasticsearch_url}" == *"hntmonitor"* ]] || [[ "${elasticsearch_url}" == *"nginx-api"* ]] || [ "${elasticsearch_logging_enabled}" == "true" ]; then
+      temp_log_file="${level}.${client_id}.$(date +%s)"
+      log_es > /tmp/"${temp_log_file}"
+      log_post=$(curl ${curl_options} -X POST -H "apikey: ${client_api_key}" -H "Content-Type: application/json" "${elasticsearch_url}/hnt-collectorlog-$(date +%Y.%m.%d)/_doc" -d @/tmp/"${temp_log_file}") || true
+      rm -f /tmp/"${temp_log_file}"
+    else
+      echo -e "$(date +%Y-%m-%dT%H:%M:%S) [${level}] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
+    fi
   fi
+}
+
+log_es() {
+cat <<EOF
+{
+  "level": "${level}",
+  "thread": "${id}",
+  "clientId": "${client_id}",
+  "@timestamp": "$(date +%Y-%m-%dT%H:%M:%S)",
+  "docId": "collectorLog",
+  "message": "${msg}"
+}
+EOF
 }

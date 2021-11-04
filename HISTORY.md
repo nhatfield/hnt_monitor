@@ -1,5 +1,7 @@
 vNext
 
+- **Enhancement** - add option to send hnt logs to elasticsearch
+
 # 7.4.2
 
 - **BugFix** - block height missing prometheus gateway
