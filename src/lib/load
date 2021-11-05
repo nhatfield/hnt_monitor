@@ -475,6 +475,26 @@ EOF
   fi
 }
 
+send_system_metrics() {
+  get_curl_options
+  if [ "${pg_admin_host}" ]; then
+    log_info "Sending data to prometheus pushgateway ${pg_admin_host}"
+    cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pg_admin_host}/metrics/job/${project}_system_metrics
+# HELP ${project}_log_info_count of the hnt monitor container
+# TYPE ${project}_log_info_count gauge
+${project}_log_info_count{instance="$(hostname)",system_tag="${system_tag}"} ${info_count}
+# HELP ${project}_log_warn_count of the hnt monitor container
+# TYPE ${project}_log_warn_count gauge
+${project}_log_warn_count{instance="$(hostname)",system_tag="${system_tag}"} ${warn_count}
+# HELP ${project}_log_err_count of the hnt monitor container
+# TYPE ${project}_log_err_count gauge
+${project}_log_err_count{instance="$(hostname)",system_tag="${system_tag}"} ${err_count}
+EOF
+
+    log_info "[system] data pushed to ${pg_admin_host}/metrics/job/${project}_system"
+  fi
+}
+
 send_witnessed_count() {
   get_curl_options
   if [ "${pghost}" ] && [ ! "${name}" == "unknown" ]; then

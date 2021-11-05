@@ -22,8 +22,16 @@ done
 id=main
 init=true
 
+#####################
+# Set system metrics
+#
+info_count=0
+warn_count=0
+err_count=0
+
 set_home
 get_configs
+get_curl_options
 
 make_dir ${logpath}
 make_dir ${data_dir}
@@ -71,7 +79,7 @@ run() {
     fi
 
     sleep ${master_schedule}
-
+    send_system_metrics
   done
 }
 
