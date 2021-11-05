@@ -76,6 +76,7 @@ Minimum system resources to run this stack are. This will support 5 miners with 
 * CoreI5
 * 6GB RAM
 * 7200 RPM Disk
+* x86 / x64 systems (no ARM support)
 <br />
 
 ## Prerequisite
