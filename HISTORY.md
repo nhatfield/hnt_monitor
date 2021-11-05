@@ -1,5 +1,7 @@
 vNext
 
+# 7.5.0
+
 - **Enhancement** - add log counts to system metrics
 - **Enhancement** - add option to send hnt logs to elasticsearch
 
