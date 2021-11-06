@@ -482,13 +482,22 @@ send_system_metrics() {
     cat <<EOF | curl ${curl_options} -H "apikey: ${client_api_key}" --data-binary @- ${pg_admin_host}/metrics/job/${project}_system_metrics
 # HELP ${project}_log_info_count of the hnt monitor container
 # TYPE ${project}_log_info_count gauge
-${project}_log_info_count{instance="$(hostname)",system_tag="${system_tag}"} ${info_count}
+${project}_log_info_count{instance="$(hostname)",system_tag="${system_tag}",version="${version}"} ${info_count}
 # HELP ${project}_log_warn_count of the hnt monitor container
 # TYPE ${project}_log_warn_count gauge
-${project}_log_warn_count{instance="$(hostname)",system_tag="${system_tag}"} ${warn_count}
+${project}_log_warn_count{instance="$(hostname)",system_tag="${system_tag}",version="${version}"} ${warn_count}
 # HELP ${project}_log_err_count of the hnt monitor container
 # TYPE ${project}_log_err_count gauge
-${project}_log_err_count{instance="$(hostname)",system_tag="${system_tag}"} ${err_count}
+${project}_log_err_count{instance="$(hostname)",system_tag="${system_tag}",version="${version}"} ${err_count}
+# HELP ${project}_log_info_count_total of the hnt monitor container
+# TYPE ${project}_log_info_count_total gauge
+${project}_log_info_count_total{instance="$(hostname)",system_tag="${system_tag}",version="${version}"} ${total_info_count}
+# HELP ${project}_log_warn_count_total of the hnt monitor container
+# TYPE ${project}_log_warn_count_total gauge
+${project}_log_warn_count_total{instance="$(hostname)",system_tag="${system_tag}",version="${version}"} ${total_warn_count}
+# HELP ${project}_log_err_count_total of the hnt monitor container
+# TYPE ${project}_log_err_count_total gauge
+${project}_log_err_count_total{instance="$(hostname)",system_tag="${system_tag}",version="${version}"} ${total_err_count}
 EOF
 
     log_info "[system] data pushed to ${pg_admin_host}/metrics/job/${project}_system"

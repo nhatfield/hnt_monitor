@@ -1,0 +1,39 @@
+set_system_metrics() {
+  info_count=0
+  warn_count=0
+  err_count=0
+}
+
+set_system_metrics_totals() {
+  echo "0" > "${data_dir}"/total_info_count
+  echo "0" > "${data_dir}"/total_warn_count
+  echo "0" > "${data_dir}"/total_err_count
+}
+
+get_system_metrics_total() {
+if [ "$(< "${data_dir}"/total_info_count)" ]; then
+  total_info_count=$(< "${data_dir}"/total_info_count)
+else
+  total_info_count=0
+fi
+
+if [ "$(< "${data_dir}"/total_warn_count)" ]; then
+  total_warn_count=$(< "${data_dir}"/total_warn_count)
+else
+  total_warn_count=0
+fi
+
+if [ "$(< "${data_dir}"/total_err_count)" ]; then
+  total_err_count=$(< "${data_dir}"/total_err_count)
+else
+  total_err_count=0
+fi
+
+total_info_count=$((total_info_count + info_count))
+total_warn_count=$((total_warn_count + warn_count))
+total_err_count=$((total_err_count + err_count))
+
+echo "${total_info_count}" > "${data_dir}"/total_info_count
+echo "${total_warn_count}" > "${data_dir}"/total_warn_count
+echo "${total_err_count}" > "${data_dir}"/total_err_count
+}
