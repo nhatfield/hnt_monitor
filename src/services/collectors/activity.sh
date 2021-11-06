@@ -31,6 +31,7 @@ get() {
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
+    get_system_metrics_total
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload
@@ -47,6 +48,8 @@ get() {
     if [ "${n}" -ge ${cursor_threshold} ]; then
       log_err "api is having problems or there are too many cursors to traverse"
       rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
+      get_system_metrics_total
+      send_system_metrics
       exit
     fi
     ((n++)) || true
@@ -60,6 +63,7 @@ get() {
 
   sleep "${activity_interval}"
   rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
+  get_system_metrics_total
 }
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${activity_collector_enabled}" == "true" ]; then

@@ -30,6 +30,7 @@ get() {
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
+    get_system_metrics_total
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload
@@ -40,6 +41,7 @@ get() {
 
   sleep "${bobcat_status_interval}"
   rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
+  get_system_metrics_total
 }
 
 
