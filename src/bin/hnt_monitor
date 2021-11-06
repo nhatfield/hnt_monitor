@@ -25,11 +25,11 @@ init=true
 set_home
 get_configs
 get_curl_options
-set_system_metrics
-set_system_metrics_totals
 
 make_dir ${logpath}
 make_dir ${data_dir}
+set_system_metrics
+set_system_metrics_totals
 
 version=$(grep '#' /HISTORY.md 2>/dev/null | sed 's%# %%' | sort -V | tail -1)
 
