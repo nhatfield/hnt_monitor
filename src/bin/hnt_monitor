@@ -22,21 +22,18 @@ done
 id=main
 init=true
 
-#####################
-# Set system metrics
-#
-info_count=0
-warn_count=0
-err_count=0
-
 set_home
 get_configs
 get_curl_options
 
 make_dir ${logpath}
 make_dir ${data_dir}
+set_system_metrics
+set_system_metrics_totals
 
-log_info "initializing hnt monitor version [$(grep '#' /HISTORY.md 2>/dev/null | sed 's%# %%' | sort -V | tail -1)]"
+version=$(grep '#' /HISTORY.md 2>/dev/null | sed 's%# %%' | sort -V | tail -1)
+
+log_info "initializing hnt monitor version [${version}]"
 send_addresses_elasticsearch
 sleep 5
 
@@ -45,6 +42,8 @@ rm_locks
 
 run() {
   while true; do
+    set_system_metrics
+
     global_day=$(date +%Y-%m-%d)
     # Set libs
     for l in ../lib/*; do
@@ -79,6 +78,8 @@ run() {
     fi
 
     sleep ${master_schedule}
+
+    get_system_metrics_total
     send_system_metrics
   done
 }

@@ -25,6 +25,8 @@ get() {
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
       rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
+      get_system_metrics_total
+      send_system_metrics
       exit
     fi
 
