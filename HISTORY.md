@@ -1,5 +1,7 @@
 vNext
 
+# 7.6.0
+
 - **Enhancement** - add totals to log counts
 - **Enhancement** - add container log version
 - **Enhancement** - log counts reset to 0 on each run
