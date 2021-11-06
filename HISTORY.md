@@ -1,5 +1,7 @@
 vNext
 
+# 7.7.0
+
 - **Enhancement** - update to send warnings per event
 
 # 7.6.0
