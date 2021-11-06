@@ -30,6 +30,8 @@ get() {
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
+    get_system_metrics_total
+    send_system_metrics
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload
@@ -40,6 +42,7 @@ get() {
 
   sleep "${info_interval}"
   rm_lock "${data_dir}/${client_id}/${a}/${lock_file}"
+  get_system_metrics_total
 }
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${info_collector_enabled}" == "true" ]; then
