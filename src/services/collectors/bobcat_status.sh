@@ -31,6 +31,7 @@ get() {
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
     get_system_metrics_total
+    send_system_metrics
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload
