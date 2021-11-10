@@ -1,5 +1,7 @@
 vNext
 
+- **Enhancement** - update to send all log counts per event
+
 # 7.7.0
 
 - **Enhancement** - update to send warnings per event

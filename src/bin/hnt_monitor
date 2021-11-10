@@ -78,9 +78,6 @@ run() {
     fi
 
     sleep ${master_schedule}
-
-    get_system_metrics_total
-    send_system_metrics
   done
 }
 

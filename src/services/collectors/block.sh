@@ -24,14 +24,10 @@ get() {
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
       rm_lock "${data_dir}/${lock_file}"
-      get_system_metrics_total
-      send_system_metrics
       exit
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data. Retrying in 5 seconds..."
-    get_system_metrics_total
-    send_system_metrics
     ((n++)) || true
     sleep "${api_retry_wait}"
     get_payload
@@ -42,7 +38,6 @@ get() {
 
   sleep "${blocks_interval}"
   rm_lock "${data_dir}/${lock_file}"
-  get_system_metrics_total
 }
 
 if [[ ! "${elasticsearch_url}" == *"hntmonitor.com"* ]] && [ "${block_height_collector_enabled}" == "true" ]; then

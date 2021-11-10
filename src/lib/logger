@@ -12,6 +12,9 @@ log_info() {
   else
     echo "$(date +%Y-%m-%dT%H:%M:%S) [${level}] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
   fi
+
+  get_system_metrics_total
+  send_system_metrics
 }
 
 log_warn() {
@@ -28,6 +31,9 @@ log_warn() {
   else
     echo "$(date +%Y-%m-%dT%H:%M:%S) [${level}] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
   fi
+
+  get_system_metrics_total
+  send_system_metrics
 }
 
 log_err() {
@@ -44,6 +50,9 @@ log_err() {
   else
     echo "$(date +%Y-%m-%dT%H:%M:%S) [${level}] [$id] [${client_id}] - ${msg}" >> "${logpath}/${logfile}"
   fi
+
+  get_system_metrics_total
+  send_system_metrics
 }
 
 log_debug() {
