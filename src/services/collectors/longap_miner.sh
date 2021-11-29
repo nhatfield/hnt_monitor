@@ -23,8 +23,8 @@ get() {
   while [ ! "$(longap_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
-      rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-      exit
+      error=true
+      break
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
@@ -33,8 +33,10 @@ get() {
     get_payload
   done
 
-  send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}"
-  log_info "${miner} miner [${a}] ${endpoint} ready to process"
+  if [ ! "${error}" == "true" ]; then
+    send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}"
+    log_info "${miner} miner [${a}] ${endpoint} ready to process"
+  fi
 
   sleep "${longap_data_interval}"
   rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
@@ -50,10 +52,14 @@ if [ "${miner_collector_enabled}" == "true" ] && [ "${longap_collector_enabled}"
     for a in ${addr}; do
       make_dir "${data_dir}/${client_id}/miner.${miner}"
   
+      ttl=${longap_data_interval}
       lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-      get &
-  
-      sleep 1
+
+      if [ "${ready}" == "true" ]; then
+        error=
+        get &
+        sleep 1
+      fi
     done
   done
 fi

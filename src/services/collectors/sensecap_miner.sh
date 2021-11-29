@@ -23,8 +23,8 @@ get() {
   while [ ! "$(sensecap_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
-      rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-      exit
+      error=true
+      break
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
@@ -33,16 +33,18 @@ get() {
     get_payload
   done
 
-  ip_address=$(jq -r '.data.ipEthLocal' <<< "${payload}")
-  if [ "$(echo "${ip_address}" | awk -F '.' '{print $1,$2,$3,$4}' | wc -w | tr -dc .[:print:].)" -eq 4 ]; then
-    latency=$(ping -W 5 -c 1 ${ip_address} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%' | grep 'response_time') || latency='{ "response_time": "-1" }'
-  else
-    latency='{ "response_time": "-1" }'
-  fi
-  payload=$(jq -s '(.[0] + .[1])' <<< "${payload} ${latency}") || true
-
-  send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}" || true
-  log_info "${miner} miner [${a}] ${endpoint} ready to process"
+  if [ ! "${error}" == "true" ]; then
+    ip_address=$(jq -r '.data.ipEthLocal' <<< "${payload}")
+    if [ "$(echo "${ip_address}" | awk -F '.' '{print $1,$2,$3,$4}' | wc -w | tr -dc .[:print:].)" -eq 4 ]; then
+      latency=$(ping -W 5 -c 1 ${ip_address} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%' | grep 'response_time') || latency='{ "response_time": "-1" }'
+    else
+      latency='{ "response_time": "-1" }'
+    fi
+    payload=$(jq -s '(.[0] + .[1])' <<< "${payload} ${latency}") || true
+  
+    send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}" || true
+    log_info "${miner} miner [${a}] ${endpoint} ready to process"
+  fi 
 
   sleep "${sensecap_data_interval}"
   rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
@@ -58,10 +60,14 @@ if [ "${miner_collector_enabled}" == "true" ] && [ "${sensecap_collector_enabled
     for a in ${addr}; do
       make_dir "${data_dir}/${client_id}/miner.${miner}"
   
+      ttl=${sensecap_data_interval}
       lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-      get &
-  
-      sleep 1
+
+      if [ "${ready}" == "true" ]; then
+        error=
+        get &
+        sleep 1
+      fi
     done
   done
 fi
