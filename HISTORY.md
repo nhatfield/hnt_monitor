@@ -1,5 +1,7 @@
 vNext
 
+# 7.9.0
+
 - **Enhancement** - update miner collectors 
 - **HotFix** - collection is broken without user agents
 
