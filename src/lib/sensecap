@@ -33,31 +33,38 @@ get_miner_sensecap_data() {
     val=($(jq -r -c '.data.cpuTemperature, .data.cpuUsed, .data.memoryTotal, .data.memoryUsed, .data.sdTotal, .data.sdUsed, .data.gain, .data.isHealth, .data.totalHeight, .data.height, .data.connected, .data.dialable, .data.natType, .response_time' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
   
-  cputemp=${val[0]}
-  cpuused=${val[1]}
-  memtotal=${val[2]}
-  memused=${val[3]}
-  sdtotal=${val[4]}
-  sdused=${val[5]}
-  gain=${val[6]}
-  healthy=${val[7]}
+  val=${val:-""}
 
-  if [ "${helium_height}" ]; then
-    block_height=${helium_height}
-  else
-    block_height=${val[8]}
-  fi
-
-  miner_height=${val[9]}
-  p2p_connected=${val[10]}
-  dialable=${val[11]}
-  nattype=${val[12]}
-  gap=$((block_height - miner_height))
-  if [ "${gap}" -ge 20 ]; then
-    sync_status=0
-  else
-    sync_status=1
-  fi
+  if [ "${val}" ]; then
+    cputemp=${val[0]}
+    cpuused=${val[1]}
+    memtotal=${val[2]}
+    memused=${val[3]}
+    sdtotal=${val[4]}
+    sdused=${val[5]}
+    gain=${val[6]}
+    healthy=${val[7]}
   
-  miner_response_time=${val[13]}
+    if [ "${helium_height}" ]; then
+      block_height=${helium_height}
+    else
+      block_height=${val[8]}
+    fi
+  
+    miner_height=${val[9]}
+    p2p_connected=${val[10]}
+    dialable=${val[11]}
+    nattype=${val[12]}
+    gap=$((block_height - miner_height))
+    if [ "${gap}" -ge 20 ]; then
+      sync_status=0
+    else
+      sync_status=1
+    fi
+    
+    miner_response_time=${val[13]}
+  else
+    miner_error=true
+    log_debug "could not get temps from elasticsearch payload"
+  fi
 }

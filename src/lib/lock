@@ -1,11 +1,27 @@
 lock() {
   lockfile=${1:-""}
+  ttl=${ttl:-90}
   if [ "${lockfile}" ]; then
-    if [ ! -f "${lockfile}" ]; then
-      touch "${lockfile}"
+    if [ "${redis_host}" ]; then
+      log_debug "creating redis lock [${lockfile}] with TTL [${ttl}]"
+      if [ ! "$(redis get ${lockfile})" ]; then
+        set_lock=$(redis set ${lockfile} "locked" EX ${ttl})
+        ready=true
+        log_debug "service lock created"
+      else
+        log_debug "service is already locked."
+        ready=false
+      fi
     else
-      log_debug "service is locked."
-      exit 1
+      log_debug "creating local lock [${lockfile}] with TTL [${ttl}]"
+      if [ ! -f "${lockfile}" ]; then
+        touch "${lockfile}"
+        ready=true
+        log_debug "service lock created"
+      else
+        log_debug "service is already locked."
+        ready=false
+      fi
     fi
   else
     log_err "cannot create lock. no lock file provided ${lockfile}"

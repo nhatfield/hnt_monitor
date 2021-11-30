@@ -26,48 +26,55 @@ get_miner_nebra_data() {
     val=($(jq -r -c '.BCH, .FR, .MH, .BSP, .BT, .LOR, .MC, .response_time' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
 
-  if [ "${helium_height}" ]; then
-    block_height=${helium_height}
-  else
-    block_height=${val[0]}
-  fi
+  val=${val:-""}
 
-  frequency=${val[1]}
-  miner_height=${val[2]}
-  gap=$((block_height - miner_height))
-  if [ "${gap}" -ge 20 ]; then
-    sync_status=0
-  else
-    sync_status=1
-  fi
-
-  sync_perc=${val[3]}
-  if [ "$(echo "${sync_perc}" | grep -i "load")" ]; then
-    sync_percent=0
-  else
-    sync_percent=${sync_perc}
-  fi
-
-  bt_conn=${val[4]}
-  if [ "$(echo "${bt_conn}" | grep -i "true")" ]; then
-    bluetooth_connected=1
-  else
-    bluetooth_connected=0 
-  fi
-
-  lo_stat=${val[5]}
-  if [ "$(echo "${lo_stat}" | grep -i "true")" ]; then
-    lora_status=1
-  else
-    lora_status=0
-  fi
-
-  mn_conn=${val[6]}
-  if [ "$(echo "${mn_conn}" | grep -i "yes")" ]; then
-    miner_connected=1
-  else
-    miner_connected=0
-  fi
+  if [ "${val}" ]; then
+    if [ "${helium_height}" ]; then
+      block_height=${helium_height}
+    else
+      block_height=${val[0]}
+    fi
   
-  miner_response_time=${val[7]}
+    frequency=${val[1]}
+    miner_height=${val[2]}
+    gap=$((block_height - miner_height))
+    if [ "${gap}" -ge 20 ]; then
+      sync_status=0
+    else
+      sync_status=1
+    fi
+  
+    sync_perc=${val[3]}
+    if [ "$(echo "${sync_perc}" | grep -i "load")" ]; then
+      sync_percent=0
+    else
+      sync_percent=${sync_perc}
+    fi
+  
+    bt_conn=${val[4]}
+    if [ "$(echo "${bt_conn}" | grep -i "true")" ]; then
+      bluetooth_connected=1
+    else
+      bluetooth_connected=0 
+    fi
+  
+    lo_stat=${val[5]}
+    if [ "$(echo "${lo_stat}" | grep -i "true")" ]; then
+      lora_status=1
+    else
+      lora_status=0
+    fi
+  
+    mn_conn=${val[6]}
+    if [ "$(echo "${mn_conn}" | grep -i "yes")" ]; then
+      miner_connected=1
+    else
+      miner_connected=0
+    fi
+    
+    miner_response_time=${val[7]}
+  else
+    miner_error=true
+    log_debug "could not get data from elasticsearch payload: [${val}]"
+  fi
 }
