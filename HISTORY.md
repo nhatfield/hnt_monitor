@@ -1,5 +1,8 @@
 vNext
 
+- **Enhancement** - update miner collectors 
+- **HotFix** - collection is broken without user agents
+
 # 7.8.0
 
 - **Enhancement** - update to send all log counts per event

@@ -26,27 +26,34 @@ get_miner_longap_data() {
     val=($(jq -r -c '.helium.blockchain.height, .miner.blockHeight, .miner.connected' <<< "${es_miner_payload}" 2>/dev/null)) || log_err "Could not collect [status] on ${a}"
   fi
 
-  if [ "${helium_height}" ]; then
-    block_height=${helium_height}
+  val=${val:-""}
+
+  if [ "${val}" ]; then
+    if [ "${helium_height}" ]; then
+      block_height=${helium_height}
+    else
+      block_height=${val[0]}
+    fi
+    
+    miner_height=${val[1]}
+    
+    block_conn=${val[2]}
+    if [ "$(echo "${block_conn}" | grep -i "true")" ]; then
+      block_connected=1
+    else
+      block_connected=0
+    fi
+    
+    gap=$((block_height - miner_height))
+    
+    if [ "${gap}" -ge 20 ]; then
+      sync_status=0
+    else
+      sync_status=1
+    fi
   else
-    block_height=${val[0]}
-  fi
-  
-  miner_height=${val[1]}
-  
-  block_conn=${val[2]}
-  if [ "$(echo "${block_conn}" | grep -i "true")" ]; then
-    block_connected=1
-  else
-    block_connected=0
-  fi
-  
-  gap=$((block_height - miner_height))
-  
-  if [ "${gap}" -ge 20 ]; then
-    sync_status=0
-  else
-    sync_status=1
+    miner_error=true
+    log_debug "could not get data from elasticsearch payload: [${val}]"
   fi
  
 }

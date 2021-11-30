@@ -23,8 +23,8 @@ get() {
   while [ ! "$(bobcat_temp_success_payload)" ]; do
     if [ "${n}" -ge "${api_retry_threshold}" ]; then
       log_err "maximum retries have been reached - ${api_retry_threshold}"
-      rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-      exit
+      error=true
+      break
     fi
 
     log_warn "bad response from the api gateway while retrieving ${endpoint} data for ${a}. Retrying in 5 seconds..."
@@ -33,15 +33,17 @@ get() {
     get_payload
   done
 
-  if [ "$(echo "${a}" | awk -F '.' '{print $1,$2,$3,$4}' | wc -w | tr -dc .[:print:].)" -eq 4 ]; then
-    latency=$(ping -W 5 -c 1 ${a} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%' | grep 'response_time') || latency='{ "response_time": "-1" }'
-  else
-    latency='{ "response_time": "-1" }'
+  if [ ! "${error}" == "true" ]; then
+    if [ "$(echo "${a}" | awk -F '.' '{print $1,$2,$3,$4}' | wc -w | tr -dc .[:print:].)" -eq 4 ]; then
+      latency=$(ping -W 5 -c 1 ${a} | sed 's%.*time=\(.*\) .*%{ "response_time": "\1" }%' | grep 'response_time') || latency='{ "response_time": "-1" }'
+    else
+      latency='{ "response_time": "-1" }'
+    fi
+    payload=$(jq -s '(.[0] + .[1])' <<< "${payload} ${latency}") || true
+  
+    send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}" || true
+    log_info "${miner} miner [${a}] ${endpoint} data ready to process"
   fi
-  payload=$(jq -s '(.[0] + .[1])' <<< "${payload} ${latency}") || true
-
-  send_payload write "${data_dir}/${client_id}/miner.${miner}/${a}.${endpoint}" || true
-  log_info "${miner} miner [${a}] ${endpoint} data ready to process"
 
   sleep "${bobcat_temperature_interval}"
   rm_lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
@@ -57,10 +59,14 @@ if [ "${miner_collector_enabled}" == "true" ] && [ "${bobcat_collector_enabled}"
     for a in ${addr}; do
       make_dir "${data_dir}/${client_id}/miner.${miner}"
   
+      ttl=${bobcat_temperature_interval}
       lock "${data_dir}/${client_id}/miner.${miner}/.${a}${lock_file}"
-      get &
-  
-      sleep 1
+
+      if [ "${ready}" == "true" ]; then
+        error=
+        get &
+        sleep 1
+      fi
     done
   done
 fi
