@@ -1,5 +1,9 @@
 vNext
 
+# 7.9.1
+
+- **HotFix** - list a single browser agent
+
 # 7.9.0
 
 - **Enhancement** - update miner collectors 

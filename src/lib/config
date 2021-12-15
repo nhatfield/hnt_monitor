@@ -244,7 +244,7 @@ get_client_config() {
 }
 
 get_curl_options() {
-  curl_options="-s -L --speed-limit 50 --speed-time 60 -A \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (K HTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36\""
+  curl_options="-s -L --speed-limit 50 --speed-time 60 -A \"Chrome/61.0.3163.100\""
   if [ "${insecure_api}" == "true" ]; then
     curl_options="${curl_options} -k"
   fi
