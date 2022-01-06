@@ -54,7 +54,7 @@ If you're serious about your fleet's performance, then you will want a tool that
 
 | Service | Description | Cost |
 |:-------:|-------------|------|
-| `Custom Domain` | Create your own domain name `mymon.customdomain.com`. Default `yoursite.hntmonitor.com` | `1` HNT 1 time fee |
+| `Custom Domain` | Create your own domain name `mymon.customdomain.com`. Default `yoursite.hntmonitor.com` | `1` HNT |
 
 <br>
 <br>
