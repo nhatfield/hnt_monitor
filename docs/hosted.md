@@ -33,7 +33,7 @@ If you're serious about your fleet's performance, then you will want a tool that
 |:----:|-------------|------|----------|
 | `Base` | Up to 5 miners | `1` HNT | 30 days |
 | `Additional` | 6+ miners. The cost per additional miner | `.1` HNT | 30 days |
-| `Custom Domain` | Create your own domain name | `1` HNT | 30 days |
+| `Custom Domain` | Create your own domain name `mymon.customdomain.com`. By default you are a part of the hntmonitor.com domain as a subdomain `yoursite.hntmonitor.com` | `1` HNT | 1 time fee |
 
 <br>
 <br>
