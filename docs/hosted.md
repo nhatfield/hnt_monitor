@@ -27,13 +27,34 @@ If you're serious about your fleet's performance, then you will want a tool that
 <br>
 <br>
 
-## Operations
+## Pricing
 
-| Plan | Description | Cost | Interval |
-|:----:|-------------|------|----------|
-| `Base` | Up to 5 miners | `1` HNT | 30 days |
-| `Additional` | 6+ miners. The cost per additional miner | `.1` HNT | 30 days |
-| `Custom Domain` | Create your own domain name `mymon.customdomain.com`. By default you are a part of the hntmonitor.com domain as a subdomain `yoursite.hntmonitor.com` | `1` HNT | 1 time fee |
+### Pay As You Go
+
+| Description | Cost |
+|-------------|------|
+| 1 - 5 hotspots | `.033` HNT per day |
+| 6+ hotspots. The cost per additional miner | `.0033` HNT per day |
+
+<br>
+<br>
+
+### Subscription 
+
+**Monthly**
+| Description | Cost |
+|-------------|------|
+| 1 - 5 hotspots | `1` HNT a month (30 days) |
+| 6+ hotspots. The cost per additional miner | `.1` HNT a month (30 days) |
+
+<br>
+<br>
+
+### Custom Domain
+
+| Service | Description | Cost |
+|:-------:|-------------|------|
+| `Custom Domain` | Create your own domain name `mymon.customdomain.com`. Default `yoursite.hntmonitor.com` | `1` HNT 1 time fee |
 
 <br>
 <br>
