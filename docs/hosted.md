@@ -33,7 +33,7 @@ If you're serious about your fleet's performance, then you will want a tool that
 
 | Description | Cost |
 |-------------|------|
-| 1 - 5 hotspots | `.033` HNT per day |
+| 1 - 5 hotspots | `.016` HNT per day |
 | 6+ hotspots | `.0033` HNT per day per hotspot |
 
 <br>
@@ -44,7 +44,7 @@ If you're serious about your fleet's performance, then you will want a tool that
 **Monthly**
 | Description | Cost |
 |-------------|------|
-| 1 - 5 hotspots | `1` HNT a month (30 days) |
+| 1 - 5 hotspots | `.5` HNT a month (30 days) |
 | 6+ hotspots | `.1` HNT a month per hotspot (30 days) |
 
 <br>
