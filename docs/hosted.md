@@ -40,10 +40,11 @@ If you're serious about your hotspot fleet performance, then you will want a too
 
 example: 7 hotspots
 ```
-5 x .016  = 0.08
-2 x .0033 = 0.0066
-Total: 0.0866 HNT per day
+1-5 hotspots @ 0.016
+2 hotspots x .0033 = 0.0066
+Total: 0.0226 HNT per day
 ```
+
 <br>
 <br>
 
