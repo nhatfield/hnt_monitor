@@ -7,6 +7,17 @@ FROM centos:7
 # && echo "gpgcheck=0" >> /etc/yum.repos.d/epel.repo 
 
 RUN yum update -y \
+ && yum groupinstall "Development tools" -y \
+ && curl http://download.redis.io/redis-stable.tar.gz -o redis-stable.tar.gz \
+ && tar xvzf redis-stable.tar.gz \
+ && cd redis-stable \
+ && make MALLOC=libc redis-cli 
+
+FROM centos:7
+
+COPY --from=0 /redis-stable/src/redis-cli /usr/local/bin/
+
+RUN yum update -y \
  && yum -y install epel-release \
  && yum update -y \
  && yum install -y jq \
