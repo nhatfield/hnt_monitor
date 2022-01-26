@@ -13,10 +13,6 @@ RUN yum update -y \
  && cd redis-stable \
  && make MALLOC=libc redis-cli 
 
-FROM centos:7
-
-COPY --from=0 /redis-stable/src/redis-cli /usr/local/bin/
-
 RUN yum update -y \
  && yum -y install epel-release \
  && yum update -y \
