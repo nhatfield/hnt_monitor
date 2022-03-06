@@ -1,5 +1,9 @@
 vNext
 
+# 7.9.2
+
+- **BugFix** - nebra collector url remove `/` between uri path and args
+
 # 7.9.1
 
 - **HotFix** - list a single browser agent
