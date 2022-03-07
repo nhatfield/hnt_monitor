@@ -12,7 +12,7 @@ lock_file=".${endpoint}.lock"
 id=collector.${miner}.${endpoint}
 
 get() {
-  url=${nebra_test_url:-"http://${a}?json=true"}
+  url=${nebra_test_url:-"http://${a}/json"}
   url="${url}"
   log_info "getting ${miner} ${endpoint} for [${client_id} (${a})]"
   log_debug "${miner} url: ${url}"
