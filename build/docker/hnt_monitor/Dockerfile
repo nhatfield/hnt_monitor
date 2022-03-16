@@ -9,7 +9,7 @@ RUN yum update -y \
 
 RUN if [ "$(uname -a | tr ' ' '\n' | grep arm)" ]; then echo "[epel]" >> /etc/yum.repos.d/epel.repo && echo "name='Epel rebuild for armhfp'" >> /etc/yum.repos.d/epel.repo && echo "baseurl=https://armv7.dev.centos.org/repodir/epel-pass-1/" >> /etc/yum.repos.d/epel.repo && echo "enabled=1" >> /etc/yum.repos.d/epel.repo && echo "gpgcheck=0" >> /etc/yum.repos.d/epel.repo; else yum -y install epel-release; fi
 
-RUN yum install -y jq \
+RUN yum install -y jq hostname \
  && mkdir -p /opt/hnt_monitor \
  && rm -rf /tmp/* \
  && yum clean all -y
