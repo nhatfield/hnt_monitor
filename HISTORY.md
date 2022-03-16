@@ -1,5 +1,6 @@
 vNext
 
+- **BugFix** - rewards earned bug fixed
 - **Enhancement** - arm supported
 
 # 7.9.2
