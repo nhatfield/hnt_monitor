@@ -139,8 +139,23 @@ prereq() {
                         ;;
       esac
 
-      apt-get install docker docker-compose -y
-      service docker start || systemctl start docker
+      if [ "$(uname -a | tr ' ' '\n' | grep arm)" ]; then
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo chmod 755 get-docker.sh
+        sudo sh get-docker.sh
+        sudo usermod -aG docker ${USER}
+        sudo apt-get install libffi-dev libssl-dev -y
+        sudo apt install python3-dev -y
+        sudo apt-get install -y python3 python3-pip
+        sudo pip3 install docker-compose
+
+        echo "You may need to reboot your ARM device for these changes to take effect."
+        echo "... continuing in 5 seconds"
+        sleep 5
+      else
+        apt-get install docker docker-compose -y
+        service docker start || systemctl start docker
+      fi
     else
       if [ ! "$(which brew 2>/dev/null)" ]; then
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -185,9 +200,10 @@ setup() {
   echo "2. LongAP"
   echo "3. Nebra"
   echo "4. Sensecap"
-  echo "5. Deploy"
-  echo "6. back"
-  echo "7. exit"
+  echo "5. Hotspot (blockchain metrics)"
+  echo "6. Deploy"
+  echo "7. back"
+  echo "8. exit"
   echo
   read install
 
@@ -209,15 +225,18 @@ setup() {
                   sensecap|Sensecap|SENSECAP|4)
                     sensecap
                     ;;
-                  deploy|Deploy|DEPLOY|5)
+                  hotspot|Hotspot|HOTSPOT|5)
+                    hotspot
+                    ;;
+                  deploy|Deploy|DEPLOY|6)
                     deploy
                     exit 0
                     ;;
-                  back|6)
+                  back|7)
                     intro
                     exit 0
                     ;;
-                  exit|7)
+                  exit|8)
                     exit 0
                     ;;
   esac

@@ -23,6 +23,8 @@ reward_earn() {
   for r in ${rewards}; do
     time=$(date -d ${r} +%s)
     get_reward_earned
+    earned=${earned:-0}
+    earned=$(echo "${earned}" | awk '{sum+=$1} END {print sum}')
 
     if [ "${minutes_ago}" -le "${time}" ]; then
       rewards_earned_15m=$((rewards_earned_15m + earned)) || true
