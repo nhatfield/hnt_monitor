@@ -1,5 +1,7 @@
 vNext
 
+- **Enhancement** - arm supported
+
 # 7.9.2
 
 - **BugFix** - nebra collector url remove `/` between uri path and args
